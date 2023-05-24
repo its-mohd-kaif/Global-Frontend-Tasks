@@ -1,6 +1,6 @@
 import { FlexLayout, LRLayout, TextStyles } from '@cedcommerce/ounce-ui'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import "./Auth.css"
 import Forgot from './forgot/Forgot';
 import Login from './login/Login';
@@ -69,6 +69,7 @@ function Auth() {
                                 <Route path='login' element={<Login />} />
                                 <Route path="register" element={<Register />} />
                                 <Route path="forgot" element={<Forgot />} />
+                                <Route path="*" element={<Navigate to={'/auth/login'} />} />
                             </Routes>
                         </LRLayout>
                     </div>
