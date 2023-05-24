@@ -8,7 +8,7 @@
 
 .connection {
   padding-top: 7em;
-  width: 660px;
+  width: 934px;
   margin: auto;
 }
 
@@ -33,9 +33,7 @@
 
 
 @media only screen and (max-width: 670px) {
-  .source-connection {
-    padding-top: 7em;
-    width: 100%;
-    margin: auto;
+  .connection {
+    max-width: 100% !important;
   }
 }
