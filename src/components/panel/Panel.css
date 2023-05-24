@@ -1,0 +1,41 @@
+.inte__Topbar {
+  left: 0 !important;
+}
+
+.logoutButton {
+  padding: 10px 12px 10px 12px !important;
+}
+
+.source-connection {
+  padding-top: 7em;
+  width: 660px;
+  margin: auto;
+}
+
+.stepper-custom {
+  margin-top: 63px !important;
+}
+
+.source-connection-card {
+  margin-top: 33px !important;
+}
+
+.list-circle {
+  border-radius: 20px;
+  width: 20px;
+  height: 20px;
+  top: 12px;
+  background: #269e6c;
+  font-size: small;
+  color: white;
+  text-align: center;
+}
+
+
+@media only screen and (max-width: 670px) {
+  .source-connection {
+    padding-top: 7em;
+    width: 100%;
+    margin: auto;
+  }
+}
