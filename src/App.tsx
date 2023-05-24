@@ -1,5 +1,5 @@
 import Auth from "./components/auth/Auth";
-import { Routes, Route, } from 'react-router-dom';
+import { Routes, Route, Navigate, } from 'react-router-dom';
 import { Suspense } from "react";
 import Panel from "./components/panel/Panel";
 
@@ -15,7 +15,7 @@ function App() {
             </Suspense>
           }>
         </Route>
-        <Route path="*" element={<>NO Page Found 1</>} />
+        <Route path="*" element={<Navigate to={'/auth/login'} />} />
         <Route
           path="/panel/*"
           element={
