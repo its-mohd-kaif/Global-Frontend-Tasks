@@ -37,3 +37,67 @@
     max-width: 100% !important;
   }
 }
+
+/* ----------------Custom CSS--------------- */
+/* For icon background */
+.iconBody {
+  margin-top: -14%;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 100%;
+}
+
+.Finished {
+  background-color: #ecfbed;
+}
+
+.Error {
+  background-color: #ffebea;
+}
+
+.Warning {
+  background-color: #fffaec;
+}
+
+.Imported {
+  background-color: #f1ecfd;
+}
+
+.Pending {
+  background-color: #e0e1e3;
+}
+
+.Cancelled {
+  background-color: #ffebea;
+}
+
+.Refunded {
+  background-color: #f0f4ff;
+}
+
+/* Link Text CSS */
+.link .inte-TextLink--Label {
+  color: #1c2433;
+  text-decoration: underline;
+}
+
+.link .inte-TextLink--Label:hover {
+  color: #1c2433;
+  text-decoration: none;
+}
+
+/* List Link CSS */
+.textlink__list .inte-TextLink--Label {
+  color: #1c2433;
+  text-decoration: none;
+}
+
+/* Text Ellipsis CSS */
+.blogTxt {
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
