@@ -2,9 +2,11 @@ import { Button, Card, FlexLayout, TextField, TextLink, TextStyles } from '@cedc
 import React, { useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import ReCAPTCHA from "react-google-recaptcha";
 interface loginStateObj {
     eyeoff: boolean;
 }
+
 function Login() {
     /**
   * State object for form input details
@@ -69,6 +71,10 @@ function Login() {
                             Forgot Password?
                         </Button>
                     </FlexLayout>
+                    <ReCAPTCHA
+                        sitekey="6Ld8cTomAAAAANSNFxGKz_5ohemlbeUww_yf3KdI"
+                    // onChange={onChange}
+                    />
                 </FlexLayout>
                 <hr></hr>
                 <Button

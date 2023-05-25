@@ -5,7 +5,7 @@ import GreenCheckSvg from '../../../../assets/images/svg/GreenCheckSvg'
 
 function AttributeSelect() {
     return (
-        <FlexLayout spacing='extraTight' direction='vertical'>
+        <FlexLayout desktopWidth='100' tabWidth='100' mobileWidth='100' spacing='extraTight' direction='vertical'>
             <FlexChild>
                 <FlexLayout valign='center' >
                     <FlexChild desktopWidth='25' tabWidth='25'>
