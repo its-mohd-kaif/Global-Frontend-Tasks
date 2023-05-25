@@ -3,7 +3,7 @@ import React from 'react'
 import CompanyLogoSvg from '../../../assets/images/svg/CompanyLogoSvg'
 import { ChevronDown } from "react-feather"
 import USFlagSvg from '../../../assets/images/svg/USFlagSvg'
-function TopbarComp() {
+function TopbarOnboarding() {
     return (
         <>
             <Topbar
@@ -49,4 +49,4 @@ function TopbarComp() {
     )
 }
 
-export default TopbarComp
+export default TopbarOnboarding
