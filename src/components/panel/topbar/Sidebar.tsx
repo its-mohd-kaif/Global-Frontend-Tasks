@@ -16,61 +16,62 @@ function Sidebar() {
         {
             content: "Category Template",
             icon: <Box />,
-            id: "dashboard",
+            id: "category",
             path: "category",
         },
         {
             content: "Manage Products",
             icon: <FileText />,
-            id: "dashboard",
+            id: "product",
             path: "product",
         },
         {
             content: "Orders",
             icon: <ShoppingBag />,
-            id: "dashboard",
+            id: "order",
             path: "order",
         },
         {
             content: "Return Orders",
             icon: <CornerDownLeft color='#3B424F' />,
-            id: "dashboard",
+            id: "return",
             path: "return",
         },
         {
             content: "Configuration",
             icon: <Settings color='#3B424F' />,
-            id: "dashboard",
+            id: "config",
             path: "config",
         },
         {
             content: "Pricing",
             icon: <DollarSign color='#3B424F' />,
-            id: "dashboard",
+            id: "price",
             path: "price",
         },
         {
             content: "FAQ",
             icon: <HelpCircle color='#3B424F' />,
-            id: "dashboard",
+            id: "faq",
             path: "faq",
         },
         {
             content: "Help",
             icon: <LifeBuoy color='#3B424F' />,
-            id: "dashboard",
+            id: "help",
             path: "help",
         },
-
     ]
+    const navigate = useNavigate()
     return (
         <>
             <NewSidebar
                 logo={<CompanyLogoSvg />}
-                // onChange={(e: any) => navigate(e.path)}
+                onChange={(e: any) => {
+                    navigate(e.path)
+                }}
                 mobileLogo={<OnlyLogoSvg />}
                 menu={allMenu}
-                // path={path}
             />
         </>
     )

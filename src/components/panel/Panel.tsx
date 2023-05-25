@@ -6,6 +6,7 @@ import TopbarOnboarding from './topbar/TopbarOnboarding'
 import TopbarPanel from './topbar/TopbarPanel'
 import Sidebar from './topbar/Sidebar'
 import { BodyLayout } from '@cedcommerce/ounce-ui'
+import Dashboard from './pages/Dashboard'
 
 function Panel() {
     const [check, setCheck] = useState<boolean>(true)
@@ -16,7 +17,7 @@ function Panel() {
                 <Sidebar />
                 <BodyLayout>
                     <Routes>
-                        <Route path='dashboard' element={<>Dashboard</>} />
+                        <Route path='dashboard' element={<Dashboard />} />
                         <Route path='product' element={<>product</>} />
                     </Routes>
                 </BodyLayout>
