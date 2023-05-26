@@ -101,3 +101,26 @@
   text-overflow: ellipsis;
 }
 
+
+/* ---- Product Grid----- */
+.product-activity{
+  font-style: italic;
+}
+
+.error-product-btn{
+  padding-left: 0 !important;
+  background-color: transparent !important;
+}
+
+.error-product-btn > .inte__text {
+  text-decoration: underline;
+}
+
+/* --- Product Column Title---- */
+.up-arrow{
+  margin-bottom: -10px;
+  cursor: pointer;
+}
+.down-arrow{
+  cursor: pointer;
+}

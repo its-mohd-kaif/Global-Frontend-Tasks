@@ -25,9 +25,9 @@ import {
     XCircle,
     Eye, Upload
 } from "react-feather";
-import menyImg from "../../../assets/images/png/menu.png"
+import menuImg from "../../../../assets/images/png/menu.png"
 import React, { useState } from 'react'
-import carouselImg from "../../../assets/images/png/carousel.png"
+import carouselImg from "../../../../assets/images/png/carousel.png"
 function Dashboard() {
     const productStatus = [
         {
@@ -124,7 +124,7 @@ function Dashboard() {
                                                     <Button
                                                         onClick={() => setOpen(!open)}
                                                         type="Outlined"
-                                                    ><Image width={20} height={20} src={menyImg} /></Button>
+                                                    ><Image width={20} height={20} src={menuImg} /></Button>
                                                 }
                                                 onClose={() => setOpen(!open)}
                                                 popoverContainer="element"
