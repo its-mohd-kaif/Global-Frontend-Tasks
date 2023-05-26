@@ -6,8 +6,8 @@ import TopbarOnboarding from './topbar/TopbarOnboarding'
 import TopbarPanel from './topbar/TopbarPanel'
 import Sidebar from './topbar/Sidebar'
 import { BodyLayout } from '@cedcommerce/ounce-ui'
-import Dashboard from './pages/Dashboard'
-import Product from './pages/Product'
+import Dashboard from './pages/dashboard/Dashboard'
+import Product from './pages/product/Product'
 
 function Panel() {
     const [check, setCheck] = useState<boolean>(true)
