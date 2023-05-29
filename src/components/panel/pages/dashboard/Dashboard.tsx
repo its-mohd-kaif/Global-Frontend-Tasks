@@ -115,170 +115,170 @@ function Dashboard() {
             <FlexLayout spacing="loose">
                 <FlexChild desktopWidth="66">
                     <FlexLayout spacing="loose" direction="vertical">
-                            <Card>
-                                <FlexLayout spacing="extraTight" direction="vertical">
-                                        <Card
-                                            action={<Popover
-                                                open={open}
-                                                activator={
-                                                    <Button
-                                                        onClick={() => setOpen(!open)}
-                                                        type="Outlined"
-                                                    ><Image width={20} height={20} src={menuImg} /></Button>
-                                                }
-                                                onClose={() => setOpen(!open)}
-                                                popoverContainer="element"
-                                                popoverWidth={250}
+                        <Card>
+                            <FlexLayout spacing="extraTight" direction="vertical">
+                                <Card
+                                    action={<Popover
+                                        open={open}
+                                        activator={
+                                            <Button
+                                                onClick={() => setOpen(!open)}
+                                                type="Outlined"
+                                            ><Image width={20} height={20} src={menuImg} /></Button>
+                                        }
+                                        onClose={() => setOpen(!open)}
+                                        popoverContainer="element"
+                                        popoverWidth={250}
+                                    >
+                                        <FlexLayout direction='vertical' spacing="extraTight" >
+                                            <Button icon={<Eye size={18} />} type='Plain'>View All</Button>
+                                            <Button icon={<Upload size={18} />} type='Plain'>Bulk Upload</Button>
+                                        </FlexLayout>
+                                    </Popover>}
+                                    cardType="Subdued"
+                                    title="Product Status"
+                                    extraClass="cardIcon"
+                                >
+                                    <FlexLayout spacing="loose" halign="fill">
+                                        {productStatus.map((val, index) => (
+                                            <FlexChild
+                                                key={index}
+                                                desktopWidth="25"
+                                                tabWidth="50"
+                                                mobileWidth="100"
                                             >
-                                                <FlexLayout direction='vertical' spacing="extraTight" >
-                                                    <Button icon={<Eye size={18} />} type='Plain'>View All</Button>
-                                                    <Button icon={<Upload size={18} />} type='Plain'>Bulk Upload</Button>
-                                                </FlexLayout>
-                                            </Popover>}
-                                            cardType="Subdued"
-                                            title="Product Status"
-                                            extraClass="cardIcon"
-                                        >
-                                            <FlexLayout spacing="loose" halign="fill">
-                                                {productStatus.map((val, index) => (
-                                                    <FlexChild
-                                                        key={index}
-                                                        desktopWidth="25"
-                                                        tabWidth="50"
-                                                        mobileWidth="100"
-                                                    >
-                                                        <Card extraClass="link">
-                                                            <FlexLayout halign="fill">
-                                                                <TextStyles>{val.title}</TextStyles>
-                                                                <div className={`iconBody ${val.title}`}>
-                                                                    <TextStyles>{val.icon}</TextStyles>
-                                                                </div>
-                                                            </FlexLayout>
-                                                            <FlexLayout spacing="loose" direction="vertical">
-                                                                <TextStyles
-                                                                    fontweight="extraBolder"
-                                                                    type="SubHeading"
-                                                                    headingTypes="MD-2.7"
-                                                                >
-                                                                    {val.value}
-                                                                </TextStyles>
-                                                                <TextLink label={val.btn}></TextLink>
-                                                            </FlexLayout>
-                                                        </Card>
-                                                    </FlexChild>
-                                                ))}
-                                            </FlexLayout>
-                                        </Card>
-                                        <Card
-                                            action={<Button type="TextButton">View all</Button>}
-                                            cardType="Subdued"
-                                            title="Order Status"
-                                        >
-                                            <FlexLayout spacing="loose" halign="fill">
-                                                {orderStatus.map((val, index) => (
-                                                    <FlexChild
-                                                        key={index}
-                                                        desktopWidth="25"
-                                                        tabWidth="50"
-                                                        mobileWidth="100"
-                                                    >
-                                                        <Card extraClass="link">
-                                                            <FlexLayout valign="center" halign="fill">
-                                                                <TextStyles>{val.title}</TextStyles>
-                                                                <div className={`iconBody ${val.title}`}>
-                                                                    <TextStyles>{val.icon}</TextStyles>
-                                                                </div>
-                                                            </FlexLayout>
-                                                            <FlexLayout spacing="loose" direction="vertical">
-                                                                <TextStyles
-                                                                    fontweight="extraBolder"
-                                                                    type="SubHeading"
-                                                                    headingTypes="MD-2.7"
-                                                                >
-                                                                    {val.value}
-                                                                </TextStyles>
-                                                                <TextLink label={val.btn}></TextLink>
-                                                            </FlexLayout>
-                                                        </Card>
-                                                    </FlexChild>
-                                                ))}
-                                            </FlexLayout>
-                                        </Card>
-                                </FlexLayout>
-                            </Card>
-                            <Card
-                                title="Frequently Asked Question"
-                                action={<Button type="TextButton">View all FAQ articles</Button>}
+                                                <Card extraClass="link">
+                                                    <FlexLayout halign="fill">
+                                                        <TextStyles>{val.title}</TextStyles>
+                                                        <div className={`iconBody ${val.title}`}>
+                                                            <TextStyles>{val.icon}</TextStyles>
+                                                        </div>
+                                                    </FlexLayout>
+                                                    <FlexLayout spacing="loose" direction="vertical">
+                                                        <TextStyles
+                                                            fontweight="extraBolder"
+                                                            type="SubHeading"
+                                                            headingTypes="MD-2.7"
+                                                        >
+                                                            {val.value}
+                                                        </TextStyles>
+                                                        <TextLink label={val.btn}></TextLink>
+                                                    </FlexLayout>
+                                                </Card>
+                                            </FlexChild>
+                                        ))}
+                                    </FlexLayout>
+                                </Card>
+                                <Card
+                                    action={<Button type="TextButton">View all</Button>}
+                                    cardType="Subdued"
+                                    title="Order Status"
+                                >
+                                    <FlexLayout spacing="loose" halign="fill">
+                                        {orderStatus.map((val, index) => (
+                                            <FlexChild
+                                                key={index}
+                                                desktopWidth="25"
+                                                tabWidth="50"
+                                                mobileWidth="100"
+                                            >
+                                                <Card extraClass="link">
+                                                    <FlexLayout valign="center" halign="fill">
+                                                        <TextStyles>{val.title}</TextStyles>
+                                                        <div className={`iconBody ${val.title}`}>
+                                                            <TextStyles>{val.icon}</TextStyles>
+                                                        </div>
+                                                    </FlexLayout>
+                                                    <FlexLayout spacing="loose" direction="vertical">
+                                                        <TextStyles
+                                                            fontweight="extraBolder"
+                                                            type="SubHeading"
+                                                            headingTypes="MD-2.7"
+                                                        >
+                                                            {val.value}
+                                                        </TextStyles>
+                                                        <TextLink label={val.btn}></TextLink>
+                                                    </FlexLayout>
+                                                </Card>
+                                            </FlexChild>
+                                        ))}
+                                    </FlexLayout>
+                                </Card>
+                            </FlexLayout>
+                        </Card>
+                        <Card
+                            title="Frequently Asked Question"
+                            action={<Button type="TextButton">View all FAQ articles</Button>}
+                        >
+                            <Accordion
+                                boxed
+                                icon
+                                iconAlign="left"
+                                onClick={() => setFlag({ ...flag, flag1: !flag.flag1 })}
+                                title="Accordion Title"
+                                active={flag.flag1}
                             >
-                                <Accordion
-                                    boxed
-                                    icon
-                                    iconAlign="left"
-                                    onClick={() => setFlag({ ...flag, flag1: !flag.flag1 })}
-                                    title="Accordion Title"
-                                    active={flag.flag1}
-                                >
-                                    <TextStyles textcolor="light">
-                                        It is a long established fact that a reader will be distracted by the
-                                        readable content of a page when looking at its layout. The point of
-                                        using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                        letters, as opposed to using 'Content here, content here', making it
-                                        look like readable English.
-                                    </TextStyles>
-                                </Accordion>
-                                <Accordion
-                                    boxed
-                                    icon
-                                    iconAlign="left"
-                                    title="Accordion Title"
-                                    onClick={() => setFlag({ ...flag, flag2: !flag.flag2 })}
-                                    active={flag.flag2}
-                                >
-                                    <TextStyles textcolor="light">
-                                        It is a long established fact that a reader will be distracted by the
-                                        readable content of a page when looking at its layout. The point of
-                                        using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                        letters, as opposed to using 'Content here, content here', making it
-                                        look like readable English.
-                                    </TextStyles>
-                                </Accordion>
-                                <Accordion
-                                    boxed
-                                    icon
-                                    iconAlign="left"
-                                    onClick={() => setFlag({ ...flag, flag3: !flag.flag3 })}
-                                    active={flag.flag3}
-                                    title="Accordion Title"
-                                >
-                                    <TextStyles textcolor="light">
-                                        It is a long established fact that a reader will be distracted by the
-                                        readable content of a page when looking at its layout. The point of
-                                        using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                        letters, as opposed to using 'Content here, content here', making it
-                                        look like readable English.
-                                    </TextStyles>
-                                </Accordion>
-                                <Accordion
-                                    boxed
-                                    icon
-                                    iconAlign="left"
-                                    onClick={() => setFlag({ ...flag, flag4: !flag.flag4 })}
-                                    active={flag.flag4}
-                                    title="Accordion Title"
-                                >
-                                    <TextStyles textcolor="light">
-                                        It is a long established fact that a reader will be distracted by the
-                                        readable content of a page when looking at its layout. The point of
-                                        using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                        letters, as opposed to using 'Content here, content here', making it
-                                        look like readable English.
-                                    </TextStyles>
-                                </Accordion>
-                            </Card>
+                                <TextStyles textcolor="light">
+                                    It is a long established fact that a reader will be distracted by the
+                                    readable content of a page when looking at its layout. The point of
+                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
+                                    letters, as opposed to using 'Content here, content here', making it
+                                    look like readable English.
+                                </TextStyles>
+                            </Accordion>
+                            <Accordion
+                                boxed
+                                icon
+                                iconAlign="left"
+                                title="Accordion Title"
+                                onClick={() => setFlag({ ...flag, flag2: !flag.flag2 })}
+                                active={flag.flag2}
+                            >
+                                <TextStyles textcolor="light">
+                                    It is a long established fact that a reader will be distracted by the
+                                    readable content of a page when looking at its layout. The point of
+                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
+                                    letters, as opposed to using 'Content here, content here', making it
+                                    look like readable English.
+                                </TextStyles>
+                            </Accordion>
+                            <Accordion
+                                boxed
+                                icon
+                                iconAlign="left"
+                                onClick={() => setFlag({ ...flag, flag3: !flag.flag3 })}
+                                active={flag.flag3}
+                                title="Accordion Title"
+                            >
+                                <TextStyles textcolor="light">
+                                    It is a long established fact that a reader will be distracted by the
+                                    readable content of a page when looking at its layout. The point of
+                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
+                                    letters, as opposed to using 'Content here, content here', making it
+                                    look like readable English.
+                                </TextStyles>
+                            </Accordion>
+                            <Accordion
+                                boxed
+                                icon
+                                iconAlign="left"
+                                onClick={() => setFlag({ ...flag, flag4: !flag.flag4 })}
+                                active={flag.flag4}
+                                title="Accordion Title"
+                            >
+                                <TextStyles textcolor="light">
+                                    It is a long established fact that a reader will be distracted by the
+                                    readable content of a page when looking at its layout. The point of
+                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
+                                    letters, as opposed to using 'Content here, content here', making it
+                                    look like readable English.
+                                </TextStyles>
+                            </Accordion>
+                        </Card>
                     </FlexLayout>
                 </FlexChild>
                 <FlexChild desktopWidth="33">
-                    <FlexLayout spacing="loose" direction="vertical">
+                    <FlexLayout desktopWidth="100" tabWidth="100" mobileWidth="100" spacing="loose" direction="vertical">
                         <Card cardType="Default" title="Connected Michael Account">
                             <FlexLayout halign="fill" valign="start" spacing="loose">
                                 <FlexChild desktopWidth="66">
@@ -319,27 +319,19 @@ function Dashboard() {
                                 slidesToScroll={1}
                                 slidesToShow={1}
                                 autoplaySpeed={1000}
+                                dots
                             >
-                                {/* {carouselData.map((val: any, index: number) => (
+                                {carouselData.map((val: any, index: number) => (
                                     <Card key={index}
                                         cardType="Bordered"
                                         media={val.image}
                                     >
                                         <FlexLayout spacing='tight' direction='vertical'>
                                             <TextStyles fontweight='bold'>{val.title}</TextStyles>
-                                            <TextStyles>${val.price}</TextStyles>
+                                            <TextStyles fontweight='extraBold' content={`$${val.price}`} />
                                         </FlexLayout>
                                     </Card>
-                                ))} */}
-                                <Card
-                                    cardType="Bordered"
-                                    media={carouselImg}
-                                >
-                                    <FlexLayout spacing='tight' direction='vertical'>
-                                        <TextStyles fontweight='bold'>Fingers mouse with areao grip</TextStyles>
-                                        <TextStyles fontweight="extraBold">$ 24.94</TextStyles>
-                                    </FlexLayout>
-                                </Card>
+                                ))}
                             </Carousel>
                         </Card>
                         <Card title={"Activity"} action={<Button type="TextButton">View all</Button>}>

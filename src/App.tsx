@@ -15,7 +15,7 @@ function App() {
             </Suspense>
           }>
         </Route>
-        <Route path="*" element={<Navigate to={'/auth/login'} />} />
+        <Route path="*" element={<Navigate to={'/panel/dashboard'} />} />
         <Route
           path="/panel/*"
           element={

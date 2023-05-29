@@ -151,6 +151,7 @@ function MappingTemplate() {
                                 <TextStyles textcolor='light'>
                                     Note: Based on the selected category you will further map Shopify attribute with Michaels attributes.
                                 </TextStyles>
+                                <br></br>
                             </FlexLayout>
                         </FlexChild>
                     </FlexLayout>

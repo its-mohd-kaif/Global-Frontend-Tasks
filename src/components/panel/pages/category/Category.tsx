@@ -1,4 +1,4 @@
-import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, PageHeader, TextLink } from '@cedcommerce/ounce-ui'
+import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, PageHeader, Pagination, TextLink } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
@@ -75,6 +75,60 @@ function Category() {
             setData(tempArr.slice(start, end))
         })
     }, [start, end])
+    /**
+   * on count change pagination handler
+   * @param val user select from grid 
+   */
+    const countChangeHandler = (val: any) => {
+        let newGrid = allData.slice(0, val)
+        setPagination({
+            ...pagination,
+            countPerPage: val
+        })
+        setData(newGrid)
+    }
+    /**
+    * next page handler
+    */
+    const nextPageHandler = () => {
+
+        let start = countPerPage * activePage;
+        let end = countPerPage * activePage + countPerPage;
+        setPagination({
+            ...pagination,
+            activePage: activePage + 1,
+            start: start,
+            end: end
+        })
+    }
+    /**
+    * prev page handler function
+     */
+    const prevPageHandler = () => {
+        //for delay active state value we more decrement value by one
+        let start = countPerPage * (activePage - 1) - countPerPage;
+        let end = countPerPage * (activePage - 1);
+        setPagination({
+            ...pagination,
+            activePage: activePage - 1,
+            start: start,
+            end: end
+        })
+    }
+    /**
+   * on enter change handler
+   * @param val user press on grid
+   */
+    const onEnterChange = (val: number) => {
+        let start = countPerPage * val - countPerPage;
+        let end = countPerPage * val;
+        setPagination({
+            ...pagination,
+            activePage: val,
+            start: start,
+            end: end
+        })
+    }
     return (
         <>
             <PageHeader title="Category Template"
@@ -110,6 +164,29 @@ function Category() {
                     <Grid
                         columns={columns}
                         dataSource={data}
+                    />
+                    <Pagination
+                        countPerPage={countPerPage}
+                        currentPage={activePage}
+                        onCountChange={(e: any) => countChangeHandler(e)}
+                        onEnter={(e: any) => onEnterChange(e)}
+                        onNext={nextPageHandler}
+                        onPrevious={prevPageHandler}
+                        totalitem={allData.length}
+                        optionPerPage={[
+                            {
+                                label: '5',
+                                value: '5'
+                            },
+                            {
+                                label: '10',
+                                value: '10'
+                            },
+                            {
+                                label: '15',
+                                value: '15'
+                            },
+                        ]}
                     />
                 </FlexLayout>
             </Card>

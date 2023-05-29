@@ -49,9 +49,9 @@ function DefaultSetting() {
                                         <TextStyles textcolor='light'>
                                             Magento Store. Individual variants won’t be deleted
                                         </TextStyles>
+                                        <br></br>
                                     </>
                                 </FlexChild>
-
                             </FlexLayout>
                         </FlexChild>
                     </FlexLayout>

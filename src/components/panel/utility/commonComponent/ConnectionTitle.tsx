@@ -4,13 +4,13 @@ import OnlyLogoSvg from '../../../../assets/images/svg/OnlyLogoSvg'
 
 function ConnectionTitle() {
     return (
-        <FlexLayout>
+        <FlexLayout valign='center' spacing='loose'>
             <FlexChild>
                 <OnlyLogoSvg />
             </FlexChild>
-            <FlexLayout direction='vertical'>
-                <TextStyles type='Heading' fontweight='bold' headingTypes='LG-2.8'>Welcome to Michaels Integration By</TextStyles>
-                <TextStyles textcolor='light' type='Heading' headingTypes='LG-2.8'>By CedCommerce</TextStyles>
+            <FlexLayout spacing='extraTight' direction='vertical'>
+                <TextStyles type='Heading' fontweight='bold' headingTypes='LG-2.8'>Welcome to Michaels Integration</TextStyles>
+                <TextStyles utility='connection-title' textcolor='light' type='Heading' headingTypes='LG-2.8'>By CedCommerce</TextStyles>
             </FlexLayout>
         </FlexLayout>
     )
