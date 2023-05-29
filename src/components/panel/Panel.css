@@ -31,7 +31,6 @@
   text-align: center;
 }
 
-
 @media only screen and (max-width: 954px) {
   .connection {
     max-width: 100% !important;
@@ -101,13 +100,17 @@
   text-overflow: ellipsis;
 }
 
+/* ---Onboarding Title--- */
+.connection-title {
+  margin-top: -10px !important;
+}
 
 /* ---- Product Grid----- */
-.product-activity{
+.product-activity {
   font-style: italic;
 }
 
-.error-product-btn{
+.error-product-btn {
   padding-left: 0 !important;
   background-color: transparent !important;
 }
@@ -117,10 +120,16 @@
 }
 
 /* --- Product Column Title---- */
-.up-arrow{
+.up-arrow {
   margin-bottom: -10px;
   cursor: pointer;
 }
-.down-arrow{
+.down-arrow {
   cursor: pointer;
+}
+
+/* ----- Category Template---- */
+.list-highlight {
+  font-weight: bold;
+  color: #4e4f52;
 }

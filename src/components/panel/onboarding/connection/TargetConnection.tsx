@@ -8,6 +8,7 @@ function TargetConnection() {
     return (
         <>
             <ConnectionList list={targetList} />
+            <br></br>
         </>
     )
 }

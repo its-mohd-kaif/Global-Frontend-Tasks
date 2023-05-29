@@ -15,7 +15,7 @@ function Onboarding() {
                 current={stepper}
                 items={[
                     {
-                        title: 'Create Your Account'
+                        title: 'Connect Your Account'
                     },
                     {
                         title: 'Mapping'
