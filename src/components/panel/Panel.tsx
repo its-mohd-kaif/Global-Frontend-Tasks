@@ -12,6 +12,7 @@ import Order from './pages/order/Order'
 import Category from './pages/category/Category'
 import Template from './pages/category/Template'
 import Footer from '../footer/Footer'
+import Activity from './pages/activity/Activity'
 
 function Panel() {
     const [check, setCheck] = useState<boolean>(true)
@@ -27,6 +28,7 @@ function Panel() {
                         <Route path='order' element={<Order />} />
                         <Route path='category' element={<Category />} />
                         <Route path='category_template' element={< Template />} />
+                        <Route path='activity' element={<Activity />} />
                     </Routes>
                     <Footer />
                 </BodyLayout>
