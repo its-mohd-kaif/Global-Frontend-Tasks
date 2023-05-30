@@ -28,7 +28,9 @@ import {
 import menuImg from "../../../../assets/images/png/menu.png"
 import React, { useState } from 'react'
 import carouselImg from "../../../../assets/images/png/carousel.png"
+import { useNavigate } from "react-router-dom";
 function Dashboard() {
+    const navigate = useNavigate()
     const productStatus = [
         {
             title: "Finished",
@@ -110,7 +112,7 @@ function Dashboard() {
         <>
             <PageHeader
                 title="Dashboard"
-                action={<Button  icon={<FileText size={"18"} />} type="Outlined">Guide</Button>}
+                action={<Button icon={<FileText size={"18"} />} type="Outlined">Guide</Button>}
             />
             <FlexLayout spacing="loose">
                 <FlexChild desktopWidth="66">
@@ -335,7 +337,7 @@ function Dashboard() {
                                 ))}
                             </Carousel>
                         </Card>
-                        <Card title={"Activity"} action={<Button type="TextButton">View all</Button>}>
+                        <Card title={"Activity"} action={<Button onClick={() => navigate("/panel/activity")} type="TextButton">View all</Button>}>
                             <Notification
                                 destroy={false}
                                 onClose={function noRefCheck() { }}
