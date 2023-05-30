@@ -44,7 +44,10 @@ function Template() {
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>
                             <FlexChild desktopWidth='33'>
-                                <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Category Template Name *</TextStyles>
+                                <FlexLayout spacing='extraTight'>
+                                    <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Category Template Name</TextStyles>
+                                    <TextStyles textcolor="negative">*</TextStyles>
+                                </FlexLayout>
                             </FlexChild>
                             <FlexChild desktopWidth='66'>
                                 <TextField
@@ -60,9 +63,12 @@ function Template() {
                     <hr></hr>
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>
-                            <FlexChild desktopWidth='33'>
+                            <FlexChild desktopWidth='33' >
                                 <FlexLayout direction='vertical' spacing='extraTight'>
-                                    <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Assign Product to the Template *</TextStyles>
+                                    <FlexLayout spacing='extraTight'>
+                                        <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Assign Product to the Template</TextStyles>
+                                        <TextStyles textcolor="negative">*</TextStyles>
+                                    </FlexLayout>
                                     <TextStyles textcolor='light'>
                                         Create Rule Group(s) (query) to fetch a particular set of the product(s) in the current profile.
                                     </TextStyles>
