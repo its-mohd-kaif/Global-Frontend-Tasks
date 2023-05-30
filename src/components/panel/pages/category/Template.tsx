@@ -1,15 +1,15 @@
-import { Button, Card, FlexChild, FlexLayout, FormElement, List, PageHeader, Radio, TextField, TextStyles } from '@cedcommerce/ounce-ui'
+import { Button, Card, FlexChild, FlexLayout, FormElement, List, PageHeader, Radio, Select, TextField, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText, Trash2 } from "react-feather"
 import { RuleGroup } from './CategoryUtility'
 function Template() {
     const [ruleComponent, setRuleComponent] = useState<any>([]);
     useEffect(() => {
-        let obj = {
-            id: Math.floor(Math.random() * 21212121),
-            comp: <RuleGroup />
-        }
-        setRuleComponent([...ruleComponent, obj])
+        // let obj = {
+        //     id: Math.floor(Math.random() * 21212121),
+        //     comp: <RuleGroup />
+        // }
+        // setRuleComponent([...ruleComponent, obj])
     }, [])
 
     const addMoreHandler = () => {
@@ -149,6 +149,45 @@ function Template() {
                             </FlexChild>
                         </FlexLayout>
                     </FlexChild>
+                    <hr></hr>
+                    <FlexChild>
+                        <FlexLayout spacing='loose' halign='fill'>
+                            <FlexChild desktopWidth='33'>
+                                <FlexLayout spacing='extraTight' direction='vertical'>
+                                    <FlexLayout spacing='extraTight'>
+                                        <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Select Listing Category</TextStyles>
+                                        <TextStyles textcolor="negative">*</TextStyles>
+                                    </FlexLayout>
+                                    <TextStyles textcolor='light'>Choose the Category that best defines your listing(s).</TextStyles>
+                                </FlexLayout>
+
+                            </FlexChild>
+                            <FlexChild desktopWidth='66'>
+                                <FlexLayout spacing='extraTight' direction='vertical'>
+                                    <Select
+                                        helpIcon={<svg fill="none" height="20" stroke="#c3c3c3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /></svg>}
+                                        onChange={function noRefCheck() { }}
+                                        onblur={function noRefCheck() { }}
+                                        options={[
+                                            {
+                                                label: 'Select',
+                                                value: '0'
+                                            },
+                                        ]}
+                                        searchEable
+                                        value="0"
+                                    />
+                                    <FlexChild>
+                                        <FlexLayout spacing='extraTight'>
+                                            <TextStyles textcolor='light' fontweight='extraBold'>Note:</TextStyles>
+                                            <TextStyles textcolor='light'>Based on the selected category you will further map Magento attribute with setup attributes.</TextStyles>
+                                        </FlexLayout>
+                                    </FlexChild>
+                                </FlexLayout>
+                            </FlexChild>
+                        </FlexLayout>
+                    </FlexChild>
+                    <hr></hr>
                 </FlexLayout>
             </Card>
         </>
