@@ -1,17 +1,17 @@
 import { Accordion, Button, Card, FlexChild, FlexLayout, FormElement, List, PageHeader, Radio, Select, TextField, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
-import { FileText, Trash2 ,Percent} from "react-feather"
+import { FileText, Trash2, Percent } from "react-feather"
 import GrayCheckSvg from '../../../../assets/images/svg/GrayCheckSvg';
 import GreenCheckSvg from '../../../../assets/images/svg/GreenCheckSvg';
 import { RuleGroup } from './CategoryUtility'
 function Template() {
     const [ruleComponent, setRuleComponent] = useState<any>([]);
     useEffect(() => {
-        // let obj = {
-        //     id: Math.floor(Math.random() * 21212121),
-        //     comp: <RuleGroup />
-        // }
-        // setRuleComponent([...ruleComponent, obj])
+        let obj = {
+            id: Math.floor(Math.random() * 21212121),
+            comp: <RuleGroup />
+        }
+        setRuleComponent([...ruleComponent, obj])
     }, [])
 
     const addMoreHandler = () => {
@@ -45,13 +45,13 @@ function Template() {
                 <FlexLayout spacing='loose' direction='vertical'>
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>
-                            <FlexChild desktopWidth='33'>
+                            <FlexChild desktopWidth='33' tabWidth='100' mobileWidth='100'>
                                 <FlexLayout spacing='extraTight'>
                                     <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Category Template Name</TextStyles>
                                     <TextStyles textcolor="negative">*</TextStyles>
                                 </FlexLayout>
                             </FlexChild>
-                            <FlexChild desktopWidth='66'>
+                            <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
                                 <TextField
                                     autocomplete="off"
                                     onChange={function noRefCheck() { }}
@@ -65,7 +65,7 @@ function Template() {
                     <hr></hr>
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>
-                            <FlexChild desktopWidth='33' >
+                            <FlexChild desktopWidth='33' tabWidth='100' mobileWidth='100'>
                                 <FlexLayout direction='vertical' spacing='extraTight'>
                                     <FlexLayout spacing='extraTight'>
                                         <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Assign Product to the Template</TextStyles>
@@ -92,7 +92,7 @@ function Template() {
                                     </List>
                                 </FlexLayout>
                             </FlexChild>
-                            <FlexChild desktopWidth='66'>
+                            <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
                                 <Card title={"Rule Group"}
                                     primaryAction={{
                                         content: 'Run Query',
@@ -104,7 +104,7 @@ function Template() {
                                         onClick: addMoreHandler
                                     }}
                                 >
-                                    <FlexLayout spacing='loose' direction='vertical'>
+                                    <FlexLayout desktopWidth='100' tabWidth='100' mobileWidth='100' spacing='loose' direction='vertical'>
                                         <FlexChild>
                                             <FormElement>
                                                 <FlexLayout spacing='loose'>
@@ -127,14 +127,14 @@ function Template() {
                                                 </FlexLayout>
                                             </FormElement>
                                         </FlexChild>
-                                        <FlexLayout spacing='loose' direction='vertical'>
+                                        <FlexLayout desktopWidth='100' tabWidth='100' mobileWidth='100' spacing='loose' direction='vertical'>
                                             {ruleComponent.map((val: any) =>
                                             (<FlexLayout spacing='loose' key={val.id}>
-                                                <FlexChild desktopWidth='80'>
+                                                <FlexChild desktopWidth='80' tabWidth='80' mobileWidth='80'>
                                                     {val.comp}
                                                 </FlexChild>
                                                 {ruleComponent.length > 1 ?
-                                                    <FlexChild desktopWidth='20'>
+                                                    <FlexChild desktopWidth='20' tabWidth='20' mobileWidth='20'>
                                                         <Button
                                                             onClick={() => deleteRuleHandler(val.id)}
                                                             icon={<Trash2 color="#D92D20" size={20} />}
@@ -154,7 +154,7 @@ function Template() {
                     <hr></hr>
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>
-                            <FlexChild desktopWidth='33'>
+                            <FlexChild desktopWidth='33' tabWidth='100' mobileWidth='100'>
                                 <FlexLayout spacing='extraTight' direction='vertical'>
                                     <FlexLayout spacing='extraTight'>
                                         <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Select Listing Category</TextStyles>
@@ -164,7 +164,7 @@ function Template() {
                                 </FlexLayout>
 
                             </FlexChild>
-                            <FlexChild desktopWidth='66'>
+                            <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
                                 <FlexLayout spacing='extraTight' direction='vertical'>
                                     <Select
                                         helpIcon={<svg fill="none" height="20" stroke="#c3c3c3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /></svg>}
@@ -192,7 +192,7 @@ function Template() {
                     <hr></hr>
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>
-                            <FlexChild desktopWidth='33' >
+                            <FlexChild desktopWidth='33' tabWidth='100' mobileWidth='100'>
                                 <FlexLayout direction='vertical' spacing='extraTight'>
                                     <FlexLayout spacing='extraTight'>
                                         <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Select Attribute Mapping</TextStyles>
@@ -215,7 +215,7 @@ function Template() {
                                     </List>
                                 </FlexLayout>
                             </FlexChild>
-                            <FlexChild desktopWidth='66'>
+                            <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
                                 <FlexLayout spacing='mediumLoose' direction='vertical'>
                                     <Card cardType='Subdued'>
                                         <Accordion
@@ -649,10 +649,10 @@ function Template() {
                     <hr></hr>
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>
-                            <FlexChild desktopWidth='33'>
+                            <FlexChild desktopWidth='33' tabWidth='100' mobileWidth='100'>
                                 <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Profile Custom Pricing (Fixed or Percentage)</TextStyles>
                             </FlexChild>
-                            <FlexChild desktopWidth='66'>
+                            <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
                                 <FlexLayout spacing='extraTight' direction='vertical'>
                                     <FlexChild>
                                         <FlexLayout halign='fill' spacing='loose'>

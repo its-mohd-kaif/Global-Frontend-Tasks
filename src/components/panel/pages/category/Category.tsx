@@ -2,7 +2,7 @@ import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, PageHeader, Pa
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
-import { CategoryActions } from './CategoryUtility'
+import { CategoryActions, RuleGroup, ViewRules } from './CategoryUtility'
 import { TemplateData } from './TemplateData'
 interface paginationObj {
     activePage: number
@@ -66,7 +66,7 @@ function Category() {
             let obj = {
                 name: element.name,
                 category: element.category,
-                rules: <TextLink label={element.rules} />,
+                rules: <ViewRules rule={element.rules} />,
                 total_products: <TextLink label={element.totalProduct} />,
                 actions: <CategoryActions />
             }
@@ -142,7 +142,7 @@ function Category() {
             />
             <hr></hr>
             <br></br>
-            <Card>
+            <Card cardType='Bordered'>
                 <FlexLayout spacing='loose' direction='vertical'>
                     <FlexChild desktopWidth='33' tabWidth='50' mobileWidth='100'>
                         <AutoComplete
