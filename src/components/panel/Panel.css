@@ -133,3 +133,12 @@
   font-weight: bold;
   color: #4e4f52;
 }
+
+.action-button{
+  padding-left: 7px!important;
+  padding-right: 7px !important;
+}
+
+.action-delete-btn{
+  padding: 4px 12px !important;
+}

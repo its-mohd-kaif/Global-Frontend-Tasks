@@ -110,7 +110,7 @@ function Dashboard() {
         <>
             <PageHeader
                 title="Dashboard"
-                action={<Button icon={<FileText size={"18"} />} type="Outlined">Guide</Button>}
+                action={<Button  icon={<FileText size={"18"} />} type="Outlined">Guide</Button>}
             />
             <FlexLayout spacing="loose">
                 <FlexChild desktopWidth="66">
@@ -122,6 +122,7 @@ function Dashboard() {
                                         open={open}
                                         activator={
                                             <Button
+                                                customClass="action-button"
                                                 onClick={() => setOpen(!open)}
                                                 type="Outlined"
                                             ><Image width={20} height={20} src={menuImg} /></Button>

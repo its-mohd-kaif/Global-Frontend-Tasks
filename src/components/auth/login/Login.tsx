@@ -25,7 +25,7 @@ function Login() {
                     name="Email"
                     required
                     onChange={function noRefCheck() { }}
-                    placeHolder="Enter Email Address or Mobile Numberumber"
+                    placeHolder="Enter Email Address or Mobile Number"
                     type="text"
                 />
                 <FlexLayout spacing='tight' direction='vertical'>
