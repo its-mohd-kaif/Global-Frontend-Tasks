@@ -115,7 +115,7 @@ function Dashboard() {
                 action={<Button icon={<FileText size={"18"} />} type="Outlined">Guide</Button>}
             />
             <FlexLayout spacing="loose">
-                <FlexChild desktopWidth="66">
+                <FlexChild desktopWidth="66" tabWidth="66" mobileWidth="100">
                     <FlexLayout spacing="loose" direction="vertical">
                         <Card>
                             <FlexLayout spacing="extraTight" direction="vertical">
@@ -280,7 +280,7 @@ function Dashboard() {
                         </Card>
                     </FlexLayout>
                 </FlexChild>
-                <FlexChild desktopWidth="33">
+                <FlexChild desktopWidth="33" tabWidth="33" mobileWidth="100">
                     <FlexLayout desktopWidth="100" tabWidth="100" mobileWidth="100" spacing="loose" direction="vertical">
                         <Card cardType="Default" title="Connected Michael Account">
                             <FlexLayout halign="fill" valign="start" spacing="loose">

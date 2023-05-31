@@ -19,12 +19,12 @@ function CompanyLogoSvg() {
                 <path d="M154.125 19.8545C154.125 17.5768 152.487 16.1301 150.427 16.1301C148.352 16.1301 146.651 17.5768 146.651 19.8545C146.651 22.1168 148.352 23.625 150.427 23.625C151.769 23.625 153.158 23.1171 153.829 21.8859C153.345 21.6397 152.83 21.3627 152.378 21.1165C152.019 21.732 151.285 22.0398 150.552 22.0398C149.475 22.0398 148.664 21.4704 148.539 20.5009H154.094C154.109 20.3316 154.125 20.0392 154.125 19.8545ZM148.524 19.2235C148.664 18.2385 149.444 17.6999 150.443 17.6999C151.379 17.6999 152.128 18.2385 152.268 19.2235H148.524Z" fill="#474D59" />
                 <defs>
                     <linearGradient id="paint0_linear_1729_56084" x1="18" y1="0" x2="18" y2="36" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="white" />
-                        <stop offset="1" stop-color="#D0D5DD" />
+                        <stop stopColor="white" />
+                        <stop offset="1" stopColor="#D0D5DD" />
                     </linearGradient>
                     <linearGradient id="paint1_linear_1729_56084" x1="37.1254" y1="12.375" x2="-1.68707" y2="14.0625" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#100F18" />
-                        <stop offset="1" stop-color="#54538C" />
+                        <stop stopColor="#100F18" />
+                        <stop offset="1" stopColor="#54538C" />
                     </linearGradient>
                 </defs>
             </svg>

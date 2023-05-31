@@ -60,7 +60,6 @@ function Category() {
     const { activePage, countPerPage, start, end } = pagination;
     useEffect(() => {
         const resData = TemplateData
-        console.log(resData)
         let tempArr: any = []
         resData.forEach((element: any) => {
             let obj = {
@@ -68,7 +67,8 @@ function Category() {
                 category: element.category,
                 rules: <ViewRules rule={element.rules} />,
                 total_products: <TextLink label={element.totalProduct} />,
-                actions: <CategoryActions />
+                actions: <CategoryActions />,
+                key:Math.random()*91919191
             }
             tempArr.push(obj)
             setAllData(tempArr)
