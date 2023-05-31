@@ -12,8 +12,8 @@ export const ProductGridTitle = (_props: any) => {
             </FlexChild>
             <FlexChild>
                 <FlexLayout spacing="extraTight" direction="vertical">
-                        <ChevronUp className="up-arrow" onClick={() => { }} size={16} />
-                        <ChevronDown className="down-arrow" onClick={() => { }} size={16} />
+                    <ChevronUp className="up-arrow" onClick={() => { }} size={16} />
+                    <ChevronDown className="down-arrow" onClick={() => { }} size={16} />
                 </FlexLayout>
             </FlexChild>
         </FlexLayout>
@@ -41,7 +41,7 @@ export const ProductsActions = (_props: any) => {
     return (
         <>
             <Popover
-                activator={<Button onClick={() => setOpenActions(!openActions)} type='Outlined'>
+                activator={<Button customClass="action-button" onClick={() => setOpenActions(!openActions)} type='Outlined'>
                     <Image
                         fit="cover"
                         height={20}
