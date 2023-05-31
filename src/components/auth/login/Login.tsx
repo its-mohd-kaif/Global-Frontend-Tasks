@@ -15,7 +15,7 @@ function Login() {
         eyeoff: false,
     });
     const { eyeoff } = state;
-
+    const MySiteKey = process.env.REACT_APP_reCAPTCHA_SITE_KEY
     const navigate = useNavigate()
     return (
         <Card title={"Log In to your account"}>
@@ -72,8 +72,8 @@ function Login() {
                         </Button>
                     </FlexLayout>
                     <ReCAPTCHA
-                        sitekey="6Ld8cTomAAAAANSNFxGKz_5ohemlbeUww_yf3KdI"
-                    // onChange={onChange}
+                        sitekey={`${MySiteKey}`}
+                        onChange={(e) => console.log(e)}
                     />
                 </FlexLayout>
                 <hr></hr>
