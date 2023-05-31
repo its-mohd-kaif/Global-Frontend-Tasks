@@ -16,6 +16,10 @@ function Register() {
   });
   const { eyeoff } = state;
   const navigate = useNavigate()
+
+  const createAccountHandler = () => {
+    navigate("/prepareOnboarding")
+  }
   return (
     <Card title={"Create an account"}>
       <FlexLayout spacing='loose' direction='vertical'>
@@ -111,7 +115,7 @@ function Register() {
           content="Create Account"
           length="fullBtn"
           thickness='large'
-          onClick={() => { }}
+          onClick={createAccountHandler}
         />
         <TextStyles>
           <TextLink
