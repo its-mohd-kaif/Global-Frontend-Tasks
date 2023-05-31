@@ -1,8 +1,5 @@
-import React, { useState } from 'react'
 import "./Panel.css"
 import { Route, Routes } from 'react-router-dom'
-import Onboarding from './onboarding/Onboarding'
-import TopbarOnboarding from './topbar/TopbarOnboarding'
 import TopbarPanel from './topbar/TopbarPanel'
 import Sidebar from './topbar/Sidebar'
 import { BodyLayout } from '@cedcommerce/ounce-ui'
@@ -15,8 +12,6 @@ import Footer from '../footer/Footer'
 import Activity from './pages/activity/Activity'
 
 function Panel() {
-    const [check, setCheck] = useState<boolean>(true)
-    if (check === true) {
         return (
             <>
                 <TopbarPanel />
@@ -34,17 +29,6 @@ function Panel() {
                 </BodyLayout>
             </>
         )
-    } else {
-        return (
-            <>
-                <TopbarOnboarding />
-                <Routes>
-                    <Route path='onboarding' element={<Onboarding />} />
-                </Routes>
-            </>
-        )
-    }
-
 }
 
 export default Panel

@@ -16,7 +16,6 @@ function Footer() {
                         <TextLink label="Get Support" />
                     </FlexLayout>
                 </FlexChild>
-
             </FlexLayout>
         </div>
     )

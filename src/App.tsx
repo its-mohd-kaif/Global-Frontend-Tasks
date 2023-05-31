@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import Panel from "./components/panel/Panel";
 import PrepareDashboard from "./components/auth/prepare/PrepareDashboard";
 import PrepareOnboarding from "./components/auth/prepare/PrepareOnboarding";
+import Onboarding from "./components/panel/onboarding/Onboarding";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           }>
         </Route>
         <Route path="*" element={<Navigate to={'/auth/login'} />} />
+        <Route path='/onboarding' element={<Onboarding />} />
         <Route path='/prepareOnboarding' element={<PrepareOnboarding />} />
         <Route path='/prepareDashboard' element={<PrepareDashboard />} />
         <Route
@@ -30,6 +32,7 @@ function App() {
           <Route path="*" element={<>NO Page Found 2</>} />
         </Route>
       </Routes>
+      
     </>
   );
 }
