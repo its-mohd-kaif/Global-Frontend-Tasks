@@ -18,7 +18,7 @@ function Register() {
   const navigate = useNavigate()
 
   const createAccountHandler = () => {
-    navigate("/prepareOnboarding")
+    navigate("/onboarding")
   }
   return (
     <Card title={"Create an account"}>

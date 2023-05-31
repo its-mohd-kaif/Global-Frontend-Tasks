@@ -34,6 +34,18 @@ hr {
 }
 
 /* --- Footer ---- */
+/* .app-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+   padding-left: 1.6rem;
+   padding-right: 1.6rem; 
+  padding-top: 1.6rem; 
+}
+.app-footer button {
+  background: transparent;
+} */
 .app-footer {
   position: absolute;
   left: 0;
@@ -42,7 +54,4 @@ hr {
   padding-left: 1.6rem;
   padding-right: 1.6rem;
   padding-top: 1.6rem;
-}
-.app-footer button {
-  background: transparent;
 }
