@@ -90,7 +90,6 @@ function Login() {
                         label="Create Account" />
                 </TextStyles>
             </FlexLayout>
-
         </Card>
     )
 }

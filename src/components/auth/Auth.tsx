@@ -1,6 +1,7 @@
 import { FlexLayout, LRLayout, TextStyles } from '@cedcommerce/ounce-ui'
 import React from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom';
+import Footer from '../footer/Footer';
 import "./Auth.css"
 import Forgot from './forgot/Forgot';
 import Login from './login/Login';
@@ -74,7 +75,7 @@ function Auth() {
                         </LRLayout>
                     </div>
                 </div>
-                {/* Footer Comes Here */}
+                <Footer/>
             </div>
         </>
     )
