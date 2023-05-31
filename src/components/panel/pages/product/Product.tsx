@@ -26,6 +26,7 @@ function Product() {
     const columns = [
         {
             align: 'left',
+            fixed: 'left',
             dataIndex: 'image',
             key: 'image',
             title: 'Image',
@@ -33,6 +34,7 @@ function Product() {
         },
         {
             align: 'left',
+            fixed: 'left',
             dataIndex: 'title',
             key: 'title',
             title: <ProductGridTitle title="Title" />,
@@ -68,6 +70,7 @@ function Product() {
         },
         {
             align: 'left',
+            fixed: 'right',
             dataIndex: 'actions',
             key: 'actions',
             title: 'Actions',
@@ -103,7 +106,8 @@ function Product() {
                 quantity: `${element.quantity} in Stock`,
                 status: <ProductsStatus status={element.source_status} />,
                 activity: <TextStyles utility='product-activity' textcolor='light'>No Ongoing Activity</TextStyles>,
-                actions: <ProductsActions id={element._id} />
+                actions: <ProductsActions id={element._id} />,
+                key: Math.random() * 91919191
             }
             tempArr.push(obj)
         })
@@ -516,36 +520,42 @@ function Product() {
                                             />
                                         </FlexLayout>
                                     </FlexChild>
-                                    <Grid
-                                        columns={columns}
-                                        dataSource={products}
-                                        rowSelection={{
-                                            onChange: function noRefCheck() { }
-                                        }}
-                                    />
-                                    <Pagination
-                                        countPerPage={countPerPage}
-                                        currentPage={activePage}
-                                        onCountChange={(e: any) => countChangeHandler(e)}
-                                        onEnter={(e: any) => onEnterChange(e)}
-                                        onNext={nextPageHandler}
-                                        onPrevious={prevPageHandler}
-                                        totalitem={allData.length}
-                                        optionPerPage={[
-                                            {
-                                                label: '5',
-                                                value: '5'
-                                            },
-                                            {
-                                                label: '10',
-                                                value: '10'
-                                            },
-                                            {
-                                                label: '15',
-                                                value: '15'
-                                            },
-                                        ]}
-                                    />
+                                    <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                        <>
+                                            <Grid
+                                                columns={columns}
+                                                dataSource={products}
+                                                rowSelection={{
+                                                    onChange: function noRefCheck() { }
+                                                }}
+                                                scrollX={970}
+                                            />
+                                            <br></br>
+                                            <Pagination
+                                                countPerPage={countPerPage}
+                                                currentPage={activePage}
+                                                onCountChange={(e: any) => countChangeHandler(e)}
+                                                onEnter={(e: any) => onEnterChange(e)}
+                                                onNext={nextPageHandler}
+                                                onPrevious={prevPageHandler}
+                                                totalitem={allData.length}
+                                                optionPerPage={[
+                                                    {
+                                                        label: '5',
+                                                        value: '5'
+                                                    },
+                                                    {
+                                                        label: '10',
+                                                        value: '10'
+                                                    },
+                                                    {
+                                                        label: '15',
+                                                        value: '15'
+                                                    },
+                                                ]}
+                                            />
+                                        </>
+                                    </FlexChild>
                                 </FlexLayout>
                             </Card>
                         </Tabs>

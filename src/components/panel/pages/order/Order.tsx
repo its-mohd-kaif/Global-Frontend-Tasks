@@ -84,7 +84,8 @@ function Order() {
                 date: moment(element.created_at).format("YYYY-MM-DD"),
                 order_status: <OrdersStatus status={element.status} />,
                 price: `$${element.sub_total.price}`,
-                inventory: 25
+                inventory: 25,
+                key:Math.random()*91919191
             }
             tempArr.push(obj)
             setAllData(tempArr)
