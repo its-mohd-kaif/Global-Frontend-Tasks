@@ -1,0 +1,13 @@
+.prepareDashboard{
+    margin-top: 6em;
+}
+
+.prepareDashboard__bar {
+  width: 668px;
+  margin: auto;
+  margin-top: 40px;
+}
+
+.prepareDashboard__bar__title {
+  margin-bottom: 12px;
+}
