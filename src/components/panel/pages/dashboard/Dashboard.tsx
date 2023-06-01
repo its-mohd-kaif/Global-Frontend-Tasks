@@ -26,9 +26,10 @@ import {
     Eye, Upload
 } from "react-feather";
 import menuImg from "../../../../assets/images/png/menu.png"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import carouselImg from "../../../../assets/images/png/carousel.png"
 import { useNavigate } from "react-router-dom";
+import { AccordionData } from "./DashboardUtility";
 function Dashboard() {
     const navigate = useNavigate()
     const productStatus = [
@@ -83,13 +84,16 @@ function Dashboard() {
             btn: <TextLink label="View Product"></TextLink>,
         },
     ];
-    // Make State For Toggle Accordian
-    const [flag, setFlag] = useState({
-        flag1: true,
-        flag2: false,
-        flag3: false,
-        flag4: false,
-    });
+
+    const [accordian, setAccordian] = useState<any>([])
+    const [multiaccor, setMultiacor] = useState<any>([]);
+
+    useEffect(() => {
+        setAccordian(AccordionData)
+        for (let i = 0; i < AccordionData.length; i++) {
+            setMultiacor([...multiaccor, false])
+        }
+    }, [])
     const [open, setOpen] = useState<boolean>(false);
     const carouselData = [
         {
@@ -213,70 +217,27 @@ function Dashboard() {
                             title="Frequently Asked Question"
                             action={<Button type="TextButton">View all FAQ articles</Button>}
                         >
-                            <Accordion
-                                boxed
-                                icon
-                                iconAlign="left"
-                                onClick={() => setFlag({ ...flag, flag1: !flag.flag1 })}
-                                title="Accordion Title"
-                                active={flag.flag1}
-                            >
-                                <TextStyles textcolor="light">
-                                    It is a long established fact that a reader will be distracted by the
-                                    readable content of a page when looking at its layout. The point of
-                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                    letters, as opposed to using 'Content here, content here', making it
-                                    look like readable English.
-                                </TextStyles>
-                            </Accordion>
-                            <Accordion
-                                boxed
-                                icon
-                                iconAlign="left"
-                                title="Accordion Title"
-                                onClick={() => setFlag({ ...flag, flag2: !flag.flag2 })}
-                                active={flag.flag2}
-                            >
-                                <TextStyles textcolor="light">
-                                    It is a long established fact that a reader will be distracted by the
-                                    readable content of a page when looking at its layout. The point of
-                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                    letters, as opposed to using 'Content here, content here', making it
-                                    look like readable English.
-                                </TextStyles>
-                            </Accordion>
-                            <Accordion
-                                boxed
-                                icon
-                                iconAlign="left"
-                                onClick={() => setFlag({ ...flag, flag3: !flag.flag3 })}
-                                active={flag.flag3}
-                                title="Accordion Title"
-                            >
-                                <TextStyles textcolor="light">
-                                    It is a long established fact that a reader will be distracted by the
-                                    readable content of a page when looking at its layout. The point of
-                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                    letters, as opposed to using 'Content here, content here', making it
-                                    look like readable English.
-                                </TextStyles>
-                            </Accordion>
-                            <Accordion
-                                boxed
-                                icon
-                                iconAlign="left"
-                                onClick={() => setFlag({ ...flag, flag4: !flag.flag4 })}
-                                active={flag.flag4}
-                                title="Accordion Title"
-                            >
-                                <TextStyles textcolor="light">
-                                    It is a long established fact that a reader will be distracted by the
-                                    readable content of a page when looking at its layout. The point of
-                                    using Lorem Ipsum is that it has a more-or-less normal distribution of
-                                    letters, as opposed to using 'Content here, content here', making it
-                                    look like readable English.
-                                </TextStyles>
-                            </Accordion>
+                            {
+                                accordian.map((val: any, index: number) => (
+                                    <Accordion
+                                        key={index}
+                                        boxed
+                                        icon
+                                        iconAlign="left"
+                                        onClick={() => {
+                                            multiaccor[index] = !multiaccor[index]
+                                            setMultiacor([...multiaccor])
+                                        }}
+                                        title="Accordion Title"
+                                        active={multiaccor[index]}
+
+                                    >
+                                        <TextStyles textcolor="light">
+                                            {val}
+                                        </TextStyles>
+                                    </Accordion>
+                                ))
+                            }
                         </Card>
                     </FlexLayout>
                 </FlexChild>
