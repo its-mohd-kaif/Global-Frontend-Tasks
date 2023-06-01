@@ -4,6 +4,8 @@ import { Eye, EyeOff } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
 interface loginStateObj {
+    email: string;
+    password: string;
     eyeoff: boolean;
 }
 
@@ -12,9 +14,11 @@ function Login() {
   * State object for form input details
   */
     const [state, setState] = useState<loginStateObj>({
+        email: "",
+        password: "",
         eyeoff: false,
     });
-    const { eyeoff } = state;
+    const { email, password, eyeoff } = state;
     const MySiteKey = process.env.REACT_APP_reCAPTCHA_SITE_KEY
     const navigate = useNavigate()
     return (

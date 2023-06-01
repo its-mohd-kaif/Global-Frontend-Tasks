@@ -1,4 +1,4 @@
-import { Accordion, FlexChild, FlexLayout, Select, Switcher, Tag, TextStyles } from '@cedcommerce/ounce-ui'
+import { Accordion, Card, FlexChild, FlexLayout, Select, Switcher, Tag, TextStyles } from '@cedcommerce/ounce-ui'
 import React from 'react'
 import AttributeSelect from '../../utility/commonComponent/AttributeSelect'
 function MappingTemplate() {
@@ -36,7 +36,7 @@ function MappingTemplate() {
                     </FlexLayout>
 
                     <FlexLayout spacing='extraLoose' halign='fill'>
-                        <FlexChild desktopWidth='33' tabWidth='33'>
+                        <FlexChild desktopWidth='33' tabWidth='33'  mobileWidth='100'>
                             <FlexLayout spacing='tight' direction='vertical'>
                                 <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Select Attribute Mapping</TextStyles>
                                 <TextStyles textcolor='light'>Through ‘Attribute Mapping’ you can enhance your listing catalog with additional
@@ -55,7 +55,7 @@ function MappingTemplate() {
                                 </div>
                             </FlexLayout>
                         </FlexChild>
-                        <FlexChild desktopWidth='66' tabWidth='66'>
+                        <FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
                             <FlexLayout direction='vertical' spacing='mediumLoose'>
                                 <Accordion
                                     boxed
@@ -96,14 +96,29 @@ function MappingTemplate() {
                     </FlexLayout>
 
                     <FlexLayout spacing='extraLoose' halign='fill'>
-                        <FlexChild desktopWidth='33' tabWidth='33'>
+                        <FlexChild desktopWidth='33' tabWidth='33'  mobileWidth='100'>
                             <FlexLayout spacing='tight' direction='vertical'>
                                 <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Shipping Dimensions</TextStyles>
                                 <TextStyles textcolor='light'>Through ‘Attribute Mapping’ you can enhance your listing catalog with additional listing information.</TextStyles>
                             </FlexLayout>
                         </FlexChild>
-                        <FlexChild desktopWidth='66' tabWidth='66'>
-                            <AttributeSelect />
+                        <FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
+                            <Card cardType='Subdued'>
+                                <FlexChild>
+                                    <FlexLayout>
+                                        <FlexChild desktopWidth='25' tabWidth='25'>
+                                            <>
+                                                <TextStyles>Michaels</TextStyles>
+                                                <TextStyles>Attributes</TextStyles>
+                                            </>
+                                        </FlexChild>
+                                        <FlexChild desktopWidth='75' tabWidth='75'>
+                                            <TextStyles>Shopify Attributes</TextStyles>
+                                        </FlexChild>
+                                    </FlexLayout>
+                                </FlexChild>
+                                <AttributeSelect />
+                            </Card>
                         </FlexChild>
                     </FlexLayout>
                     <FlexLayout spacing='extraLoose' halign='fill'>

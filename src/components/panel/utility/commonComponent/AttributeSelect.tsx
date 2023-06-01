@@ -8,13 +8,13 @@ function AttributeSelect() {
         <FlexLayout desktopWidth='100' tabWidth='100' mobileWidth='100' spacing='extraTight' direction='vertical'>
             <FlexChild>
                 <FlexLayout valign='center' >
-                    <FlexChild desktopWidth='25' tabWidth='25'>
+                    <FlexChild desktopWidth='25' tabWidth='25' mobileWidth='25'>
                         <FlexLayout spacing='tight'>
                             <GreenCheckSvg />
                             <TextStyles>Brand</TextStyles>
                         </FlexLayout>
                     </FlexChild>
-                    <FlexChild desktopWidth='75' tabWidth='75'>
+                    <FlexChild desktopWidth='75' tabWidth='75'  mobileWidth='75'>
                         <Select
                             onChange={function noRefCheck() { }}
                             onblur={function noRefCheck() { }}
@@ -31,13 +31,13 @@ function AttributeSelect() {
             </FlexChild>
             <FlexChild>
                 <FlexLayout valign='center' >
-                    <FlexChild desktopWidth='25' tabWidth='25'>
+                    <FlexChild desktopWidth='25' tabWidth='25'  mobileWidth='25'>
                         <FlexLayout spacing='tight'>
                             <GrayCheckSvg />
                             <TextStyles>Weight</TextStyles>
                         </FlexLayout>
                     </FlexChild>
-                    <FlexChild desktopWidth='75' tabWidth='75'>
+                    <FlexChild desktopWidth='75' tabWidth='75'  mobileWidth='75'>
                         <Select
                             onChange={function noRefCheck() { }}
                             onblur={function noRefCheck() { }}
@@ -54,15 +54,15 @@ function AttributeSelect() {
             </FlexChild>
             <FlexChild>
                 <FlexLayout valign='center' >
-                    <FlexChild desktopWidth='25' tabWidth='25'>
+                    <FlexChild desktopWidth='25' tabWidth='25' mobileWidth='25'>
                         <FlexLayout spacing='tight'>
                             <GrayCheckSvg />
                             <TextStyles>Height</TextStyles>
                         </FlexLayout>
                     </FlexChild>
-                    <FlexChild desktopWidth='75' mobileWidth='75'>
+                    <FlexChild desktopWidth='75' tabWidth='75' mobileWidth='75'>
                         <FlexLayout spacing='mediumTight'>
-                            <FlexChild desktopWidth='75' tabWidth='75'>
+                            <FlexChild desktopWidth='75' tabWidth='75' mobileWidth='75'>
                                 <Select
                                     onChange={function noRefCheck() { }}
                                     onblur={function noRefCheck() { }}
@@ -75,7 +75,7 @@ function AttributeSelect() {
                                     value="0"
                                 />
                             </FlexChild>
-                            <FlexChild desktopWidth='25' tabWidth='25'>
+                            <FlexChild desktopWidth='25' tabWidth='25' mobileWidth='25'>
                                 <Select
                                     onChange={function noRefCheck() { }}
                                     onblur={function noRefCheck() { }}
@@ -95,15 +95,15 @@ function AttributeSelect() {
             </FlexChild>
             <FlexChild>
                 <FlexLayout valign='center' >
-                    <FlexChild desktopWidth='25' tabWidth='25'>
+                    <FlexChild desktopWidth='25' tabWidth='25' mobileWidth='25'>
                         <FlexLayout spacing='tight'>
                             <GrayCheckSvg />
                             <TextStyles>Length</TextStyles>
                         </FlexLayout>
                     </FlexChild>
-                    <FlexChild desktopWidth='75' mobileWidth='75'>
+                    <FlexChild desktopWidth='75' tabWidth='75' mobileWidth='75'>
                         <FlexLayout spacing='mediumTight'>
-                            <FlexChild desktopWidth='75' tabWidth='75'>
+                            <FlexChild desktopWidth='75' tabWidth='75' mobileWidth='75'>
                                 <Select
                                     onChange={function noRefCheck() { }}
                                     onblur={function noRefCheck() { }}
@@ -116,7 +116,7 @@ function AttributeSelect() {
                                     value="0"
                                 />
                             </FlexChild>
-                            <FlexChild desktopWidth='25' tabWidth='25'>
+                            <FlexChild desktopWidth='25' tabWidth='25' mobileWidth='25'>
                                 <Select
                                     onChange={function noRefCheck() { }}
                                     onblur={function noRefCheck() { }}
