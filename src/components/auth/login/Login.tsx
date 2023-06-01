@@ -8,7 +8,11 @@ interface loginStateObj {
     password: string;
     eyeoff: boolean;
 }
-
+interface loginErrorObj {
+    emailError: boolean;
+    passwordError: boolean;
+    passwordMess: string;
+}
 function Login() {
     /**
   * State object for form input details
@@ -18,9 +22,21 @@ function Login() {
         password: "",
         eyeoff: false,
     });
+
+    const [error, setError] = useState<loginErrorObj>({
+        emailError: false,
+        passwordError: false,
+        passwordMess: ""
+    })
     const { email, password, eyeoff } = state;
+    const { emailError, passwordError, passwordMess } = error
     const MySiteKey = process.env.REACT_APP_reCAPTCHA_SITE_KEY
     const navigate = useNavigate()
+
+    const loginHandler = () => {
+        
+    }
+
     return (
         <Card title={"Log In to your account"}>
             <FlexLayout spacing='loose' direction='vertical'>
@@ -85,7 +101,7 @@ function Login() {
                     content="Login"
                     length="fullBtn"
                     thickness='large'
-                    onClick={() => { }}
+                    onClick={loginHandler}
                 />
                 <TextStyles>
                     New to CedCommerce? {" "}
