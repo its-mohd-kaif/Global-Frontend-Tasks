@@ -1,5 +1,5 @@
 import { NewSidebar } from '@cedcommerce/ounce-ui'
-import React, { useState } from 'react'
+import React from 'react'
 import CompanyLogoSvg from '../../../assets/images/svg/CompanyLogoSvg'
 import OnlyLogoSvg from '../../../assets/images/svg/OnlyLogoSvg'
 import { Box, HelpCircle, Home, LifeBuoy, Settings, FileText, ShoppingBag, DollarSign, CornerDownLeft } from 'react-feather'

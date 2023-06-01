@@ -1,5 +1,4 @@
-import { ActionList, AdvanceFilter, Alert, AutoComplete, Badge, Button, Card, CheckBox, FlexChild, FlexLayout, FormElement, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
-import { type } from 'os'
+import { ActionList, AdvanceFilter, Alert, AutoComplete, Button, Card, CheckBox, FlexChild, FlexLayout, FormElement, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText, ChevronDown, Filter } from "react-feather"
 import { ProductData } from "./ProductData";
@@ -75,14 +74,6 @@ function Product() {
             key: 'actions',
             title: 'Actions',
             width: 60
-        }
-    ]
-    const data = [
-        {
-            address: '10 Downing Street',
-            age: 32,
-            key: '1',
-            name: 'Mike'
         }
     ]
     const { activePage, countPerPage, start, end } = pagination;

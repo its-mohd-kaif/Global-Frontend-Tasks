@@ -1,10 +1,9 @@
-import { Accordion, Badge, Button, Card, FlexChild, FlexLayout, Modal, TextStyles } from "@cedcommerce/ounce-ui";
+import { Badge, Button, Modal } from "@cedcommerce/ounce-ui";
 import { useState } from "react";
-import { AlertTriangle, XCircle } from "react-feather"
+import { XCircle } from "react-feather"
 
 export const OrdersStatus = (_props: any) => {
     const [open, setOpen] = useState<boolean>(false)
-    const [accordion, setAccordion] = useState<boolean>(false);
     const { status } = _props
     if (status === "Completed" || status==="Complete") {
         return (
