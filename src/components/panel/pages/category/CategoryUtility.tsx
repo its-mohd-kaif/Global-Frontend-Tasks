@@ -123,31 +123,6 @@ export const RuleGroup = () => {
 export const ViewRules = (_props: any) => {
     const { rule } = _props;
     const [openModal, setOpenModal] = useState<boolean>(false);
-    const myRules = [
-        {
-            string: {
-                str1: "Category",
-                str2: "Equal",
-                str3: "Mobile"
-            },
-        },
-        {
-            string: {
-                str1: "Name",
-                str2: "Contains",
-                str3: "Samsung"
-            },
-            optr: "And"
-        },
-        {
-            string: {
-                str1: "Color",
-                str2: "Equal",
-                str3: "Red"
-            },
-            optr: "And"
-        },
-    ]
     return (<>
         <TextLink onClick={() => { setOpenModal(!openModal) }} label={rule} />
         <Modal

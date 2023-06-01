@@ -2,7 +2,7 @@ import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, PageHeader, Pa
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
-import { CategoryActions, RuleGroup, ViewRules } from './CategoryUtility'
+import { CategoryActions, ViewRules } from './CategoryUtility'
 import { TemplateData } from './TemplateData'
 interface paginationObj {
     activePage: number
