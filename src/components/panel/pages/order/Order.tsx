@@ -14,6 +14,7 @@ function Order() {
     const columns = [
         {
             align: 'left',
+            fixed: 'left',
             dataIndex: 'target_order_id',
             key: 'target_order_id',
             title: 'Target Order ID',
@@ -21,6 +22,7 @@ function Order() {
         },
         {
             align: 'left',
+            fixed: 'left',
             dataIndex: 'source_order_id',
             key: 'source_order_id',
             title: 'Source Order Id',
@@ -56,6 +58,7 @@ function Order() {
         },
         {
             align: 'center',
+            fixed: 'right',
             dataIndex: 'inventory',
             key: 'inventory',
             title: 'Inventory',
@@ -73,10 +76,8 @@ function Order() {
     const { activePage, countPerPage, start, end } = pagination;
     useEffect(() => {
         const resData = OrderData.data.rows
-        console.log(resData)
         let tempArr: any = []
         resData.forEach((element: any) => {
-            console.log(element.targets[0].shop_id)
             let obj = {
                 target_order_id: <TextLink label={element.targets[0].shop_id} />,
                 source_order_id: <TextLink label={element.shop_id} />,
@@ -85,7 +86,7 @@ function Order() {
                 order_status: <OrdersStatus status={element.status} />,
                 price: `$${element.sub_total.price}`,
                 inventory: 25,
-                key:Math.random()*91919191
+                key: Math.random() * 91919191
             }
             tempArr.push(obj)
             setAllData(tempArr)
@@ -320,33 +321,40 @@ function Order() {
                                         />
                                     </FlexLayout>
                                 </FlexChild>
-                                <Grid
-                                    columns={columns}
-                                    dataSource={orders}
-                                />
-                                <Pagination
-                                    countPerPage={countPerPage}
-                                    currentPage={activePage}
-                                    onCountChange={(e: any) => countChangeHandler(e)}
-                                    onEnter={(e: any) => onEnterChange(e)}
-                                    onNext={nextPageHandler}
-                                    onPrevious={prevPageHandler}
-                                    totalitem={allData.length}
-                                    optionPerPage={[
-                                        {
-                                            label: '5',
-                                            value: '5'
-                                        },
-                                        {
-                                            label: '10',
-                                            value: '10'
-                                        },
-                                        {
-                                            label: '15',
-                                            value: '15'
-                                        },
-                                    ]}
-                                />
+                                <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                    <>
+                                        <Grid
+                                            columns={columns}
+                                            dataSource={orders}
+                                            scrollX={900}
+                                        />
+                                        <br></br>
+                                        <Pagination
+                                            countPerPage={countPerPage}
+                                            currentPage={activePage}
+                                            onCountChange={(e: any) => countChangeHandler(e)}
+                                            onEnter={(e: any) => onEnterChange(e)}
+                                            onNext={nextPageHandler}
+                                            onPrevious={prevPageHandler}
+                                            totalitem={allData.length}
+                                            optionPerPage={[
+                                                {
+                                                    label: '5',
+                                                    value: '5'
+                                                },
+                                                {
+                                                    label: '10',
+                                                    value: '10'
+                                                },
+                                                {
+                                                    label: '15',
+                                                    value: '15'
+                                                },
+                                            ]}
+                                        />
+                                    </>
+                                </FlexChild>
+
                             </FlexLayout>
                         </Card>
                     </Tabs>
