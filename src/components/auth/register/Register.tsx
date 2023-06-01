@@ -53,13 +53,45 @@ function Register() {
 
   const regexForDigit = /[0-9]/g;
 
+  const apiEndPoint = process.env.REACT_APP_END_POINT
+
   let { emailFormat
   } = regexValidation;
 
   const navigate = useNavigate()
 
   const createAccountHandler = () => {
-    // navigate("/onboarding")
+    console.log(apiEndPoint)
+    const token = process.env.REACT_APP_BEARER;
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        // Add the request body data here
+        email: email,
+        mobile_number: mobile,
+        username: "kaif",
+        first_name: "Mohd",
+        last_name: "Kaif",
+        password: password,
+        autoConfirm: false,
+      }),
+    };
+
+    fetch(`${apiEndPoint}user/create`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response data
+        console.log(data);
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        console.error(error);
+      });
   }
 
   const commonValidation = (
