@@ -7,6 +7,9 @@ import { PasswordStrenght } from '../../functions';
 import CustomHelpPoints from '../CustomHelpPoints';
 
 interface registerStateObj {
+  first_name: string;
+  last_name: string;
+  username: string;
   mobile: string;
   email: string;
   password: string;
@@ -15,6 +18,9 @@ interface registerStateObj {
   eyeoff: boolean;
 }
 interface registerErrorObj {
+  firstNameError: boolean;
+  lastNameError: boolean;
+  usernameError: boolean;
   mobileError: boolean;
   mobileMess: string;
   emailError: boolean;
@@ -29,6 +35,9 @@ function Register() {
    * State object for form input details
    */
   const [state, setState] = useState<registerStateObj>({
+    first_name: "",
+    last_name: "",
+    username: "",
     mobile: "",
     email: "",
     password: "",
@@ -38,6 +47,9 @@ function Register() {
   });
 
   const [error, setError] = useState<registerErrorObj>({
+    firstNameError: false,
+    lastNameError: false,
+    usernameError: false,
     mobileError: false,
     mobileMess: "",
     emailError: false,
@@ -47,11 +59,10 @@ function Register() {
     confirmPasswordMess: "",
     createBtn: true
   })
-  const { check, confirmPassword, email, eyeoff, mobile, password } = state;
-  const { confirmPasswordError, confirmPasswordMess, createBtn, emailError,
+  const { first_name, last_name, username, check, confirmPassword, email, eyeoff, mobile, password } = state;
+  const { firstNameError, lastNameError, usernameError, confirmPasswordError, confirmPasswordMess, createBtn, emailError,
     emailMess, mobileError, mobileMess, passwordError } = error;
 
-  const regexForDigit = /[0-9]/g;
 
   const apiEndPoint = process.env.REACT_APP_END_POINT
 
@@ -74,10 +85,11 @@ function Register() {
         // Add the request body data here
         email: email,
         mobile_number: mobile,
-        username: "kaif",
-        first_name: "Mohd",
-        last_name: "Kaif",
+        username: username,
+        first_name: first_name,
+        last_name: last_name,
         password: password,
+        confirmation_link: `${window.location.origin}/auth/confirmation`,
         autoConfirm: false,
       }),
     };
@@ -110,6 +122,9 @@ function Register() {
     else {
       console.log("b")
       setError({
+        firstNameError: false,
+        lastNameError: false,
+        usernameError: false,
         mobileError: false,
         mobileMess: "",
         emailError: false,
@@ -122,12 +137,18 @@ function Register() {
     }
   }
 
-  const checkValidation = (checkProp: boolean, confirmPasswordProp: string,
-    emailProp: string, mobileProp: string, passwordProp: string) => {
+  const checkValidation = (first_nameProp: string, last_nameProp: string, usernameProp: string, checkProp: boolean,
+    confirmPasswordProp: string, emailProp: string, mobileProp: string, passwordProp: string) => {
     let strenght = PasswordStrenght(passwordProp);
     if (strenght === 100) {
-      if (mobileProp !== "" && /^\d{10}$/.test(mobileProp) === true && emailProp !== "" && emailFormat.test(emailProp) === true && passwordProp === confirmPasswordProp && confirmPasswordProp !== "" && checkProp === true) {
+      if (first_nameProp !== "" && last_nameProp !== "" && usernameProp !== "" &&
+        mobileProp !== "" && /^\d{10}$/.test(mobileProp) === true && emailProp !== "" &&
+        emailFormat.test(emailProp) === true && passwordProp === confirmPasswordProp &&
+        confirmPasswordProp !== "" && checkProp === true) {
         setError({
+          firstNameError: false,
+          lastNameError: false,
+          usernameError: false,
           confirmPasswordError: false,
           confirmPasswordMess: "",
           createBtn: false,
@@ -150,6 +171,112 @@ function Register() {
   return (
     <Card title={"Create an account"}>
       <FlexLayout spacing='loose' direction='vertical'>
+        <FlexLayout spacing='loose' halign='fill'>
+          <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+            <TextField
+              autocomplete="off"
+              name="First Name"
+              required
+              onChange={(e) => {
+                setState({
+                  ...state,
+                  first_name: e
+                })
+                if (e === "") {
+                  setError({
+                    ...error,
+                    createBtn: true,
+                    firstNameError: true
+                  })
+                }
+                else {
+                  checkValidation(e, last_name, username, check, confirmPassword, email, mobile, password)
+                }
+              }}
+              placeHolder="Enter First Name"
+              type="text"
+              strength
+              error={firstNameError}
+              value={first_name}
+              onblur={() => {
+                if (first_name === "") {
+                  setError({
+                    ...error,
+                    firstNameError: true
+                  })
+                }
+              }}
+            />
+          </FlexChild>
+          <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+            <TextField
+              autocomplete="off"
+              name="Last Name"
+              required
+              onChange={(e) => {
+                setState({
+                  ...state,
+                  last_name: e
+                })
+                if (e === "") {
+                  setError({
+                    ...error,
+                    createBtn: true,
+                    lastNameError: true
+                  })
+                }
+                else {
+                  checkValidation(first_name, e, username, check, confirmPassword, email, mobile, password)
+                }
+              }}
+              placeHolder="Enter Last Name"
+              type="text"
+              error={lastNameError}
+              value={last_name}
+              onblur={() => {
+                if (last_name === "") {
+                  setError({
+                    ...error,
+                    lastNameError: true
+                  })
+                }
+              }}
+            />
+          </FlexChild>
+        </FlexLayout>
+        <TextField
+          autocomplete="off"
+          name="Username"
+          required
+          onChange={(e) => {
+            setState({
+              ...state,
+              username: e
+            })
+            if (e === "") {
+              setError({
+                ...error,
+                createBtn: true,
+                usernameError: true
+              })
+            }
+            else {
+              checkValidation(first_name, last_name, e, check, confirmPassword, email, mobile, password)
+            }
+          }}
+          placeHolder="Enter Username"
+          type="text"
+          error={usernameError}
+          value={username}
+          onblur={() => {
+            if (username === "") {
+              setError({
+                ...error,
+                usernameError: true
+              })
+            }
+          }}
+        />
         <TextField
           autocomplete="off"
           name="Mobile Number"
@@ -168,7 +295,7 @@ function Register() {
               })
             }
             else {
-              checkValidation(check, confirmPassword, email, e, password)
+              checkValidation(first_name, last_name, username, check, confirmPassword, email, e, password)
             }
           }}
           placeHolder="Enter Mobile Number"
@@ -209,7 +336,7 @@ function Register() {
               })
             }
             else {
-              checkValidation(check, confirmPassword, e, mobile, password)
+              checkValidation(first_name, last_name, username, check, confirmPassword, e, mobile, password)
             }
           }}
           placeHolder="Enter Email Address"
@@ -253,7 +380,7 @@ function Register() {
                       createBtn: true
                     })
                   } else {
-                    checkValidation(check, confirmPassword, email, mobile, e)
+                    checkValidation(first_name, last_name, username, check, confirmPassword, email, mobile, e)
                   }
                 }}
                 placeHolder="Enter Password"
@@ -314,7 +441,7 @@ function Register() {
                       createBtn: true
                     })
                   } else {
-                    checkValidation(check, e, email, mobile, password)
+                    checkValidation(first_name, last_name, username, check, e, email, mobile, password)
                   }
                 }}
                 placeHolder="Enter Password"
@@ -346,7 +473,7 @@ function Register() {
                 ...state,
                 check: !check
               })
-              checkValidation(!check, confirmPassword, email, mobile, password)
+              checkValidation(first_name, last_name, username, !check, confirmPassword, email, mobile, password)
             }}
             checked={check}
           />

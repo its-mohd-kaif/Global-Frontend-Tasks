@@ -4,6 +4,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import Footer from '../footer/Footer';
 import "./Auth.css"
 import Forgot from './forgot/Forgot';
+import Confirmation from './layouts/Confirmation';
 import Login from './login/Login';
 import Register from './register/Register';
 function Auth() {
@@ -70,12 +71,13 @@ function Auth() {
                                 <Route path='login' element={<Login />} />
                                 <Route path="register" element={<Register />} />
                                 <Route path="forgot" element={<Forgot />} />
+                                <Route path='confirmation' element={<Confirmation />} />
                                 <Route path="*" element={<Navigate to={'/auth/login'} />} />
                             </Routes>
                         </LRLayout>
                     </div>
                 </div>
-                <Footer/>
+                <Footer />
             </div>
         </>
     )
