@@ -4,7 +4,9 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import Footer from '../footer/Footer';
 import "./Auth.css"
 import Forgot from './forgot/Forgot';
+import ResetPassword from './forgot/ResetPassword';
 import Confirmation from './layouts/Confirmation';
+import ResetMail from './layouts/ResetMail';
 import Login from './login/Login';
 import Register from './register/Register';
 function Auth() {
@@ -72,6 +74,8 @@ function Auth() {
                                 <Route path="register" element={<Register />} />
                                 <Route path="forgot" element={<Forgot />} />
                                 <Route path='confirmation' element={<Confirmation />} />
+                                <Route path='resetMail' element={<ResetMail />} />
+                                <Route path='resetPassword' element={<ResetPassword />} />
                                 <Route path="*" element={<Navigate to={'/auth/login'} />} />
                             </Routes>
                         </LRLayout>

@@ -72,7 +72,6 @@ function Register() {
   const navigate = useNavigate()
 
   const createAccountHandler = () => {
-    console.log(apiEndPoint)
     const token = process.env.REACT_APP_BEARER;
 
     const requestOptions = {

@@ -67,7 +67,7 @@ function Login() {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    username: email,
+                    email: email,
                     password: password
                 }),
             };

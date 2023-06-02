@@ -1,9 +1,81 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Card, FlexLayout, TextField, TextStyles } from '@cedcommerce/ounce-ui'
 import { ArrowLeft } from "react-feather"
 import { useNavigate } from 'react-router-dom'
+import { regexValidation } from '../../../Constant';
+interface forgotObj {
+    emailError: boolean;
+    emailMess: string;
+    sendBtn: boolean;
+    loader: boolean;
+}
 function Forgot() {
+    const [email, setEmail] = useState<string>("")
+    const [error, setError] = useState<forgotObj>({
+        emailError: false,
+        emailMess: "",
+        sendBtn: true,
+        loader: false,
+    })
+    let { emailFormat
+    } = regexValidation;
+    const { emailError, emailMess, sendBtn, loader } = error
     const navigate = useNavigate()
+    const checkValidation = (emailProp: string) => {
+        if (emailProp !== "" &&
+            emailFormat.test(emailProp) === true) {
+            setError({
+                ...error,
+                emailError: false,
+                emailMess: "",
+                sendBtn: false
+            })
+        } else {
+            setError({
+                ...error,
+                emailError: false,
+                emailMess: "",
+                sendBtn: true
+            })
+
+        }
+    }
+    const sendResetButtonHandler = () => {
+        setError({
+            ...error,
+            loader: true
+        })
+        const token = process.env.REACT_APP_BEARER;
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                // Add the request body data here
+                "reset-link": `${window.location.origin}/auth/resetPassword`,
+                email: email,
+            }),
+        };
+        fetch(`${process.env.REACT_APP_END_POINT}user/forgot`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                setError({
+                    ...error,
+                    loader: false
+                })
+                // Handle the response data
+                if (data.success === true) {
+                    navigate("/auth/resetMail")
+                }
+                console.log(data);
+            })
+            .catch((error) => {
+                // Handle any errors that occurred during the request
+                console.error(error);
+            });
+    }
     return (
         <Card>
             <FlexLayout spacing='mediumTight' direction='vertical'>
@@ -18,16 +90,48 @@ function Forgot() {
                 <TextField
                     autocomplete="off"
                     required
-                    onChange={function noRefCheck() { }}
+                    onChange={(e) => {
+                        setEmail(e)
+                        if (e === "") {
+                            setError({
+                                ...error,
+                                sendBtn: true,
+                                emailError: true
+                            })
+                        } else {
+                            checkValidation(e)
+                        }
+                    }}
                     placeHolder="Enter Email Address"
                     type="email"
+                    value={email}
+                    error={emailError}
+                    showHelp={emailMess}
+                    onblur={() => {
+                        if (email === "") {
+                            setError({
+                                ...error,
+                                emailError: true
+                            })
+                        }
+                        else if (emailFormat.test(email) === false) {
+                            setError({
+                                ...error,
+                                emailError: true,
+                                emailMess: "Please enter a valid email",
+                                sendBtn: true
+                            })
+                        }
+                    }}
                 />
                 <hr></hr>
                 <Button
                     content="Send reset link"
                     length="fullBtn"
                     thickness='large'
-                    onClick={() => { }}
+                    loading={loader}
+                    disable={sendBtn}
+                    onClick={sendResetButtonHandler}
                 />
             </FlexLayout>
         </Card>
