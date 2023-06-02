@@ -1,43 +1,364 @@
 import { Button, Card, CheckBox, FlexChild, FlexLayout, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { regexValidation } from '../../../Constant';
+import { PasswordStrenght } from '../../functions';
 import CustomHelpPoints from '../CustomHelpPoints';
 
 interface registerStateObj {
+  first_name: string;
+  last_name: string;
+  username: string;
+  mobile: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  check: boolean;
   eyeoff: boolean;
+}
+interface registerErrorObj {
+  firstNameError: boolean;
+  lastNameError: boolean;
+  usernameError: boolean;
+  mobileError: boolean;
+  mobileMess: string;
+  emailError: boolean;
+  emailMess: string;
+  passwordError: boolean;
+  confirmPasswordError: boolean;
+  confirmPasswordMess: string;
+  createBtn: boolean;
 }
 function Register() {
   /**
    * State object for form input details
    */
   const [state, setState] = useState<registerStateObj>({
+    first_name: "",
+    last_name: "",
+    username: "",
+    mobile: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    check: true,
     eyeoff: false,
   });
-  const { eyeoff } = state;
+
+  const [error, setError] = useState<registerErrorObj>({
+    firstNameError: false,
+    lastNameError: false,
+    usernameError: false,
+    mobileError: false,
+    mobileMess: "",
+    emailError: false,
+    emailMess: "",
+    passwordError: false,
+    confirmPasswordError: false,
+    confirmPasswordMess: "",
+    createBtn: true
+  })
+  const { first_name, last_name, username, check, confirmPassword, email, eyeoff, mobile, password } = state;
+  const { firstNameError, lastNameError, usernameError, confirmPasswordError, confirmPasswordMess, createBtn, emailError,
+    emailMess, mobileError, mobileMess, passwordError } = error;
+
+
+  const apiEndPoint = process.env.REACT_APP_END_POINT
+
+  let { emailFormat
+  } = regexValidation;
+
   const navigate = useNavigate()
 
   const createAccountHandler = () => {
-    navigate("/onboarding")
+    const token = process.env.REACT_APP_BEARER;
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        // Add the request body data here
+        email: email,
+        mobile_number: mobile,
+        username: username,
+        first_name: first_name,
+        last_name: last_name,
+        password: password,
+        confirmation_link: `${window.location.origin}/auth/confirmation`,
+        autoConfirm: false,
+      }),
+    };
+
+    fetch(`${apiEndPoint}user/create`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response data
+        console.log(data);
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        console.error(error);
+      });
   }
+
+  const commonValidation = (
+    confirmPasswordProp: string,
+    passwordProp: string
+  ) => {
+    if (passwordProp !== confirmPasswordProp && passwordProp !== "" && confirmPasswordProp !== "") {
+      console.log("a")
+      setError({
+        ...error,
+        confirmPasswordError: true,
+        createBtn: true,
+        confirmPasswordMess: "Passwords do not match!",
+      })
+    }
+    else {
+      console.log("b")
+      setError({
+        firstNameError: false,
+        lastNameError: false,
+        usernameError: false,
+        mobileError: false,
+        mobileMess: "",
+        emailError: false,
+        emailMess: "",
+        passwordError: false,
+        confirmPasswordError: false,
+        confirmPasswordMess: "",
+        createBtn: true
+      })
+    }
+  }
+
+  const checkValidation = (first_nameProp: string, last_nameProp: string, usernameProp: string, checkProp: boolean,
+    confirmPasswordProp: string, emailProp: string, mobileProp: string, passwordProp: string) => {
+    let strenght = PasswordStrenght(passwordProp);
+    if (strenght === 100) {
+      if (first_nameProp !== "" && last_nameProp !== "" && usernameProp !== "" &&
+        mobileProp !== "" && /^\d{10}$/.test(mobileProp) === true && emailProp !== "" &&
+        emailFormat.test(emailProp) === true && passwordProp === confirmPasswordProp &&
+        confirmPasswordProp !== "" && checkProp === true) {
+        setError({
+          firstNameError: false,
+          lastNameError: false,
+          usernameError: false,
+          confirmPasswordError: false,
+          confirmPasswordMess: "",
+          createBtn: false,
+          emailError: false,
+          emailMess: "",
+          mobileError: false,
+          mobileMess: "",
+          passwordError: false
+        })
+      } else {
+        commonValidation(confirmPasswordProp,
+          passwordProp)
+      }
+    } else {
+      commonValidation(confirmPasswordProp,
+        passwordProp)
+    }
+  }
+
   return (
     <Card title={"Create an account"}>
       <FlexLayout spacing='loose' direction='vertical'>
+        <FlexLayout spacing='loose' halign='fill'>
+          <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+            <TextField
+              autocomplete="off"
+              name="First Name"
+              required
+              onChange={(e) => {
+                setState({
+                  ...state,
+                  first_name: e
+                })
+                if (e === "") {
+                  setError({
+                    ...error,
+                    createBtn: true,
+                    firstNameError: true
+                  })
+                }
+                else {
+                  checkValidation(e, last_name, username, check, confirmPassword, email, mobile, password)
+                }
+              }}
+              placeHolder="Enter First Name"
+              type="text"
+              strength
+              error={firstNameError}
+              value={first_name}
+              onblur={() => {
+                if (first_name === "") {
+                  setError({
+                    ...error,
+                    firstNameError: true
+                  })
+                }
+              }}
+            />
+          </FlexChild>
+          <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+            <TextField
+              autocomplete="off"
+              name="Last Name"
+              required
+              onChange={(e) => {
+                setState({
+                  ...state,
+                  last_name: e
+                })
+                if (e === "") {
+                  setError({
+                    ...error,
+                    createBtn: true,
+                    lastNameError: true
+                  })
+                }
+                else {
+                  checkValidation(first_name, e, username, check, confirmPassword, email, mobile, password)
+                }
+              }}
+              placeHolder="Enter Last Name"
+              type="text"
+              error={lastNameError}
+              value={last_name}
+              onblur={() => {
+                if (last_name === "") {
+                  setError({
+                    ...error,
+                    lastNameError: true
+                  })
+                }
+              }}
+            />
+          </FlexChild>
+        </FlexLayout>
+        <TextField
+          autocomplete="off"
+          name="Username"
+          required
+          onChange={(e) => {
+            setState({
+              ...state,
+              username: e
+            })
+            if (e === "") {
+              setError({
+                ...error,
+                createBtn: true,
+                usernameError: true
+              })
+            }
+            else {
+              checkValidation(first_name, last_name, e, check, confirmPassword, email, mobile, password)
+            }
+          }}
+          placeHolder="Enter Username"
+          type="text"
+          error={usernameError}
+          value={username}
+          onblur={() => {
+            if (username === "") {
+              setError({
+                ...error,
+                usernameError: true
+              })
+            }
+          }}
+        />
         <TextField
           autocomplete="off"
           name="Mobile Number"
           required
-          onChange={function noRefCheck() { }}
+          onChange={(e) => {
+            setState({
+              ...state,
+              mobile: e
+            })
+
+            if (e === "") {
+              setError({
+                ...error,
+                createBtn: true,
+                mobileError: true
+              })
+            }
+            else {
+              checkValidation(first_name, last_name, username, check, confirmPassword, email, e, password)
+            }
+          }}
           placeHolder="Enter Mobile Number"
           type="text"
+          error={mobileError}
+          showHelp={mobileMess}
+          value={mobile}
+          onblur={() => {
+            if (mobile === "") {
+              setError({
+                ...error,
+                mobileError: true,
+                createBtn: true
+              })
+            } else if (/^\d{10}$/.test(mobile) === false) {
+              setError({
+                ...error,
+                mobileError: true,
+                mobileMess: "Not a valid Phone Number"
+              })
+            }
+          }}
         />
         <TextField
           autocomplete="off"
           name="Email"
           required
-          onChange={function noRefCheck() { }}
+          onChange={(e) => {
+            setState({
+              ...state,
+              email: e
+            })
+            if (e === "") {
+              setError({
+                ...error,
+                createBtn: true,
+                emailError: true
+              })
+            }
+            else {
+              checkValidation(first_name, last_name, username, check, confirmPassword, e, mobile, password)
+            }
+          }}
           placeHolder="Enter Email Address"
           type="email"
+          error={emailError}
+          showHelp={emailMess}
+          value={email}
+          onblur={() => {
+            if (email === "") {
+              setError({
+                ...error,
+                emailError: true
+              })
+            }
+            else if (emailFormat.test(email) === false) {
+              setError({
+                ...error,
+                emailError: true,
+                emailMess: "Please enter a valid email",
+                createBtn: true
+              })
+            }
+          }}
         />
         <FlexChild>
           <FlexLayout spacing='loose' halign='fill'>
@@ -46,10 +367,35 @@ function Register() {
                 autocomplete="off"
                 name="Password"
                 required
-                onChange={function noRefCheck() { }}
+                onChange={(e) => {
+                  setState({
+                    ...state,
+                    password: e
+                  })
+                  if (e === "") {
+                    setError({
+                      ...error,
+                      passwordError: true,
+                      createBtn: true
+                    })
+                  } else {
+                    checkValidation(first_name, last_name, username, check, confirmPassword, email, mobile, e)
+                  }
+                }}
                 placeHolder="Enter Password"
                 type="password"
                 show={eyeoff}
+                strength
+                error={passwordError}
+                value={password}
+                onblur={() => {
+                  if (password === "") {
+                    setError({
+                      ...error,
+                      passwordError: true
+                    })
+                  }
+                }}
                 innerSufIcon={
                   eyeoff ? (
                     <Eye
@@ -82,9 +428,34 @@ function Register() {
                 autocomplete="off"
                 name="Confirm Password"
                 required
-                onChange={function noRefCheck() { }}
+                onChange={(e) => {
+                  setState({
+                    ...state,
+                    confirmPassword: e
+                  })
+                  if (e === "") {
+                    setError({
+                      ...error,
+                      confirmPasswordError: true,
+                      createBtn: true
+                    })
+                  } else {
+                    checkValidation(first_name, last_name, username, check, e, email, mobile, password)
+                  }
+                }}
                 placeHolder="Enter Password"
                 type="password"
+                error={confirmPasswordError}
+                showHelp={confirmPasswordMess}
+                value={confirmPassword}
+                onblur={() => {
+                  if (confirmPassword === "") {
+                    setError({
+                      ...error,
+                      confirmPasswordError: true
+                    })
+                  }
+                }}
               />
             </FlexChild>
           </FlexLayout>
@@ -96,8 +467,14 @@ function Register() {
             id="two"
             labelVal={"Accept Terms and Conditions."}
             name="Name"
-            onClick={() => { }}
-            checked={true}
+            onClick={() => {
+              setState({
+                ...state,
+                check: !check
+              })
+              checkValidation(first_name, last_name, username, !check, confirmPassword, email, mobile, password)
+            }}
+            checked={check}
           />
           <Button
             halign="Center"
@@ -115,6 +492,7 @@ function Register() {
           content="Create Account"
           length="fullBtn"
           thickness='large'
+          disable={createBtn}
           onClick={createAccountHandler}
         />
         <TextStyles>
