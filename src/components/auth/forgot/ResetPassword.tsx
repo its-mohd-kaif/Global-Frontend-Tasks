@@ -1,8 +1,10 @@
 import { Alert, Button, Card, FormElement, List, TextField, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'react-feather';
+import { useLocation } from 'react-router-dom';
 import { PasswordStrenght } from '../../functions';
 import CustomHelpPoints from '../CustomHelpPoints';
+import jwt_decode from "jwt-decode";
 
 interface stateObj {
     newPassword: string;
@@ -35,6 +37,11 @@ function ResetPassword() {
             email: ""
         }
     })
+    const location = useLocation();
+
+    // Accessing query parameters
+    const queryParams = new URLSearchParams(location.search);
+
     /**
      * make a state for show or hide alert box
      */
@@ -54,15 +61,17 @@ function ResetPassword() {
      * and through jwt token we get user information
      */
     useEffect(() => {
-        // let pathUrl = window.location.search.split("token=");
-        // const jwtT = pathUrl[1]
-        // let myToken = atob(jwtT);
-        // setToken({
-        //     base64: jwtT,
-        //     jwtToken: {
-        //         email: parseJwt(myToken).email
-        //     }
-        // })
+        const base64: any = queryParams.get('token');
+        const jwt = atob(base64)
+        console.log("Token", atob(base64))
+        const decoded: any = jwt_decode(jwt);
+        console.log("JWT", decoded)
+        setToken({
+            base64: base64,
+            jwtToken: {
+                email: decoded.email
+            }
+        })
     }, [])
     /**
      * destructure all values 
