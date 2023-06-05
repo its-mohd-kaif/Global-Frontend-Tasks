@@ -21,6 +21,7 @@ interface registerErrorObj {
   firstNameError: boolean;
   lastNameError: boolean;
   usernameError: boolean;
+  usernameMess: string;
   mobileError: boolean;
   mobileMess: string;
   emailError: boolean;
@@ -50,6 +51,7 @@ function Register() {
     firstNameError: false,
     lastNameError: false,
     usernameError: false,
+    usernameMess: "",
     mobileError: false,
     mobileMess: "",
     emailError: false,
@@ -60,7 +62,8 @@ function Register() {
     createBtn: true
   })
   const { first_name, last_name, username, check, confirmPassword, email, eyeoff, mobile, password } = state;
-  const { firstNameError, lastNameError, usernameError, confirmPasswordError, confirmPasswordMess, createBtn, emailError,
+  const { firstNameError, lastNameError, usernameError, usernameMess, confirmPasswordError,
+    confirmPasswordMess, createBtn, emailError,
     emailMess, mobileError, mobileMess, passwordError } = error;
 
 
@@ -124,6 +127,7 @@ function Register() {
         firstNameError: false,
         lastNameError: false,
         usernameError: false,
+        usernameMess: "",
         mobileError: false,
         mobileMess: "",
         emailError: false,
@@ -140,7 +144,7 @@ function Register() {
     confirmPasswordProp: string, emailProp: string, mobileProp: string, passwordProp: string) => {
     let strenght = PasswordStrenght(passwordProp);
     if (strenght === 100) {
-      if (first_nameProp !== "" && last_nameProp !== "" && usernameProp !== "" &&
+      if (first_nameProp !== "" && last_nameProp !== "" && usernameProp !== "" && usernameProp.length >= 6 &&
         mobileProp !== "" && /^\d{10}$/.test(mobileProp) === true && emailProp !== "" &&
         emailFormat.test(emailProp) === true && passwordProp === confirmPasswordProp &&
         confirmPasswordProp !== "" && checkProp === true) {
@@ -148,6 +152,7 @@ function Register() {
           firstNameError: false,
           lastNameError: false,
           usernameError: false,
+          usernameMess: "",
           confirmPasswordError: false,
           confirmPasswordMess: "",
           createBtn: false,
@@ -266,12 +271,19 @@ function Register() {
           placeHolder="Enter Username"
           type="text"
           error={usernameError}
+          showHelp={usernameMess}
           value={username}
           onblur={() => {
             if (username === "") {
               setError({
                 ...error,
                 usernameError: true
+              })
+            } else if (username !== "" && username.length < 6) {
+              setError({
+                ...error,
+                usernameError: true,
+                usernameMess: "Username must be at least 6 characters"
               })
             }
           }}
