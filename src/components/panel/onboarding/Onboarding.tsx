@@ -8,9 +8,26 @@ import DefaultSetting from './default/DefaultSetting'
 import TopbarOnboarding from '../topbar/TopbarOnboarding'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../../footer/Footer'
+import { useSelector } from 'react-redux'
 function Onboarding() {
     const [stepper, setStepper] = useState<number>(0)
     const navigate = useNavigate()
+    const reduxState: any = useSelector((redux) => redux)
+    // Connect Source Handler
+    const connectSourceHandler = () => {
+        console.log("REDUX", reduxState)
+        const state = {
+            app_tag: process.env.REACT_APP_TAG,
+            user_id: reduxState.redux.user_id,
+            target_shop_id: 313,
+            target: "tiktok",
+        };
+        const url = `${process.env.REACT_APP_END_POINT
+            }connector/get/installationForm?code=shopify&appCode=shopify_tiktok&appType=private&bearer=${sessionStorage.getItem(`${reduxState.redux.user_id}_auth_token`)}&state=${JSON.stringify(
+                state
+            )}`;
+        window.open(url, "_blank")
+    }
     return (
         <>
             <TopbarOnboarding />
@@ -41,6 +58,10 @@ function Onboarding() {
                         onClick: () => {
                             if (stepper !== 2) {
                                 setStepper((val) => ++val)
+                                if (stepper === 0) {
+                                    connectSourceHandler()
+                                    setStepper(0)
+                                }
                             } else {
                                 navigate("/prepareOnboarding")
                             }
@@ -48,12 +69,12 @@ function Onboarding() {
                     }}
                     extraClass='connection-card'>
                     {
-                        stepper === 0 ?
-                            <TargetConnection />
-                            : stepper === 1 ?
-                                <MappingTemplate />
-                                : stepper === 2 ?
-                                    <DefaultSetting /> : null
+                        // stepper === 0 ?
+                        <TargetConnection />
+                        // : stepper === 1 ?
+                        //     <MappingTemplate />
+                        //     : stepper === 2 ?
+                        //         <DefaultSetting /> : null
                     }
                 </Card>
             </div>

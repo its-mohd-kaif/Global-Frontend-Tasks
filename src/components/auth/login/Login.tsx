@@ -3,12 +3,17 @@ import React, { useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
-import withApiCall from '../../../core/HOC';
+import { callApi } from '../../../core/ApiMethods';
+import jwtDecode from 'jwt-decode';
+import { useDispatch } from 'react-redux';
+import { userId } from '../../../redux/ReduxSlice';
+
 interface loginStateObj {
     email: string;
     password: string;
     eyeoff: boolean;
     reCAPTCHA: string | null;
+    loader: boolean
 }
 interface loginErrorObj {
     emailError: boolean;
@@ -18,7 +23,6 @@ interface loginErrorObj {
 
 
 function Login() {
-    // console.log("PROPS", _props)
     /**
   * State object for form input details
   */
@@ -27,19 +31,26 @@ function Login() {
         password: "",
         eyeoff: false,
         reCAPTCHA: null,
+        loader: false
     });
 
+    /**
+     * State object for handling errors
+     */
     const [error, setError] = useState<loginErrorObj>({
         emailError: false,
         passwordError: false,
         reCAPTCHAMess: ""
     })
-    const { email, password, eyeoff, reCAPTCHA } = state;
+    const { email, password, eyeoff, reCAPTCHA, loader } = state;
     const { emailError, passwordError, reCAPTCHAMess } = error
     const MySiteKey = process.env.REACT_APP_reCAPTCHA_SITE_KEY
+
+    const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const loginHandler = () => {
+        // Check Validation
         if (email === "" && password === "") {
             setError({
                 emailError: true,
@@ -62,30 +73,31 @@ function Login() {
                 reCAPTCHAMess: "Please Click On ReCAPTCHA"
             })
         } else {
-            const token = process.env.REACT_APP_BEARER;
-
-            const requestOptions = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                }),
-            };
-
-            fetch(`${process.env.REACT_APP_END_POINT}user/login`, requestOptions)
-                .then((response) => response.json())
-                .then((data) => {
-                    // Handle the response data
-                    console.log(data);
+            setState({
+                ...state,
+                loader: true
+            })
+            // Make a payload for api
+            const payload = {
+                email: email,
+                password: password
+            }
+            callApi("POST", "user/login", payload)
+                .then((res: any) => {
+                    setState({
+                        ...state,
+                        loader: false
+                    })
+                    if (res.success === true) {
+                        const userDetails: any = jwtDecode(`${res.data.token}`);
+                        // Save User Token In Session 
+                        sessionStorage.setItem(`${userDetails.user_id}_auth_token`, res.data.token)
+                        // Save User Id in redux
+                        dispatch(userId(userDetails.user_id))
+                        // For Now Redirect To Onboarding Page
+                        navigate("/onboarding")
+                    }
                 })
-                .catch((error) => {
-                    // Handle any errors that occurred during the request
-                    console.error(error);
-                });
         }
     }
 
@@ -182,6 +194,7 @@ function Login() {
                     length="fullBtn"
                     thickness='large'
                     onClick={loginHandler}
+                    loading={loader}
                 />
                 <TextStyles>
                     New to CedCommerce? {" "}

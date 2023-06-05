@@ -6,6 +6,7 @@ import PrepareDashboard from "./components/auth/prepare/PrepareDashboard";
 import PrepareOnboarding from "./components/auth/prepare/PrepareOnboarding";
 import Onboarding from "./components/panel/onboarding/Onboarding";
 
+
 function App() {
   return (
     <>
@@ -32,7 +33,7 @@ function App() {
           <Route path="*" element={<>NO Page Found 2</>} />
         </Route>
       </Routes>
-      
+
     </>
   );
 }

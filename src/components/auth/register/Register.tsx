@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { regexValidation } from '../../../Constant';
+import { callApi } from '../../../core/ApiMethods';
 import { PasswordStrenght } from '../../functions';
 import CustomHelpPoints from '../CustomHelpPoints';
 
@@ -75,37 +76,20 @@ function Register() {
   const navigate = useNavigate()
 
   const createAccountHandler = () => {
-    const token = process.env.REACT_APP_BEARER;
 
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        // Add the request body data here
-        email: email,
-        mobile_number: mobile,
-        username: username,
-        first_name: first_name,
-        last_name: last_name,
-        password: password,
-        confirmation_link: `${window.location.origin}/auth/confirmation`,
-        autoConfirm: false,
-      }),
-    };
+    const payload = {
+      email: email,
+      mobile_number: mobile,
+      username: username,
+      first_name: first_name,
+      last_name: last_name,
+      password: password,
+      confirmation_link: `${window.location.origin}/auth/confirmation`,
+      autoConfirm: false,
+    }
 
-    fetch(`${apiEndPoint}user/create`, requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        // Handle the response data
-        console.log(data);
-      })
-      .catch((error) => {
-        // Handle any errors that occurred during the request
-        console.error(error);
-      });
+    callApi("POST", "user/create", payload)
+      .then((res) => console.log("REGISTER", res))
   }
 
   const commonValidation = (
