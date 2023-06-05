@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
+import withApiCall from '../../../core/HOC';
 interface loginStateObj {
     email: string;
     password: string;
@@ -14,7 +15,10 @@ interface loginErrorObj {
     passwordError: boolean;
     reCAPTCHAMess: string;
 }
+
+
 function Login() {
+    // console.log("PROPS", _props)
     /**
   * State object for form input details
   */
