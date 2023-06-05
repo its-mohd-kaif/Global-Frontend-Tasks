@@ -5,12 +5,16 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import '@cedcommerce/ounce-ui/dist/index.css';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from "react-redux";
+import store from "./redux/Store";
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-   <BrowserRouter>
-    <App />
+  <BrowserRouter>
+    <Provider store={store}>
+      <App />
+    </Provider>
   </BrowserRouter>
 );
 

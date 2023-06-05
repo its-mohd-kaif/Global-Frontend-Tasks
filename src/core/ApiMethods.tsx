@@ -4,6 +4,14 @@ interface ApiError {
 
 type ApiResponse<Data> = Data | ApiError;
 
+/**
+ * Make this method for call api
+ * @param method In This You Can Pass Method Like (GET,POST,etc)
+ * @param endPoint For Adding End Point
+ * @param body Passing Payload
+ * @returns Promise
+ */
+
 export function callApi<Data>(method: string, endPoint: string, body = "" as any): Promise<ApiResponse<Data>> {
     const requestOptions: RequestInit = {
         method: method,
