@@ -3,6 +3,7 @@ import { Button, Card, FlexLayout, TextField, TextStyles } from '@cedcommerce/ou
 import { ArrowLeft } from "react-feather"
 import { useNavigate } from 'react-router-dom'
 import { regexValidation } from '../../../Constant';
+import { callApi } from '../../../core/ApiMethods';
 interface forgotObj {
     emailError: boolean;
     emailMess: string;
@@ -45,22 +46,12 @@ function Forgot() {
             ...error,
             loader: true
         })
-        const token = process.env.REACT_APP_BEARER;
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-                // Add the request body data here
-                "reset-link": `${window.location.origin}/auth/resetPassword`,
-                email: email,
-            }),
-        };
-        fetch(`${process.env.REACT_APP_END_POINT}user/forgot`, requestOptions)
-            .then((response) => response.json())
-            .then((data) => {
+        const payload = {
+            "reset-link": `${window.location.origin}/auth/resetPassword`,
+            email: email,
+        }
+        callApi("POST", "user/forgot", payload)
+            .then((data: any) => {
                 setError({
                     ...error,
                     loader: false

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
-import withApiCall from '../../../core/HOC';
+import { callApi } from '../../../core/ApiMethods';
 interface loginStateObj {
     email: string;
     password: string;
@@ -62,30 +62,12 @@ function Login() {
                 reCAPTCHAMess: "Please Click On ReCAPTCHA"
             })
         } else {
-            const token = process.env.REACT_APP_BEARER;
-
-            const requestOptions = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                }),
-            };
-
-            fetch(`${process.env.REACT_APP_END_POINT}user/login`, requestOptions)
-                .then((response) => response.json())
-                .then((data) => {
-                    // Handle the response data
-                    console.log(data);
-                })
-                .catch((error) => {
-                    // Handle any errors that occurred during the request
-                    console.error(error);
-                });
+            const payload = {
+                email: email,
+                password: password
+            }
+            callApi("POST","user/login", payload)
+                .then((res) => console.log("RES", res))
         }
     }
 
