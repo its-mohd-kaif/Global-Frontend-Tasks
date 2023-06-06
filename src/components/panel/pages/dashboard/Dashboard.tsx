@@ -93,6 +93,8 @@ function Dashboard() {
         for (let i = 0; i < AccordionData.length; i++) {
             setMultiacor([...multiaccor, false])
         }
+        const urlParams = window.location.pathname
+        console.log("MY PARAMS", urlParams.split("/")[2])
     }, [])
     const [open, setOpen] = useState<boolean>(false);
     const carouselData = [

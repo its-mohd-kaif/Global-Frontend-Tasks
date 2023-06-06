@@ -22,11 +22,11 @@ function Onboarding() {
             target_shop_id: 313,
             target: "tiktok",
         };
-        const url = `${process.env.REACT_APP_END_POINT
+        const url= `${process.env.REACT_APP_END_POINT
             }connector/get/installationForm?code=shopify&appCode=shopify_tiktok&appType=private&bearer=${sessionStorage.getItem(`${reduxState.redux.user_id}_auth_token`)}&state=${JSON.stringify(
                 state
             )}`;
-        window.open(url, "_blank")
+        window.location.href = url
     }
     return (
         <>

@@ -6,7 +6,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { callApi } from '../../../core/ApiMethods';
 import jwtDecode from 'jwt-decode';
 import { useDispatch } from 'react-redux';
-import { userId } from '../../../redux/ReduxSlice';
+import { showToast, userId } from '../../../redux/ReduxSlice';
 
 interface loginStateObj {
     email: string;
@@ -89,13 +89,22 @@ function Login() {
                         loader: false
                     })
                     if (res.success === true) {
+                        dispatch(showToast({
+                            type: "success",
+                            message: res.message
+                        }))
                         const userDetails: any = jwtDecode(`${res.data.token}`);
                         // Save User Token In Session 
                         sessionStorage.setItem(`${userDetails.user_id}_auth_token`, res.data.token)
                         // Save User Id in redux
                         dispatch(userId(userDetails.user_id))
                         // For Now Redirect To Onboarding Page
-                        navigate("/onboarding")
+                        navigate(`/panel/${userDetails.user_id}/dashboard`)
+                    } else if (res.success === false) {
+                        dispatch(showToast({
+                            type: "error",
+                            message: res.message
+                        }))
                     }
                 })
         }
