@@ -16,7 +16,6 @@ code {
     monospace;
 }
 
-
 /* Register Page*/
 .custom-help-points ul.inte__List {
   padding-left: 2rem;
@@ -27,25 +26,14 @@ code {
 }
 
 hr {
-  border-top: 1px solid #E1E3E5;
+  border-top: 1px solid #e1e3e5;
   margin: 0;
   border-bottom: none;
   box-shadow: unset;
 }
 
 /* --- Footer ---- */
-/* .app-footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-   padding-left: 1.6rem;
-   padding-right: 1.6rem; 
-  padding-top: 1.6rem; 
-}
-.app-footer button {
-  background: transparent;
-} */
+
 .app-footer {
   position: absolute;
   left: 0;
@@ -55,3 +43,7 @@ hr {
   padding-right: 1.6rem;
   padding-top: 1.6rem;
 }
+
+
+
+

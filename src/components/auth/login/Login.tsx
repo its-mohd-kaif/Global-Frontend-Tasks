@@ -1,12 +1,12 @@
 import { Button, Card, FlexLayout, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
 import { callApi } from '../../../core/ApiMethods';
 import jwtDecode from 'jwt-decode';
 import { useDispatch } from 'react-redux';
-import { userId } from '../../../redux/ReduxSlice';
+import { showToast, userId } from '../../../redux/ReduxSlice';
 
 interface loginStateObj {
     email: string;
@@ -44,11 +44,56 @@ function Login() {
     })
     const { email, password, eyeoff, reCAPTCHA, loader } = state;
     const { emailError, passwordError, reCAPTCHAMess } = error
-    const MySiteKey = process.env.REACT_APP_reCAPTCHA_SITE_KEY
+    const MySiteKey = process.env.REACT_APP_reCAPTCHA_SITE_KEY;
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const location = useLocation();
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const user_token: any = searchParams.get('user_token');
+        console.log("Login Param", user_token);
+        if (user_token !== null) {
+            const userDetails: any = jwtDecode(`${user_token}`);
+            console.log("details", userDetails)
+            // Save User Token In Session 
+            sessionStorage.setItem(`${userDetails.user_id}_auth_token`, user_token)
+            // Save User Id in redux
+            dispatch(userId(userDetails.user_id))
+            // Save User Id in Session
+            sessionStorage.setItem('user_id', userDetails.user_id)
+            callApi("POST", "connector/get/all")
+                .then((res: any) => {
+                    if (res.success === true) {
+                        console.log("connector/get/all", res)
+                        if (res.data.shopify?.installed.length > 0) {
+                            callApi("POST", "tiktokhome/frontend/getStepCompleted")
+                                .then((res: any) => {
+                                    if (res.success === true) {
+                                        console.log("getStepCompleted", res)
+                                        setStepCompleted(res.data, userDetails.user_id)
+                                    }
+                                })
+                        }
+                    }
+                })
+        }
+    }, [])
 
+    const setStepCompleted = (data: number, user_id: number) => {
+        // For Now Pass Static 1
+        // But In Real Case Pass data+1
+        let payload = {
+            step: 1
+        }
+        callApi("POST", "tiktokhome/frontend/stepCompleted", payload)
+            .then((res: any) => {
+                console.log("stepCompleted", res)
+                if (res.success === true) {
+                    navigate(`/panel/${user_id}/dashboard`)
+                }
+            })
+    }
     const loginHandler = () => {
         // Check Validation
         if (email === "" && password === "") {
@@ -89,13 +134,24 @@ function Login() {
                         loader: false
                     })
                     if (res.success === true) {
+                        dispatch(showToast({
+                            type: "success",
+                            message: res.message
+                        }))
                         const userDetails: any = jwtDecode(`${res.data.token}`);
                         // Save User Token In Session 
                         sessionStorage.setItem(`${userDetails.user_id}_auth_token`, res.data.token)
                         // Save User Id in redux
                         dispatch(userId(userDetails.user_id))
+                        // Save User Id in Session
+                        sessionStorage.setItem('user_id', userDetails.user_id)
                         // For Now Redirect To Onboarding Page
-                        navigate("/onboarding")
+                        navigate(`/panel/${userDetails.user_id}/dashboard`)
+                    } else if (res.success === false) {
+                        dispatch(showToast({
+                            type: "error",
+                            message: res.message
+                        }))
                     }
                 })
         }
