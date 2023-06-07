@@ -6,21 +6,19 @@ import TargetConnection from './connection/TargetConnection'
 import MappingTemplate from './default/MappingTemplate'
 import DefaultSetting from './default/DefaultSetting'
 import TopbarOnboarding from '../topbar/TopbarOnboarding'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import Footer from '../../footer/Footer'
 import { useSelector } from 'react-redux'
 import { callApi } from '../../../core/ApiMethods'
 function Onboarding() {
     const [stepper, setStepper] = useState<number>(0)
     const [loader, setLoader] = useState<boolean>(true)
-    const navigate = useNavigate()
     const reduxState: any = useSelector((redux) => redux)
 
     useEffect(() => {
         callApi("POST", "tiktokhome/frontend/getStepCompleted")
             .then((res: any) => {
                 if (res.success === true) {
-                    console.log("Onboarding getStepCompleted", res)
                     setStepper(res.data)
                     setLoader(false)
                 }
@@ -29,7 +27,6 @@ function Onboarding() {
 
     // Connect Source Handler
     const connectSourceHandler = () => {
-        console.log("REDUX", reduxState)
         const state = {
             app_tag: process.env.REACT_APP_TAG,
             user_id: reduxState.redux.user_id,
@@ -42,7 +39,6 @@ function Onboarding() {
             )}`;
         window.location.href = url
     }
-    console.log("Stepper", stepper)
     if (loader === true) {
         return (
             <>
@@ -79,13 +75,9 @@ function Onboarding() {
                             iconAlign: "right",
                             onClick: () => {
                                 if (stepper !== 2) {
-                                    // setStepper((val) => ++val)
                                     if (stepper === 0) {
                                         connectSourceHandler()
-                                        // setStepper(0)
                                     }
-                                } else {
-                                    // navigate("/prepareOnboarding")
                                 }
                             }
                         }}

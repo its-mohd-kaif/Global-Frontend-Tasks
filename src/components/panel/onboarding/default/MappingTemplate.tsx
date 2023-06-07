@@ -1,13 +1,52 @@
 import { Accordion, Card, FlexChild, FlexLayout, Select, Switcher, Tag, TextStyles } from '@cedcommerce/ounce-ui'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { callApi } from '../../../../core/ApiMethods'
+import { CategoryListData } from '../../../../core/Constant'
 import AttributeSelect from '../../utility/commonComponent/AttributeSelect'
 function MappingTemplate() {
+    const [listingCategroy, setListingCategroy] = useState<any>([])
+    const [chooseCategory, setChooseCategory] = useState<any>({
+        value: "",
+        category_id: "",
+        // appCode: "",
+        // _id: 0
+    })
+    useEffect(() => {
+        // callApi("POST", "tiktokhome/request/getCategorydata")
+        //     .then((res) => console.log("getCategorydata", res))
+        const res = CategoryListData;
+        console.log("getCategorydata", res)
+        let tempArr: any = []
+        res.forEach((element: any) => {
+            let obj = {
+                label: element.category_path,
+                value: element.category_path,
+                category_id: element.category_id,
+                appCode: element.appCode,
+                _id: element._id.$oid
+            }
+            tempArr.push(obj)
+        });
+        setListingCategroy(tempArr)
+    }, [])
+    const handleSelectCategory = (value: string, id: any) => {
+        setChooseCategory({
+            value: value,
+            category_id: id,
+        })
+        let payload = {
+            category_id: `${id}`,
+            marketplace: "tiktok",
+            source_marketplace: 'bigcommerce'
+        }
+        callApi("POST", "tiktokhome/category/getAttributes", payload).then((res: any) => console.log(res))
+    }
     return (
         <div>
             <FlexLayout halign='center' direction='vertical'>
                 <FlexLayout spacing='loose' direction='vertical'>
                     <FlexLayout spacing='extraLoose' halign='fill'>
-                        <FlexChild desktopWidth='33' tabWidth='33'>
+                        <FlexChild desktopWidth='33' tabWidth='33' mobileWidth='100'>
                             <FlexLayout spacing='tight' direction='vertical'>
                                 <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Select Listing Category</TextStyles>
                                 <TextStyles textcolor='light'>Choose the ‘Category’ that best defines your listing(s).</TextStyles>
@@ -18,25 +57,18 @@ function MappingTemplate() {
                                 </div>
                             </FlexLayout>
                         </FlexChild>
-                        <FlexChild desktopWidth='66' tabWidth='66'>
+                        <FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
                             <Select
-                                onChange={function noRefCheck() { }}
+                                onChange={(event: any, id: any) => handleSelectCategory(event, id.category_id)}
                                 onblur={function noRefCheck() { }}
-                                options={[
-                                    {
-                                        label: <Tag destroy={() => { }}>
-                                            Shop Categories &gt; Apparel Crafts &gt; Fabric Paint
-                                        </Tag>,
-                                        value: '0'
-                                    },
-                                ]}
-                                value="0"
+                                options={listingCategroy}
+                                value={chooseCategory.value}
                             />
                         </FlexChild>
                     </FlexLayout>
 
                     <FlexLayout spacing='extraLoose' halign='fill'>
-                        <FlexChild desktopWidth='33' tabWidth='33'  mobileWidth='100'>
+                        <FlexChild desktopWidth='33' tabWidth='33' mobileWidth='100'>
                             <FlexLayout spacing='tight' direction='vertical'>
                                 <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Select Attribute Mapping</TextStyles>
                                 <TextStyles textcolor='light'>Through ‘Attribute Mapping’ you can enhance your listing catalog with additional
@@ -96,7 +128,7 @@ function MappingTemplate() {
                     </FlexLayout>
 
                     <FlexLayout spacing='extraLoose' halign='fill'>
-                        <FlexChild desktopWidth='33' tabWidth='33'  mobileWidth='100'>
+                        <FlexChild desktopWidth='33' tabWidth='33' mobileWidth='100'>
                             <FlexLayout spacing='tight' direction='vertical'>
                                 <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Shipping Dimensions</TextStyles>
                                 <TextStyles textcolor='light'>Through ‘Attribute Mapping’ you can enhance your listing catalog with additional listing information.</TextStyles>
