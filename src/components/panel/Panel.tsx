@@ -34,23 +34,10 @@ function Panel() {
         if (!flag) {
             getAsyncCall();
         }
-        // if (reduxState.connectorGetAllState.data.shopify.installed.length > 0) {
-            const payload = {
-                step: 1
-            }
-            callApi("POST", "tiktokhome/frontend/getStepCompleted", payload)
-                .then((res: any) => {
-                    console.log("RESSSS",res)
-                    if (res.success === true) {
-                        dispatch(stepCompleted(res))
-                    }
-                })
-        // }
-        // Save User Id in redux
+
         dispatch(userId(user_id))
     }, [])
     const getStepCompleted = () => {
-
         callApi("POST", "tiktokhome/frontend/getStepCompleted")
             .then((res: any) => {
                 if (res.success === true) {
@@ -69,13 +56,13 @@ function Panel() {
     console.log("redux", reduxState)
     useEffect(() => {
         if (reduxState.stepCompletedState.data !== undefined) {
-            if (reduxState.stepCompletedState.data === 0) {
+            if (reduxState.stepCompletedState.data < 3) {
                 navigate(`/panel/${reduxState.user_id}/onboarding`)
             }
         }
     }, [reduxState])
     if (reduxState.stepCompletedState.data !== undefined) {
-        if (reduxState.stepCompletedState.data === 0) {
+        if (reduxState.stepCompletedState.data < 3) {
             return (
                 <>
                     <Routes>
@@ -83,7 +70,7 @@ function Panel() {
                     </Routes>
                 </>
             )
-        } else if (reduxState.stepCompletedState.data > 0) {
+        } else if (reduxState.stepCompletedState.data >= 3) {
             return (
                 <>
                     <TopbarPanel />

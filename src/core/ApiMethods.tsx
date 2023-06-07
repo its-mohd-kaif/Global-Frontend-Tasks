@@ -13,8 +13,7 @@ type ApiResponse<Data> = Data | ApiError;
  */
 
 export function callApi<Data>(method: string, endPoint: string, body = "" as any): Promise<ApiResponse<Data>> {
-    const urlParams = window.location.pathname;
-    const user_id = urlParams.split("/")[2]
+    const user_id = sessionStorage.getItem("user_id");
     let token: any = process.env.REACT_APP_BEARER
     if (sessionStorage.getItem(`${user_id}_auth_token`) !== null) {
         token = sessionStorage.getItem(`${user_id}_auth_token`)
@@ -27,7 +26,6 @@ export function callApi<Data>(method: string, endPoint: string, body = "" as any
         },
         body: JSON.stringify(body),
     };
-
     return fetch(`${process.env.REACT_APP_END_POINT}${endPoint}`, requestOptions)
         .then((response) => {
             if (!response.ok) {

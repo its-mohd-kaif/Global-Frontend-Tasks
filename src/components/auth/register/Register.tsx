@@ -1,9 +1,11 @@
 import { Button, Card, CheckBox, FlexChild, FlexLayout, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { regexValidation } from '../../../Constant';
 import { callApi } from '../../../core/ApiMethods';
+import { showToast } from '../../../redux/ReduxSlice';
 import { PasswordStrenght } from '../../functions';
 import CustomHelpPoints from '../CustomHelpPoints';
 
@@ -17,6 +19,7 @@ interface registerStateObj {
   confirmPassword: string;
   check: boolean;
   eyeoff: boolean;
+  btnLoader: boolean;
 }
 interface registerErrorObj {
   firstNameError: boolean;
@@ -46,6 +49,7 @@ function Register() {
     confirmPassword: "",
     check: true,
     eyeoff: false,
+    btnLoader: false
   });
 
   const [error, setError] = useState<registerErrorObj>({
@@ -62,7 +66,7 @@ function Register() {
     confirmPasswordMess: "",
     createBtn: true
   })
-  const { first_name, last_name, username, check, confirmPassword, email, eyeoff, mobile, password } = state;
+  const { first_name, last_name, username, check, confirmPassword, email, eyeoff, mobile, password, btnLoader } = state;
   const { firstNameError, lastNameError, usernameError, usernameMess, confirmPasswordError,
     confirmPasswordMess, createBtn, emailError,
     emailMess, mobileError, mobileMess, passwordError } = error;
@@ -74,9 +78,13 @@ function Register() {
   } = regexValidation;
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const createAccountHandler = () => {
-
+    setState({
+      ...state,
+      btnLoader: true
+    })
     const payload = {
       email: email,
       mobile_number: mobile,
@@ -89,7 +97,24 @@ function Register() {
     }
 
     callApi("POST", "user/create", payload)
-      .then((res) => console.log("REGISTER", res))
+      .then((res: any) => {
+        setState({
+          ...state,
+          btnLoader: false
+        })
+        console.log("REGISTER", res)
+        if (res.success === true) {
+          dispatch(showToast({
+            type: "success",
+            message: res.message
+          }))
+        } else if (res.success === false) {
+          dispatch(showToast({
+            type: "error",
+            message: res.message
+          }))
+        }
+      })
   }
 
   const commonValidation = (
@@ -97,7 +122,6 @@ function Register() {
     passwordProp: string
   ) => {
     if (passwordProp !== confirmPasswordProp && passwordProp !== "" && confirmPasswordProp !== "") {
-      console.log("a")
       setError({
         ...error,
         confirmPasswordError: true,
@@ -106,7 +130,6 @@ function Register() {
       })
     }
     else {
-      console.log("b")
       setError({
         firstNameError: false,
         lastNameError: false,
@@ -490,6 +513,7 @@ function Register() {
           thickness='large'
           disable={createBtn}
           onClick={createAccountHandler}
+          loading={btnLoader}
         />
         <TextStyles>
           <TextLink
