@@ -112,12 +112,14 @@ function Login() {
                 ...error,
                 passwordError: true
             })
-        } else if (reCAPTCHA === null) {
-            setError({
-                ...error,
-                reCAPTCHAMess: "Please Click On ReCAPTCHA"
-            })
-        } else {
+        } 
+        // else if (reCAPTCHA === null) {
+        //     setError({
+        //         ...error,
+        //         reCAPTCHAMess: "Please Click On ReCAPTCHA"
+        //     })
+        // } 
+        else {
             setState({
                 ...state,
                 loader: true

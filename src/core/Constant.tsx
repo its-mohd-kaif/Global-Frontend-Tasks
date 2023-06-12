@@ -12600,3 +12600,832 @@ export const CategoryListData = [
         "appCode": "tiktok_uk"
     }
 ]
+
+export const StaticAttributes = [
+    {
+        "attribute_type": 3,
+        "id": "100401",
+        "customized_name": false,
+        "required": false,
+        "is_multiselect": true,
+        "name": "Washing Instructions",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1001195",
+                "name": "Hand Wash Only"
+            },
+            {
+                "id": "1001196",
+                "name": "Dry Clean"
+            },
+            {
+                "id": "1001197",
+                "name": "Do Not Wash"
+            },
+            {
+                "id": "1001198",
+                "name": "Do Not Dry Clean"
+            },
+            {
+                "id": "1001199",
+                "name": "Machine Washable"
+            },
+            {
+                "id": "1001200",
+                "name": "Cold Wash"
+            }
+        ]
+    },
+    {
+        "attribute_type": 3,
+        "id": "100347",
+        "customized_name": true,
+        "required": false,
+        "is_multiselect": false,
+        "name": "Quantity Per Pack",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1000256",
+                "name": "1"
+            },
+            {
+                "id": "1000257",
+                "name": "2"
+            },
+            {
+                "id": "1000258",
+                "name": "3"
+            },
+            {
+                "id": "1000347",
+                "name": "4"
+            },
+            {
+                "id": "1000354",
+                "name": "5"
+            },
+            {
+                "id": "1000638",
+                "name": "6"
+            },
+            {
+                "id": "1000355",
+                "name": "7"
+            },
+            {
+                "id": "1000639",
+                "name": "8"
+            },
+            {
+                "id": "1000356",
+                "name": "9"
+            },
+            {
+                "id": "1000357",
+                "name": "10"
+            },
+            {
+                "id": "1001201",
+                "name": "11"
+            },
+            {
+                "id": "1001202",
+                "name": "12"
+            }
+        ]
+    },
+    {
+        "attribute_type": 3,
+        "id": "100757",
+        "customized_name": true,
+        "required": false,
+        "is_multiselect": false,
+        "name": "Design",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1003698",
+                "name": "Frill"
+            },
+            {
+                "id": "1003681",
+                "name": "Ruffle"
+            },
+            {
+                "id": "1003699",
+                "name": "Asymmetrical"
+            },
+            {
+                "id": "1003713",
+                "name": "Criss Cross"
+            },
+            {
+                "id": "1003897",
+                "name": "Adjustable Strap"
+            },
+            {
+                "id": "1003704",
+                "name": "Washed"
+            },
+            {
+                "id": "1003688",
+                "name": "Split"
+            },
+            {
+                "id": "1003707",
+                "name": "Shirred"
+            },
+            {
+                "id": "1003721",
+                "name": "Plicated"
+            },
+            {
+                "id": "1003678",
+                "name": "Contrast Lace"
+            },
+            {
+                "id": "1003684",
+                "name": "Twist"
+            },
+            {
+                "id": "1003691",
+                "name": "Sheer"
+            },
+            {
+                "id": "1003715",
+                "name": "Tiered Layer"
+            },
+            {
+                "id": "1003712",
+                "name": "Contrast Binding"
+            },
+            {
+                "id": "1003692",
+                "name": "Lettuce Trim"
+            },
+            {
+                "id": "1003837",
+                "name": "Hollow Out"
+            },
+            {
+                "id": "1003706",
+                "name": "Raw Hem"
+            },
+            {
+                "id": "1003702",
+                "name": "Ripped"
+            }
+        ]
+    },
+    {
+        "attribute_type": 3,
+        "id": "100198",
+        "customized_name": true,
+        "required": false,
+        "is_multiselect": false,
+        "name": "Pattern",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1001182",
+                "name": "Plain"
+            },
+            {
+                "id": "1001183",
+                "name": "Floral"
+            },
+            {
+                "id": "1001184",
+                "name": "Striped"
+            },
+            {
+                "id": "1001185",
+                "name": "Plaid"
+            },
+            {
+                "id": "1001186",
+                "name": "Graphic"
+            },
+            {
+                "id": "1001187",
+                "name": "Embroidering"
+            },
+            {
+                "id": "1001188",
+                "name": "Herringbone"
+            },
+            {
+                "id": "1001189",
+                "name": "Moire"
+            },
+            {
+                "id": "1001190",
+                "name": "Paisley"
+            },
+            {
+                "id": "1001191",
+                "name": "Polka Dot"
+            },
+            {
+                "id": "1001192",
+                "name": "Tie Dye"
+            },
+            {
+                "id": "1005051",
+                "name": "Camouflage"
+            },
+            {
+                "id": "1003633",
+                "name": "Slogan"
+            },
+            {
+                "id": "1003613",
+                "name": "Figure"
+            },
+            {
+                "id": "1002395",
+                "name": "Plants"
+            },
+            {
+                "id": "1003602",
+                "name": "All Over Print"
+            },
+            {
+                "id": "1003610",
+                "name": "Colorblock"
+            },
+            {
+                "id": "1003623",
+                "name": "Leopard"
+            },
+            {
+                "id": "1003627",
+                "name": "Ombre"
+            },
+            {
+                "id": "1003638",
+                "name": "Zebra Stripe"
+            },
+            {
+                "id": "1003626",
+                "name": "Marble"
+            },
+            {
+                "id": "1003621",
+                "name": "Houndstooth"
+            }
+        ]
+    },
+    {
+        "attribute_type": 3,
+        "id": "100398",
+        "customized_name": true,
+        "required": false,
+        "is_multiselect": true,
+        "name": "Style",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1001164",
+                "name": "Athletic"
+            },
+            {
+                "id": "1001165",
+                "name": "Basic"
+            },
+            {
+                "id": "1001166",
+                "name": "Boho"
+            },
+            {
+                "id": "1001167",
+                "name": "Chic"
+            },
+            {
+                "id": "1001168",
+                "name": "Elegant"
+            },
+            {
+                "id": "1001169",
+                "name": "Japanese"
+            },
+            {
+                "id": "1001170",
+                "name": "Korean"
+            },
+            {
+                "id": "1001171",
+                "name": "Cute"
+            },
+            {
+                "id": "1001172",
+                "name": "Minimalist"
+            },
+            {
+                "id": "1001173",
+                "name": "Preppy"
+            },
+            {
+                "id": "1001174",
+                "name": "Retro"
+            },
+            {
+                "id": "1001175",
+                "name": "Sexy"
+            },
+            {
+                "id": "1001176",
+                "name": "Street"
+            },
+            {
+                "id": "1001177",
+                "name": "Sweet"
+            },
+            {
+                "id": "1001178",
+                "name": "Holiday"
+            },
+            {
+                "id": "1003597",
+                "name": "Modest"
+            },
+            {
+                "id": "1002665",
+                "name": "Party"
+            },
+            {
+                "id": "1005406",
+                "name": "OL"
+            }
+        ]
+    },
+    {
+        "attribute_type": 2,
+        "id": "100007",
+        "customized_name": true,
+        "required": false,
+        "is_multiselect": true,
+        "name": "Size",
+        "input_type": "string"
+    },
+    {
+        "attribute_type": 3,
+        "id": "100397",
+        "customized_name": false,
+        "required": false,
+        "is_multiselect": true,
+        "name": "Season",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1001161",
+                "name": "Spring"
+            },
+            {
+                "id": "1001162",
+                "name": "Summer"
+            },
+            {
+                "id": "1000905",
+                "name": "Fall"
+            },
+            {
+                "id": "1001163",
+                "name": "Winter"
+            },
+            {
+                "id": "1005840",
+                "name": "All Seasons"
+            }
+        ]
+    },
+    {
+        "attribute_type": 3,
+        "id": "100400",
+        "customized_name": false,
+        "required": false,
+        "is_multiselect": false,
+        "name": "Stretch",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1000325",
+                "name": "None"
+            },
+            {
+                "id": "1001193",
+                "name": "Slight"
+            },
+            {
+                "id": "1000907",
+                "name": "Medium"
+            },
+            {
+                "id": "1001194",
+                "name": "High"
+            }
+        ]
+    },
+    {
+        "attribute_type": 3,
+        "id": "101127",
+        "customized_name": false,
+        "required": false,
+        "is_multiselect": true,
+        "name": "Size Type",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1006946",
+                "name": "Juniors"
+            },
+            {
+                "id": "1002679",
+                "name": "Petite"
+            },
+            {
+                "id": "1002680",
+                "name": "Plus Size"
+            },
+            {
+                "id": "1005904",
+                "name": "Regular"
+            }
+        ]
+    },
+    {
+        "attribute_type": 2,
+        "id": "100000",
+        "customized_name": true,
+        "required": false,
+        "is_multiselect": true,
+        "name": "Colour",
+        "input_type": "string"
+    },
+    {
+        "attribute_type": 3,
+        "id": "100157",
+        "customized_name": true,
+        "required": false,
+        "is_multiselect": true,
+        "name": "Material",
+        "input_type": "select",
+        "values": [
+            {
+                "id": "1000039",
+                "name": "Cotton"
+            },
+            {
+                "id": "1000044",
+                "name": "Silk"
+            },
+            {
+                "id": "1000011",
+                "name": "Polyester"
+            },
+            {
+                "id": "1000014",
+                "name": "Acrylic"
+            },
+            {
+                "id": "1000038",
+                "name": "Cashmere"
+            },
+            {
+                "id": "1001107",
+                "name": "Rayon"
+            },
+            {
+                "id": "1001108",
+                "name": "Tencel"
+            },
+            {
+                "id": "1001109",
+                "name": "Cupro"
+            },
+            {
+                "id": "1000045",
+                "name": "Wool"
+            },
+            {
+                "id": "1001110",
+                "name": "Mohair"
+            },
+            {
+                "id": "1000013",
+                "name": "Linen"
+            },
+            {
+                "id": "1000015",
+                "name": "Nylon"
+            },
+            {
+                "id": "1001111",
+                "name": "Viscose"
+            },
+            {
+                "id": "1001112",
+                "name": "Elastane"
+            },
+            {
+                "id": "1001113",
+                "name": "Modal"
+            },
+            {
+                "id": "1001114",
+                "name": "Down"
+            },
+            {
+                "id": "1001115",
+                "name": "Faux Fur"
+            },
+            {
+                "id": "1000042",
+                "name": "Leather"
+            },
+            {
+                "id": "1001116",
+                "name": "Corduroy"
+            },
+            {
+                "id": "1001117",
+                "name": "Denim"
+            },
+            {
+                "id": "1001118",
+                "name": "Felt"
+            },
+            {
+                "id": "1001119",
+                "name": "Fleece"
+            },
+            {
+                "id": "1001120",
+                "name": "Chiffon"
+            },
+            {
+                "id": "1001121",
+                "name": "Knit"
+            },
+            {
+                "id": "1000041",
+                "name": "Lace"
+            },
+            {
+                "id": "1003739",
+                "name": "Rib"
+            },
+            {
+                "id": "1003738",
+                "name": "Satin"
+            },
+            {
+                "id": "1000918",
+                "name": "Metallic"
+            },
+            {
+                "id": "1003756",
+                "name": "Mesh"
+            },
+            {
+                "id": "1005699",
+                "name": "Crepe"
+            },
+            {
+                "id": "1005715",
+                "name": "French Terry"
+            },
+            {
+                "id": "1003908",
+                "name": "Twill"
+            },
+            {
+                "id": "1002347",
+                "name": "Velvet"
+            },
+            {
+                "id": "1005910",
+                "name": "Jacquard"
+            }
+        ]
+    },
+    {
+        "name": "GTIN Exemption Applicable",
+        "attribute_type": 3,
+        "required": true,
+        "hide": true,
+        "customized_name": false,
+        "id": "exemption",
+        "input_type": "string",
+        "option": [
+            "true",
+            "false"
+        ],
+        "value": "true"
+    },
+    {
+        "name": "Cash on Delivery",
+        "attribute_type": 3,
+        "required": true,
+        "customized_name": false,
+        "id": "cod",
+        "input_type": "string",
+        "option": [
+            "true",
+            "false"
+        ],
+        "value": "false"
+    },
+    {
+        "name": "Package Length",
+        "attribute_type": 3,
+        "required": true,
+        "customized_name": false,
+        "id": "package_length",
+        "input_type": "number_unit",
+        "default_unit": [
+            "cm"
+        ]
+    },
+    {
+        "name": "Package Width",
+        "attribute_type": 3,
+        "required": true,
+        "customized_name": false,
+        "id": "package_width",
+        "input_type": "number_unit",
+        "default_unit": [
+            "cm"
+        ]
+    },
+    {
+        "name": "Package Height",
+        "attribute_type": 3,
+        "required": true,
+        "customized_name": false,
+        "id": "package_height",
+        "input_type": "number_unit",
+        "default_unit": [
+            "cm"
+        ]
+    },
+    {
+        "name": "Package Weight",
+        "attribute_type": 3,
+        "required": true,
+        "customized_name": false,
+        "id": "package_weight",
+        "input_type": "number_unit",
+        "default_unit": [
+            "kg"
+        ]
+    },
+    {
+        "attribute_type": 3,
+        "id": "Brand",
+        "name": "Brand",
+        "is_multiselect": false,
+        "customized_name": false,
+        "values": [
+            {
+                "id": "7196330502343771910",
+                "name": "1+,ONEPLUS"
+            },
+            {
+                "id": "7184773435841644293",
+                "name": "0850"
+            },
+            {
+                "id": "7114532254914840326",
+                "name": "0'LITSTR"
+            },
+            {
+                "id": "7097524963137259270",
+                "name": "+WIS+"
+            },
+            {
+                "id": "7111296075067098885",
+                "name": "+ful"
+            },
+            {
+                "id": "7138001776841656069",
+                "name": "+DegoPharma"
+            },
+            {
+                "id": "7168889611886888709",
+                "name": "(Figurative)"
+            },
+            {
+                "id": "7202045035800872710",
+                "name": "&honey"
+            },
+            {
+                "id": "7158094830659340038",
+                "name": "#ohmymats"
+            },
+            {
+                "id": "7111595400213071622",
+                "name": "#arjdbb"
+            }
+        ],
+        "required": false,
+        "input_type": "string"
+    },
+    {
+        "attribute_type": 3,
+        "name": "Warranty period",
+        "id": "Warranty period",
+        "is_multiselect": false,
+        "customized_name": false,
+        "values": [
+            {
+                "id": 1,
+                "name": "4 weeks"
+            },
+            {
+                "id": 15,
+                "name": "1 week"
+            },
+            {
+                "id": 16,
+                "name": "2 weeks"
+            },
+            {
+                "id": 2,
+                "name": "2 months"
+            },
+            {
+                "id": 3,
+                "name": "3 months"
+            },
+            {
+                "id": 4,
+                "name": "4 months"
+            },
+            {
+                "id": 5,
+                "name": "5 months"
+            },
+            {
+                "id": 6,
+                "name": "6 months"
+            },
+            {
+                "id": 7,
+                "name": "7 months"
+            },
+            {
+                "id": 8,
+                "name": "8 months"
+            },
+            {
+                "id": 9,
+                "name": "9 months"
+            },
+            {
+                "id": 10,
+                "name": "10 months"
+            },
+            {
+                "id": 11,
+                "name": "11 months"
+            },
+            {
+                "id": 12,
+                "name": "12 months"
+            },
+            {
+                "id": 17,
+                "name": "18 months"
+            },
+            {
+                "id": 18,
+                "name": "4 years"
+            },
+            {
+                "id": 19,
+                "name": "5 years"
+            },
+            {
+                "id": 20,
+                "name": "10 years"
+            },
+            {
+                "id": 13,
+                "name": "2 years"
+            },
+            {
+                "id": 14,
+                "name": "3 years"
+            },
+            {
+                "id": 21,
+                "name": "lifetime warranty"
+            }
+        ],
+        "required": false,
+        "input_type": "string"
+    }
+]

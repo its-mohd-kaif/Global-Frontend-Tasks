@@ -1,23 +1,61 @@
-import { Accordion, Card, FlexChild, FlexLayout, Select, Switcher, Tag, TextStyles } from '@cedcommerce/ounce-ui'
+import { Accordion, Button, Card, FlexChild, FlexLayout, Select, Switcher, Tag, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { callApi } from '../../../../core/ApiMethods'
-import { CategoryListData } from '../../../../core/Constant'
+import { CategoryListData, StaticAttributes } from '../../../../core/Constant'
 import AttributeSelect from '../../utility/commonComponent/AttributeSelect'
+import { FileText, ArrowRight } from "react-feather"
+import AttributeMappingMethod from './DefaultUtility'
+interface accordionsObj {
+    product: boolean;
+    variation: boolean;
+}
 function MappingTemplate() {
+
     const [listingCategroy, setListingCategroy] = useState<any>([])
     const [chooseCategory, setChooseCategory] = useState<any>({
-        value: "",
-        category_id: "",
-        // appCode: "",
-        // _id: 0
+        selectValue: "",
+        selectCategory_id: "",
     })
+    const [selectAttribute, setSelectAttribute] = useState<any>([]);
+    const [accordions, setAccordions] = useState<accordionsObj>({
+        product: false,
+        variation: false
+    })
+    const [getAttributeOptions, setGetAttributeOptions] = useState<any>({
+        attr: [],
+        variant_attr: []
+    })
+    const { attr, variant_attr } = getAttributeOptions
+    const { selectValue, selectCategory_id } = chooseCategory;
+    const [myPayload, setMyPayload] = useState<any>({})
+    const { product, variation } = accordions
+
     useEffect(() => {
-        // callApi("POST", "tiktokhome/request/getCategorydata")
-        //     .then((res) => console.log("getCategorydata", res))
-        const res = CategoryListData;
-        console.log("getCategorydata", res)
+        callApi("POST", "tiktokhome/frontend/getStepCompleted")
+            .then((res: any) => {
+                if (res.success === true) {
+                    let extraHeaders = {
+                        "Ced-Source-Id": res.shops["Ced-Source-Id"],
+                        "Ced-Source-Name": res.shops["Ced-Source-Name"],
+                        "Ced-Target-Id": res.shops["Ced-Target-Id"],
+                        "Ced-Target-Name": res.shops["Ced-Target-Name"]
+                    }
+                    callApi("GET", "tiktokhome/category/getAttributeOptions?marketplace=bigcommerce", {}, extraHeaders)
+                        .then((res: any) => {
+                            console.log("getAttributeOptions", res)
+                            if (res.success === true) {
+                                setGetAttributeOptions({
+                                    attr: res.data.attr,
+                                    variant_attr: res.data.variant_attr
+                                })
+                            }
+                        })
+                }
+            })
+        const resOfCategoryListData = CategoryListData;
+        console.log("getCategorydata", resOfCategoryListData)
         let tempArr: any = []
-        res.forEach((element: any) => {
+        resOfCategoryListData.forEach((element: any) => {
             let obj = {
                 label: element.category_path,
                 value: element.category_path,
@@ -31,18 +69,51 @@ function MappingTemplate() {
     }, [])
     const handleSelectCategory = (value: string, id: any) => {
         setChooseCategory({
-            value: value,
-            category_id: id,
+            selectValue: value,
+            selectCategory_id: id,
         })
-        let payload = {
-            category_id: `${id}`,
-            marketplace: "tiktok",
-            source_marketplace: 'bigcommerce'
-        }
-        callApi("POST", "tiktokhome/category/getAttributes", payload).then((res: any) => console.log(res))
+        setAccordions({
+            ...accordions,
+            product: true
+        })
+        // let payload = {
+        //     category_id: `${id}`,
+        //     marketplace: "tiktok",
+        //     source_marketplace: 'bigcommerce'
+        // }
+        // callApi("GET", "tiktokhome/category/getAttributes", payload, "extraHeaders").then((res: any) => {
+        //     console.log("getAttributes", res)
+        // })
+        const resOfStaticAttributes = StaticAttributes;
+        console.log("getAttributes", resOfStaticAttributes);
+        let tempArr: any = []
+        resOfStaticAttributes.forEach((element: any) => {
+            if (element.attribute_type === 3) {
+                let obj = {
+                    productAttributes: <AttributeMappingMethod row={element} baseAttribute={attr}
+                    />
+                }
+                tempArr.push(obj)
+            } else if (element.attribute_type === 2) {
+                let obj = {
+                    variationAttributes: <AttributeMappingMethod row={element} baseAttribute={variant_attr} />
+                }
+                tempArr.push(obj)
+            }
+        });
+        setSelectAttribute(tempArr)
+
     }
+    console.log("MY PAYLOAD", myPayload)
     return (
-        <div>
+        <Card primaryAction={{
+            content: 'Save and Next',
+            type: 'Primary',
+            icon: <ArrowRight size={"18"} />,
+            iconAlign: "right",
+            onClick() {
+            },
+        }} title={" "} action={<Button type='Outlined' icon={<FileText size={18} />}>Help</Button>}>
             <FlexLayout halign='center' direction='vertical'>
                 <FlexLayout spacing='loose' direction='vertical'>
                     <FlexLayout spacing='extraLoose' halign='fill'>
@@ -58,12 +129,21 @@ function MappingTemplate() {
                             </FlexLayout>
                         </FlexChild>
                         <FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
-                            <Select
-                                onChange={(event: any, id: any) => handleSelectCategory(event, id.category_id)}
-                                onblur={function noRefCheck() { }}
-                                options={listingCategroy}
-                                value={chooseCategory.value}
-                            />
+                            <FlexLayout spacing='tight' direction='vertical'>
+                                <Select
+                                    onChange={(event: any, id: any) => handleSelectCategory(event, id.category_id)}
+                                    onblur={function noRefCheck() { }}
+                                    options={listingCategroy}
+                                    value={chooseCategory.value}
+                                    searchEable
+                                />
+                                {
+                                    selectValue !== "" ? <Tag destroy={() => { }}>
+                                        {selectValue}
+                                    </Tag> : null
+                                }
+                            </FlexLayout>
+
                         </FlexChild>
                     </FlexLayout>
 
@@ -93,35 +173,74 @@ function MappingTemplate() {
                                     boxed
                                     icon
                                     iconAlign="left"
-                                    onClick={function noRefCheck() { }}
+                                    onClick={() => {
+                                        setAccordions({
+                                            ...accordions,
+                                            product: !product
+                                        })
+                                    }}
                                     title="Product Attributes"
-                                    active={true}
+                                    active={product}
                                 >
-                                    <FlexChild>
-                                        <FlexLayout>
-                                            <FlexChild desktopWidth='25' tabWidth='25'>
+                                    <FlexLayout direction='vertical'>
+                                        <FlexChild>
+                                            <FlexLayout halign='fill'>
+                                                <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+                                                    <>
+                                                        <TextStyles fontweight='bold'>TikTok Shop Attributes</TextStyles>
+                                                    </>
+                                                </FlexChild>
+                                                <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+                                                    <TextStyles fontweight='bold'>Mapping Attributes</TextStyles>
+                                                </FlexChild>
+                                            </FlexLayout>
+                                        </FlexChild>
+                                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                            {selectAttribute.map((val: any, index: number) => (
                                                 <>
-                                                    <TextStyles>Michaels</TextStyles>
-                                                    <TextStyles>Attributes</TextStyles>
+                                                    {val.productAttributes}
+                                                    <br></br>
                                                 </>
-                                            </FlexChild>
-                                            <FlexChild desktopWidth='75' tabWidth='75'>
-                                                <TextStyles>Shopify Attributes</TextStyles>
-                                            </FlexChild>
-                                        </FlexLayout>
-                                    </FlexChild>
-                                    <AttributeSelect />
+                                            ))}
+                                        </FlexChild>
+                                    </FlexLayout>
                                 </Accordion>
                                 <Accordion
                                     boxed
                                     icon
                                     iconAlign="left"
-                                    onClick={function noRefCheck() { }}
+                                    onClick={() => {
+                                        setAccordions({
+                                            ...accordions,
+                                            variation: !variation
+                                        })
+                                    }}
                                     title="Variation Attributes"
+                                    active={variation}
                                 >
-                                    <TextStyles textcolor="light">
-                                        1 Tenetur ullam rerum ad iusto possimus sequi mollitia dolore sunt quam praesentium. Tenetur ullam rerum ad iusto possimus sequi mollitia dolore sunt quam praesentium.Tenetur ullam rerum ad iusto possimus sequi mollitia dolore sunt quam praesentium.
-                                    </TextStyles>
+                                    <FlexLayout direction='vertical'>
+                                        <FlexChild>
+                                            <FlexLayout halign='fill'>
+                                                <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+                                                    <>
+                                                        <TextStyles fontweight='bold'>TikTok Shop Attributes</TextStyles>
+                                                    </>
+                                                </FlexChild>
+                                                <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
+                                                    <TextStyles fontweight='bold'>Mapping Attributes</TextStyles>
+                                                </FlexChild>
+                                            </FlexLayout>
+                                        </FlexChild>
+                                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                            <FlexLayout spacing='extraTight' direction='vertical'>
+                                                {selectAttribute.map((val: any, index: number) => (
+                                                    <>
+                                                        {val.variationAttributes}
+                                                    </>
+                                                ))}
+                                            </FlexLayout>
+                                        </FlexChild>
+                                    </FlexLayout>
                                 </Accordion>
                             </FlexLayout>
                         </FlexChild>
@@ -204,7 +323,7 @@ function MappingTemplate() {
                     </FlexLayout>
                 </FlexLayout>
             </FlexLayout>
-        </div>
+        </Card>
     )
 }
 

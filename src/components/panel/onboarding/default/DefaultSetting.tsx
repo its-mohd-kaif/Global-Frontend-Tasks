@@ -1,8 +1,18 @@
-import { FlexChild, FlexLayout, Select, Switcher, TextStyles } from '@cedcommerce/ounce-ui'
+import { Card, FlexChild, FlexLayout, Select, Switcher, TextStyles } from '@cedcommerce/ounce-ui'
 import React from 'react'
+import { ArrowRight } from "react-feather"
 function DefaultSetting() {
     return (
-        <div>
+        <Card
+            title={"Default Configuration"}
+            subTitle={"Set default configuration settings to upload product(s) on Michaels Shop"}
+            primaryAction={{
+                content: 'Save',
+                type: 'Primary',
+                icon: <ArrowRight size={"18"} />,
+                iconAlign: "right",
+            }}
+        >
             <FlexLayout halign='center' direction='vertical'>
                 <FlexLayout spacing='mediumLoose' direction='vertical' >
                     <Select
@@ -57,7 +67,7 @@ function DefaultSetting() {
                     </FlexLayout>
                 </FlexLayout>
             </FlexLayout>
-        </div>
+        </Card>
     )
 }
 
