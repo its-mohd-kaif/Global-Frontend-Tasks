@@ -53,7 +53,6 @@ function Panel() {
                 }
             })
     }
-    console.log("redux", reduxState)
     useEffect(() => {
         if (reduxState.stepCompletedState.data !== undefined) {
             if (reduxState.stepCompletedState.data < 3) {
