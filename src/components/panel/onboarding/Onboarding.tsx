@@ -18,7 +18,7 @@ function Onboarding() {
             .then((res: any) => {
                 if (res.success === true) {
                     console.log("getStepCompleted", res)
-                    setStepper(2)
+                    setStepper(res.data)
                     setLoader(false)
                 }
             })
@@ -59,11 +59,12 @@ function Onboarding() {
                             stepper === 0 ?
                                 <SoucreConnect />
                                 : stepper === 1 ?
-                                    <TargetConnection />
+                                    // <TargetConnection />
+                                    <MappingTemplate />
                                     : stepper === 2 ?
-                                        <MappingTemplate />
-                                        : stepper === 3 ?
-                                            <DefaultSetting /> : <Navigate to={"/prepareOnboarding"} />
+                                        <DefaultSetting />
+                                        // : stepper === 3 ?
+                                            : <Navigate to={"/prepareOnboarding"} />
                         }
                     </div>
                 </div>

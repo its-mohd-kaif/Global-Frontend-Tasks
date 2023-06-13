@@ -9,6 +9,7 @@ const initialState = {
     },
     stepCompletedState: {},
     connectorGetAllState: {},
+    attributes_mapping: {},
 };
 
 const reduxSlice = createSlice({
@@ -39,12 +40,18 @@ const reduxSlice = createSlice({
                 ...state.connectorGetAllState,
                 ...action.payload
             }
-        }
+        },
+        attributesMappingMethod: (state, action) => {
+            state.attributes_mapping = {
+                ...state.attributes_mapping,
+                ...action.payload
+            }
+        },
 
     },
 });
 // Export Actions
-export const { userId, showToast, hideToast, stepCompleted, connectorGetMethod } =
+export const { userId, showToast, hideToast, stepCompleted, connectorGetMethod, attributesMappingMethod } =
     reduxSlice.actions;
 
 export default reduxSlice.reducer;
