@@ -84,7 +84,7 @@ function Login() {
         // For Now Pass Static 1
         // But In Real Case Pass data+1
         let payload = {
-            step: 1
+            step: data + 1
         }
         callApi("POST", "tiktokhome/frontend/stepCompleted", payload)
             .then((res: any) => {
@@ -112,7 +112,7 @@ function Login() {
                 ...error,
                 passwordError: true
             })
-        } 
+        }
         // else if (reCAPTCHA === null) {
         //     setError({
         //         ...error,

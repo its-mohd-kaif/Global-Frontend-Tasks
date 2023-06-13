@@ -24,7 +24,7 @@ export function callApi<Data>(method: string, endPoint: string, payload = {} as 
     if (extraHeaders !== "") {
         headers = new Headers({
             Authorization: `Bearer ${token}`,
-            "Ced-Source-Id": "440",
+            "Ced-Source-Id": "241",
             "Ced-Source-Name": "shopify",
             "Ced-Target-Id": "313",
             "Ced-Target-Name": "tiktok",

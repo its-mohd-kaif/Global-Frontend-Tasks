@@ -4,15 +4,100 @@ import React, { useEffect, useState } from 'react'
 import GrayCheckSvg from '../../../../assets/images/svg/GrayCheckSvg'
 import GreenCheckSvg from '../../../../assets/images/svg/GreenCheckSvg'
 import { RefreshCcw } from "react-feather"
+import { useDispatch, useSelector } from 'react-redux'
+import { attributesMappingMethod } from '../../../../redux/ReduxSlice'
+/**
+ * This Component will help me to achive to nested render when getAttributes api call
+ * @param props in props we pass two object
+ * row: every element
+ * baseAttribute: when values key is undefined in element when we use baseAttribute
+ *  its comes from getAttributeOptions call
+ * @returns its return every element of UI based on api response data
+ */
 
 function AttributeMappingMethod(props: any) {
     const { row, baseAttribute } = props;
+    // that redux state will help me to create nested object keys for sending payload 
+    let reduxState = useSelector((redux: any) => redux.redux.attributes_mapping)
     const [value, setValue] = useState<any | any[]>(row.is_multiselect === true ? [] : "");
     const [choiceListArr, setChoiceListArr] = useState<any>([]);
     const [selectArr, setSelectArr] = useState<any>([]);
     const [optionTitle, setOptionTitle] = useState<any>([]);
     const [options, setOptions] = useState<any>([]);
-    const [selectOptionTitle, setSelectOptionTitle] = useState<string>("0")
+    const [selectOptionTitle, setSelectOptionTitle] = useState<string>("0");
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (row.attribute_type === 3) {
+            let obj = {
+                [row.id]: {
+                    customSelectValuesLength: row.is_multiselect === true || valuePresent() === false ? value.length : 0,
+                    displayName: row.name,
+                    id: row.id,
+                    required: row.required,
+                    type: row.input_type === "select" || row.is_multiselect
+                        ? "predefined"
+                        : "fixed",
+                    value: value
+                }
+            };
+            dispatch(attributesMappingMethod(obj))
+        } else {
+            let obj = {
+                [row.name]: {
+                    displayName: row.name,
+                    id: row.id,
+                    required: row.required,
+                    type: row.input_type === "select" || row.is_multiselect
+                        ? "predefined"
+                        : "fixed",
+                    value: value
+                }
+            };
+            dispatch(attributesMappingMethod(obj))
+        }
+    }, [])
+
+    useEffect(() => {
+        ChangeValueRedux()
+    }, [value])
+
+    const ChangeValueRedux = () => {
+        if (row.attribute_type === 3) {
+            if (reduxState[row.id]?.id !== undefined) {
+                let valueArr = Object.values(reduxState[row.id])
+                if (valueArr.includes(row.id)) {
+                    if (Object.values(reduxState).some((obj: any) => obj.id === row.id)) {
+                        reduxState = {
+                            ...reduxState,
+                            [row.id]: {
+                                ...reduxState[row.id],
+                                value: value === undefined ? "" : value
+                            }
+                        }
+                        dispatch(attributesMappingMethod(reduxState))
+                    }
+                }
+            }
+        } else {
+            if (reduxState[row.name]?.displayName !== undefined) {
+                let valueArr = Object.values(reduxState[row.name])
+                if (valueArr.includes(row.name)) {
+                    if (Object.values(reduxState).some((obj: any) => obj.displayName === row.name)) {
+                        reduxState = {
+                            ...reduxState,
+                            [row.name]: {
+                                ...reduxState[row.name],
+                                value: value === undefined ? "" : value
+                            }
+                        }
+                        dispatch(attributesMappingMethod(reduxState))
+                    }
+                }
+            }
+        }
+    }
+
     useEffect(() => {
         if (row.required === false) {
             setOptionTitle(
