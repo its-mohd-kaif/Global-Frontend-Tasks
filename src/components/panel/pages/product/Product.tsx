@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { FileText, ChevronDown, Filter } from "react-feather"
 import { ProductData } from "./ProductData";
 import productFallbackImg from "../../../../assets/images/png/productFallBack.png"
-import { ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
+import { GetRange, ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
+import { callApi } from '../../../../core/ApiMethods';
 interface paginationObj {
     activePage: number
     countPerPage: number
@@ -21,7 +22,8 @@ function Product() {
     })
     const [allData, setAllData] = useState<any>([])
     const [bulkModal, setBulkModal] = useState<boolean>(false)
-    const [openExtraColumn, setOpenExtraColumn] = useState<boolean>(false)
+    const [openExtraColumn, setOpenExtraColumn] = useState<boolean>(false);
+    const [totalProducts, setTotalProducts] = useState<number>(0)
     const columns = [
         {
             align: 'left',
@@ -62,13 +64,6 @@ function Product() {
         },
         {
             align: 'left',
-            dataIndex: 'activity',
-            key: 'activity',
-            title: 'Activity',
-            width: 150
-        },
-        {
-            align: 'left',
             fixed: 'right',
             dataIndex: 'actions',
             key: 'actions',
@@ -77,34 +72,46 @@ function Product() {
         }
     ]
     const { activePage, countPerPage, start, end } = pagination;
+
     useEffect(() => {
-        const dataRes = ProductData.data.rows
-        setAllData(dataRes)
-        console.log(dataRes)
-        let tempArr: any = []
-        dataRes.forEach((element: any) => {
-            let obj = {
-                id: element._id,
-                title: ProductsTitle(element.title, element.sku),
-                image: < Image
-                    fit="cover"
-                    height={60}
-                    radius="corner-radius"
-                    src={element.main_image !== "" ? element.main_image : productFallbackImg}
-                    width={60}
-                />,
-                price: `$${element.price}`,
-                quantity: `${element.quantity} in Stock`,
-                status: <ProductsStatus status={element.source_status} />,
-                activity: <TextStyles utility='product-activity' textcolor='light'>No Ongoing Activity</TextStyles>,
-                actions: <ProductsActions id={element._id} />,
-                key: Math.random() * 91919191
-            }
-            tempArr.push(obj)
-        })
-        setAllData(tempArr)
-        setProducts(tempArr.slice(start, end))
+        callApi("GET", "connector/product/getRefineProductCount?activePage=1&count=10", {}, "extraHeaders")
+            .then((res: any) => {
+                if (res.success === true) {
+                    setTotalProducts(res.data.count)
+                    callApi("GET", "connector/product/getRefineProducts?activePage=1&count=10", {}, "extraHeaders")
+                        .then((res: any) => {
+                            console.log("getRefineProduct", res.data.rows)
+                            const dataRes = res.data.rows
+                            setAllData(dataRes)
+                            let tempArr: any = []
+                            dataRes.forEach((element: any) => {
+                                let obj = {
+                                    id: element._id,
+                                    title: ProductsTitle(element.items),
+                                    image: < Image
+                                        fit="cover"
+                                        height={60}
+                                        radius="corner-radius"
+                                        src={element.main_image !== "" ? element.main_image : productFallbackImg}
+                                        width={60}
+                                    />,
+                                    price: element.items.length === 1 && element.items[0].hasOwnProperty("price") === false ? "N/A"
+                                        : GetRange(element.items, "price"),
+                                    quantity: element.items.length === 1 && element.items[0].hasOwnProperty("quantity") === false ? "N/A"
+                                    : GetRange(element.items, "quantity"),
+                                    status: <ProductsStatus status={element.source_status} />,
+                                    actions: <ProductsActions id={element._id} />,
+                                    key: Math.random() * 91919191
+                                }
+                                tempArr.push(obj)
+                            })
+                            setAllData(tempArr)
+                            setProducts(tempArr.slice(start, end))
+                        })
+                }
+            })
     }, [start, end])
+
     /**
     * on count change pagination handler
     * @param val user select from grid 
@@ -529,7 +536,7 @@ function Product() {
                                                 onEnter={(e: any) => onEnterChange(e)}
                                                 onNext={nextPageHandler}
                                                 onPrevious={prevPageHandler}
-                                                totalitem={allData.length}
+                                                totalitem={totalProducts}
                                                 optionPerPage={[
                                                     {
                                                         label: '5',

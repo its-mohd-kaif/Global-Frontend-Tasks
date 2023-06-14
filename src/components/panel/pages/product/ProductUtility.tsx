@@ -20,21 +20,47 @@ export const ProductGridTitle = (_props: any) => {
     </>
 }
 
-export const ProductsTitle = (title: any, sku: any) => {
+export const ProductsTitle = (items: any) => {
     return <>
         <FlexLayout direction="vertical">
             <FlexChild>
-                <TextLink label={title} />
+                <TextLink label={items[0].title} />
             </FlexChild>
             <FlexChild>
                 <FlexLayout>
-                    <TextStyles fontweight="bold">SKU:</TextStyles>
-                    <TextStyles>{sku}</TextStyles>
+                    <TextStyles fontweight="bold">SKU:&nbsp;</TextStyles>
+                    <TextStyles>{items[0].sku}</TextStyles>
                 </FlexLayout>
             </FlexChild>
         </FlexLayout>
     </>
 }
+
+export const GetRange = (items: any, property: string) => {
+    console.log("items", items)
+    if (items.length === 1) {
+        return <>
+            {property === "price" ?
+                <TextStyles>INR {items[0].price}</TextStyles>
+                : <TextStyles>{items[0].quantity}</TextStyles>}
+
+        </>
+    } else {
+        const validItems = items.filter((item: any) => {
+            return typeof item.price === 'number' && typeof item.quantity === 'number';
+        });
+        const min = Math.min(...validItems.map((item: any) => item[property]));
+        const max = Math.max(...validItems.map((item: any) => item[property]));
+        if (property === 'price') {
+            const formattedMin = `INR ${min.toFixed(2)}`;
+            const formattedMax = `INR ${max.toFixed(2)}`;
+            return `${formattedMin} - ${formattedMax}`;
+        } else if (property === 'quantity') {
+            return `${min} - ${max}`;
+        }
+    }
+}
+
 
 export const ProductsActions = (_props: any) => {
     const [openActions, setOpenActions] = useState<boolean>(false)
