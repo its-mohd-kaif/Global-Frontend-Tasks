@@ -30,8 +30,15 @@ import React, { useEffect, useState } from 'react'
 import carouselImg from "../../../../assets/images/png/carousel.png"
 import { useNavigate } from "react-router-dom";
 import { AccordionData } from "./DashboardUtility";
+import { callApi } from "../../../../core/ApiMethods";
 function Dashboard() {
     const navigate = useNavigate()
+
+    useEffect(() => {
+        callApi("POST", "tiktokhome/frontend/orderStatus", "", "extraHeaders")
+            .then((res) => console.log("orderStatus", res))
+    }, [])
+
     const productStatus = [
         {
             title: "Finished",
@@ -94,7 +101,6 @@ function Dashboard() {
             setMultiacor([...multiaccor, false])
         }
         const urlParams = window.location.pathname
-        console.log("MY PARAMS", urlParams.split("/")[2])
     }, [])
     const [open, setOpen] = useState<boolean>(false);
     const carouselData = [
