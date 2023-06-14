@@ -1,12 +1,13 @@
 import { FlexLayout, Progressbar, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import BigGreenCheck from '../../../assets/images/svg/BigGreenCheck';
 import "./PrepareDashboard.css"
 function PrepareDashboard() {
     const [percentage, setPercentage] = useState<number>(0);
     const navigate = useNavigate();
-
+    const user_id = useSelector((redux: any) => redux.redux.user_id)
     useEffect(() => {
         let cal = setInterval(() => {
             setPercentage((val) => val + 1.5625)
@@ -20,7 +21,7 @@ function PrepareDashboard() {
      */
     useEffect(() => {
         if (percentage === 100) {
-            navigate(`/panel/dashboard`)
+            navigate(`/panel/${user_id}/dashboard`)
         }
     }, [percentage])
     return (

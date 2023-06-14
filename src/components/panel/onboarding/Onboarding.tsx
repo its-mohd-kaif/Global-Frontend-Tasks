@@ -17,7 +17,7 @@ function Onboarding() {
         callApi("POST", "tiktokhome/frontend/getStepCompleted")
             .then((res: any) => {
                 if (res.success === true) {
-                    console.log("getStepCompleted", res)
+                    console.log("getStepCompleted Onboarding", res)
                     setStepper(res.data)
                     setLoader(false)
                 }
@@ -44,9 +44,6 @@ function Onboarding() {
                                 title: 'Connect Your Account'
                             },
                             {
-                                title: 'Connect TikTok Shop'
-                            },
-                            {
                                 title: 'Mapping'
                             },
                             {
@@ -63,8 +60,9 @@ function Onboarding() {
                                     <MappingTemplate />
                                     : stepper === 2 ?
                                         <DefaultSetting />
-                                        // : stepper === 3 ?
-                                            : <Navigate to={"/prepareOnboarding"} />
+                                        : stepper === 3 ?
+                                            <Navigate to={"/prepareOnboarding"} />
+                                            : null
                         }
                     </div>
                 </div>

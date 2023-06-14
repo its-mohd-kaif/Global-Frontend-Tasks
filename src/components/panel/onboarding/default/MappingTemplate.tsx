@@ -149,9 +149,10 @@ function MappingTemplate() {
                                 }
                                 callApi("POST", "tiktokhome/frontend/stepCompleted", payload)
                                     .then((res: any) => {
-                                        console.log("stepCompleted", res)
+                                        console.log("stepCompleted*", res)
                                         if (res.success === true) {
-                                            // navigate(`/panel/${user_id}/onboarding`)
+                                            // navigate(`/panel/${user_id}/dashboard`)
+                                            window.location.reload();
                                         }
                                     })
                             }
