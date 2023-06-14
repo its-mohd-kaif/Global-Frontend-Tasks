@@ -55,13 +55,13 @@ function Panel() {
     }
     useEffect(() => {
         if (reduxState.stepCompletedState.data !== undefined) {
-            if (reduxState.stepCompletedState.data <= 2) {
+            if (reduxState.stepCompletedState.data < 4) {
                 navigate(`/panel/${reduxState.user_id}/onboarding`)
             }
         }
     }, [reduxState])
     if (reduxState.stepCompletedState.data !== undefined) {
-        if (reduxState.stepCompletedState.data <= 2) {
+        if (reduxState.stepCompletedState.data < 4) {
             return (
                 <>
                     <Routes>
@@ -69,7 +69,7 @@ function Panel() {
                     </Routes>
                 </>
             )
-        } else if (reduxState.stepCompletedState.data >= 3) {
+        } else if (reduxState.stepCompletedState.data >= 4) {
             return (
                 <>
                     <TopbarPanel />

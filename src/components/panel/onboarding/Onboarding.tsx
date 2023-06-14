@@ -60,9 +60,10 @@ function Onboarding() {
                                     <MappingTemplate />
                                     : stepper === 2 ?
                                         <DefaultSetting />
-                                        : stepper === 3 ?
+                                        :
+                                        // : stepper === 3 ?
                                             <Navigate to={"/prepareOnboarding"} />
-                                            : null
+                                            // : null
                         }
                     </div>
                 </div>

@@ -49,33 +49,30 @@
   border-radius: 100%;
 }
 
-.Finished {
+.live,.COMPLETED {
   background-color: #ecfbed;
 }
 
-.Error {
+.failed {
   background-color: #ffebea;
 }
 
-.Warning {
-  background-color: #fffaec;
-}
-
-.Imported {
+.inactive {
   background-color: #f1ecfd;
 }
 
-.Pending {
-  background-color: #e0e1e3;
+.not_uploaded,.AWAITING_SHIPMENT {
+  background-color: #fffaec;
+}
+/* ---- */
+.AWAITING_COLLECTION {
+  background-color: #FFEFE1;
 }
 
-.Cancelled {
-  background-color: #ffebea;
+.CANCELLED {
+  background-color: #F0F4FF;
 }
 
-.Refunded {
-  background-color: #f0f4ff;
-}
 
 /* Link Text CSS */
 .link .inte-TextLink--Label {
@@ -136,11 +133,11 @@
   color: #4e4f52;
 }
 
-.action-button{
-  padding-left: 7px!important;
+.action-button {
+  padding-left: 7px !important;
   padding-right: 7px !important;
 }
 
-.action-delete-btn{
+.action-delete-btn {
   padding: 4px 12px !important;
 }

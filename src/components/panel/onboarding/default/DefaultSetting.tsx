@@ -93,7 +93,7 @@ function DefaultSetting() {
                             if (res.success === true) {
                                 console.log("getStepCompleted", res)
                                 let payload1 = {
-                                    step: 3
+                                    step: 4
                                 }
                                 callApi("POST", "tiktokhome/frontend/stepCompleted", payload1)
                                     .then((res: any) => {
