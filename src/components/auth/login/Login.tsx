@@ -126,7 +126,8 @@ function Login() {
             })
             // Make a payload for api
             const payload = {
-                email: email,
+                // email: email,
+                username: "Testing Team #1",
                 password: password
             }
             callApi("POST", "user/login", payload)
