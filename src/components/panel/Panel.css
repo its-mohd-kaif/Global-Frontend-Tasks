@@ -49,7 +49,8 @@
   border-radius: 100%;
 }
 
-.live,.COMPLETED {
+.live,
+.COMPLETED {
   background-color: #ecfbed;
 }
 
@@ -61,18 +62,18 @@
   background-color: #f1ecfd;
 }
 
-.not_uploaded,.AWAITING_SHIPMENT {
+.not_uploaded,
+.AWAITING_SHIPMENT {
   background-color: #fffaec;
 }
 /* ---- */
 .AWAITING_COLLECTION {
-  background-color: #FFEFE1;
+  background-color: #ffefe1;
 }
 
 .CANCELLED {
-  background-color: #F0F4FF;
+  background-color: #f0f4ff;
 }
-
 
 /* Link Text CSS */
 .link .inte-TextLink--Label {
@@ -125,6 +126,11 @@
 }
 .down-arrow {
   cursor: pointer;
+}
+.errorAlertTriangle {
+  padding: 7px !important;
+  background-color: transparent !important;
+  text-decoration: underline;
 }
 
 /* ----- Category Template---- */
