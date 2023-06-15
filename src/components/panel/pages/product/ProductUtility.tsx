@@ -37,7 +37,6 @@ export const ProductsTitle = (items: any) => {
 }
 
 export const GetRange = (items: any, property: string) => {
-    console.log("items", items)
     if (items.length === 1) {
         return <>
             {property === "price" ?
@@ -54,9 +53,15 @@ export const GetRange = (items: any, property: string) => {
         if (property === 'price') {
             const formattedMin = `INR ${min.toFixed(2)}`;
             const formattedMax = `INR ${max.toFixed(2)}`;
-            return `${formattedMin} - ${formattedMax}`;
+            if (formattedMin === formattedMax) {
+                return formattedMin
+            } else
+                return `${formattedMin} - ${formattedMax}`;
         } else if (property === 'quantity') {
-            return `${min} - ${max}`;
+            if (min === max) {
+                return min
+            } else
+                return `${min} - ${max}`;
         }
     }
 }
@@ -88,106 +93,143 @@ export const ProductsActions = (_props: any) => {
 }
 
 export const ProductsStatus = (_props: any) => {
-    const [open, setOpen] = useState<boolean>(false)
-    const [accordion, setAccordion] = useState<boolean>(false);
     const { status } = _props
-    if (status === "live") {
-        return (
-            <Badge
-                position="bottom"
-                size="small"
-                type="Positive-300"
-                customTextColor="white"
-            >
-                Live
-            </Badge>
-        )
-    } else if (status === "error") {
-        return (
-            <>
-                <Button customClass="error-product-btn" onClick={() => {
-                    setOpen(!open)
-                }} icon={<AlertTriangle
-                    size={15} color='red' />} type="DangerPlain">
-                    Errors
-                </Button>
-                <Modal
-                    close={() => {
-                        setOpen(!open)
-                    }}
-                    heading="Errors"
-                    modalSize="small"
-                    open={open}>
-                    <Card cardType="Subdued">
-                        <FlexLayout direction="vertical" spacing="tight">
-                            <Card>
-                                <FlexLayout direction="vertical" spacing="mediumTight">
-                                    <FlexChild>
-                                        <>
-                                            <FlexLayout valign="center" spacing="tight">
-                                                <AlertTriangle size={17} color='red' />
-                                                <TextStyles fontweight="extraBolder">Product Error</TextStyles>
-                                            </FlexLayout>
-                                            <div style={{ marginLeft: "28px" }}>
-                                                <TextStyles>
-                                                    Error description dolor sit amet, consectetur adipiscing elit. Dui placerat
-                                                    commodo purus proin cras malesuada amet. Faucibus odio id sit varius eleifend.
-                                                </TextStyles>
-                                            </div>
-                                        </>
-                                    </FlexChild>
-                                    <FlexChild>
-                                        <>
-                                            <Accordion
-                                                active={accordion}
-                                                boxed
-                                                icon
-                                                iconAlign="left"
-                                                onClick={() => setAccordion(!accordion)}
-                                                title="Resolutions"
-                                            >
-                                                <TextStyles textcolor="light">
-                                                    Error description dolor sit amet, consectetur adipiscing elit. Dui placerat
-                                                    commodo purus proin cras malesuada amet. Faucibus odio id sit varius eleifend.
-                                                </TextStyles>
-                                            </Accordion>
-                                        </>
-                                    </FlexChild>
-                                </FlexLayout>
-
-                            </Card>
-
+    const [errorModal, setErrorModal] = useState<boolean>(false)
+    if (!status) {
+        return null; // Return null if status is undefined or null
+    } else {
+        if (
+            (status.target_marketplace === "tiktok" &&
+                status.tiktok_status === "live" &&
+                status.status === "live") || (
+                status.target_marketplace === "tiktok" &&
+                status.tiktok_status === "live" &&
+                status.status === "failed"
+            )
+        ) {
+            return (
+                <>
+                    <FlexLayout spacing="extraTight">
+                        <TextStyles>
+                            TTS :
+                        </TextStyles>
+                        <Badge
+                            position="bottom"
+                            size="small"
+                            type="Positive-100"
+                        >
+                            Live
+                        </Badge>
+                    </FlexLayout>
+                </>
+            )
+        }
+        else if (
+            status.target_marketplace === "tiktok" &&
+            !status.hasOwnProperty("tiktok_status") &&
+            status.status === "failed"
+        ) {
+            return (
+                <>
+                    <FlexLayout spacing="extraTight" direction="vertical">
+                        <FlexChild>
+                            <FlexLayout spacing="extraTight">
+                                <TextStyles>
+                                    TTS :
+                                </TextStyles>
+                                <Badge
+                                    position="bottom"
+                                    size="small"
+                                    type="Warning-100"
+                                >
+                                    Not Uploaded
+                                </Badge>
+                            </FlexLayout>
+                        </FlexChild>
+                        <FlexChild>
+                            <FlexLayout valign="center" spacing="extraTight">
+                                <TextStyles>
+                                    Error:
+                                </TextStyles>
+                                <FlexChild>
+                                    <Button
+                                        onClick={() => {
+                                            setErrorModal(!errorModal)
+                                        }}
+                                        customClass="errorAlertTriangle" icon={<AlertTriangle size={17} color="#D92D20" />} type="DangerPlain">Failed</Button>
+                                </FlexChild>
+                            </FlexLayout>
+                        </FlexChild>
+                    </FlexLayout>
+                    <Modal
+                        close={() => {
+                            setErrorModal(!errorModal)
+                        }}
+                        heading="Error Type : Failed"
+                        modalSize="small"
+                        open={errorModal} >
+                        <FlexLayout spacing="loose" direction="vertical">
+                            {status?.error_data?.messages.map((val: any, index: number) => (
+                                <Card cardType="Subdued" key={index}>
+                                    <FlexLayout spacing="loose">
+                                        <AlertTriangle size={17} color="#D92D20" />
+                                        <TextStyles content={val} />
+                                    </FlexLayout>
+                                </Card>
+                            ))}
                         </FlexLayout>
-                    </Card>
 
-                </Modal>
-            </>
-        )
-    } else if (status === "pending") {
-        return (
-            <Badge
-                position="bottom"
-                size="small"
-                type="Negative-200"
-                customTextColor="white"
-            >
-                Pending
-            </Badge>
-        )
-
-    } else if (status === "not_upload") {
-        return (
-            <Badge
-                position="bottom"
-                size="small"
-                type="Warning-100"
-                customTextColor="black"
-            >
-                Not Upload
-            </Badge>
-        )
+                    </Modal>
+                </>
+            );
+        }
+        else if (
+            status.target_marketplace === "tiktok" &&
+            !status.hasOwnProperty("tiktok_status") &&
+            !status.hasOwnProperty("status")
+        ) {
+            return (<>
+                <FlexLayout spacing="extraTight">
+                    <TextStyles>
+                        TTS :
+                    </TextStyles>
+                    <Badge
+                        position="bottom"
+                        size="small"
+                        type="Warning-100"
+                    >
+                        Not Uploaded
+                    </Badge>
+                </FlexLayout>
+            </>)
+        }
+        else if (
+            status.target_marketplace === "tiktok" &&
+            status.tiktok_status === "inactive" &&
+            status.status === "inactive"
+        ) {
+            return (<>
+                <FlexLayout spacing="extraTight">
+                    <TextStyles>
+                        TTS :
+                    </TextStyles>
+                    <Badge
+                        position="bottom"
+                        size="small"
+                        type="Neutral-300"
+                    >
+                        Inactive
+                    </Badge>
+                </FlexLayout>
+            </>)
+        }
     }
-    return (
-        <></>
-    )
+    return <>
+
+    </>
+}
+
+export const ExpandableGrid = (_props: any) => {
+    return <>
+    </>
 }

@@ -1,33 +1,26 @@
 import { ActionList, AdvanceFilter, Alert, AutoComplete, Button, Card, CheckBox, FlexChild, FlexLayout, FormElement, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText, ChevronDown, Filter } from "react-feather"
-import { ProductData } from "./ProductData";
 import productFallbackImg from "../../../../assets/images/png/productFallBack.png"
-import { GetRange, ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
+import { ExpandableGrid, GetRange, ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
 import { callApi } from '../../../../core/ApiMethods';
 interface paginationObj {
     activePage: number
     countPerPage: number
-    start: number
-    end: number
 }
 function Product() {
-    // const [open, setOpen] = useState<boolean>(false)
     const [products, setProducts] = useState<any>([])
     const [pagination, setPagination] = useState<paginationObj>({
         activePage: 1,
         countPerPage: 5,
-        start: 0,
-        end: 5,
     })
-    const [allData, setAllData] = useState<any>([])
     const [bulkModal, setBulkModal] = useState<boolean>(false)
     const [openExtraColumn, setOpenExtraColumn] = useState<boolean>(false);
     const [totalProducts, setTotalProducts] = useState<number>(0)
+    const [expandedRows, setExpandedRows] = useState<any>([])
     const columns = [
         {
             align: 'left',
-            fixed: 'left',
             dataIndex: 'image',
             key: 'image',
             title: 'Image',
@@ -35,7 +28,6 @@ function Product() {
         },
         {
             align: 'left',
-            fixed: 'left',
             dataIndex: 'title',
             key: 'title',
             title: <ProductGridTitle title="Title" />,
@@ -68,88 +60,142 @@ function Product() {
             dataIndex: 'actions',
             key: 'actions',
             title: 'Actions',
+            width: 50
+        }
+    ]
+    const childColumns = [
+        {
+            align: 'left',
+            dataIndex: 'image',
+            key: 'image',
+            title: 'Image',
+            width: 60
+        },
+        {
+            align: 'left',
+            dataIndex: 'title',
+            key: 'title',
+            title: "Title",
+            width: 224
+        },
+        {
+            align: 'left',
+            dataIndex: 'price',
+            key: 'price',
+            title: "Price",
+            width: 124
+        },
+        {
+            align: 'left',
+            dataIndex: 'quantity',
+            key: 'quantity',
+            title: "Quantity",
+            width: 124
+        },
+        {
+            align: 'left',
+            dataIndex: 'status',
+            key: 'status',
+            title: 'Status',
             width: 60
         }
     ]
-    const { activePage, countPerPage, start, end } = pagination;
+    const { activePage, countPerPage, } = pagination;
 
     useEffect(() => {
         callApi("GET", "connector/product/getRefineProductCount?activePage=1&count=10", {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
                     setTotalProducts(res.data.count)
-                    callApi("GET", "connector/product/getRefineProducts?activePage=1&count=10", {}, "extraHeaders")
-                        .then((res: any) => {
-                            console.log("getRefineProduct", res.data.rows)
-                            const dataRes = res.data.rows
-                            setAllData(dataRes)
-                            let tempArr: any = []
-                            dataRes.forEach((element: any) => {
-                                let obj = {
-                                    id: element._id,
-                                    title: ProductsTitle(element.items),
-                                    image: < Image
-                                        fit="cover"
-                                        height={60}
-                                        radius="corner-radius"
-                                        src={element.main_image !== "" ? element.main_image : productFallbackImg}
-                                        width={60}
-                                    />,
-                                    price: element.items.length === 1 && element.items[0].hasOwnProperty("price") === false ? "N/A"
-                                        : GetRange(element.items, "price"),
-                                    quantity: element.items.length === 1 && element.items[0].hasOwnProperty("quantity") === false ? "N/A"
-                                    : GetRange(element.items, "quantity"),
-                                    status: <ProductsStatus status={element.source_status} />,
-                                    actions: <ProductsActions id={element._id} />,
-                                    key: Math.random() * 91919191
-                                }
-                                tempArr.push(obj)
-                            })
-                            setAllData(tempArr)
-                            setProducts(tempArr.slice(start, end))
-                        })
+
                 }
             })
-    }, [start, end])
+    }, [])
 
+
+    useEffect(() => {
+        getRefineProduct()
+    }, [pagination])
+
+    const getRefineProduct = () => {
+        callApi("GET", `connector/product/getRefineProducts?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeaders")
+            .then((res: any) => {
+                console.log("getRefineProduct", res.data.rows)
+                const dataRes = res.data.rows
+                let tempArr: any = []
+                dataRes.forEach((element: any) => {
+                    let obj = {
+                        id: element._id,
+                        title: ProductsTitle(element.items),
+                        image: < Image
+                            fit="cover"
+                            height={60}
+                            radius="corner-radius"
+                            src={element.main_image !== "" ? element.main_image : productFallbackImg}
+                            width={60}
+                        />,
+                        price: element.items.length === 1 && element.items[0].hasOwnProperty("price") === false ? "N/A"
+                            : GetRange(element.items, "price"),
+                        quantity: element.items.length === 1 && element.items[0].hasOwnProperty("quantity") === false ? "N/A"
+                            : GetRange(element.items, "quantity"),
+                        status: <ProductsStatus status={element.items[0]} />,
+                        actions: <ProductsActions id={element._id} />,
+                        key: Math.random() * 91919191,
+                        childrenRow: element.items.length > 1 ? makeChildrenData(element.items) : undefined
+                    }
+                    tempArr.push(obj)
+                })
+                setProducts(tempArr)
+            })
+    }
+
+    const makeChildrenData = (data: any) => {
+        let tempArr: any = []
+        data.slice(1).forEach((element: any) => {
+            let obj = {
+                title: element.title,
+                image: < Image
+                    fit="cover"
+                    height={60}
+                    radius="corner-radius"
+                    src={element.main_image !== "" ? element.main_image : productFallbackImg}
+                    width={60}
+                />,
+                price: `INR ${element.price}`,
+                quantity: element.quantity,
+                status: <ProductsStatus status={element} />,
+                key: Math.random() * 91919191,
+            }
+            tempArr.push(obj)
+        })
+        return tempArr
+    }
     /**
     * on count change pagination handler
     * @param val user select from grid 
     */
     const countChangeHandler = (val: any) => {
-        let newGrid = allData.slice(0, val)
         setPagination({
             ...pagination,
             countPerPage: val
         })
-        setProducts(newGrid)
     }
     /**
     * next page handler
     */
     const nextPageHandler = () => {
-
-        let start = countPerPage * activePage;
-        let end = countPerPage * activePage + countPerPage;
         setPagination({
             ...pagination,
             activePage: activePage + 1,
-            start: start,
-            end: end
         })
     }
     /**
     * prev page handler function
      */
     const prevPageHandler = () => {
-        //for delay active state value we more decrement value by one
-        let start = countPerPage * (activePage - 1) - countPerPage;
-        let end = countPerPage * (activePage - 1);
         setPagination({
             ...pagination,
             activePage: activePage - 1,
-            start: start,
-            end: end
         })
     }
     /**
@@ -157,13 +203,9 @@ function Product() {
    * @param val user press on grid
    */
     const onEnterChange = (val: number) => {
-        let start = countPerPage * val - countPerPage;
-        let end = countPerPage * val;
         setPagination({
             ...pagination,
             activePage: val,
-            start: start,
-            end: end
         })
     }
     return (
@@ -526,7 +568,38 @@ function Product() {
                                                 rowSelection={{
                                                     onChange: function noRefCheck() { }
                                                 }}
-                                                scrollX={970}
+                                                expandable={{
+                                                    showExpandColumn: true,
+                                                    rowExpandable: (record: any) => {
+                                                        return record['childrenRow'];
+                                                    },
+                                                    expandedRowKeys: [...expandedRows],
+                                                    expandedRowRender: (record: any) => {
+                                                        return (
+                                                            <Grid
+                                                                tableLayout="auto"
+                                                                size="middle"
+                                                                scrollX={1400}
+                                                                columns={childColumns}
+                                                                dataSource={record['childrenRow']}
+                                                            />
+                                                        );
+                                                    },
+                                                    onExpand: (expanded: any, record: any) => {
+                                                        if (expanded) {
+                                                            setExpandedRows([...expandedRows, record.key]);
+                                                        } else {
+                                                            const tempRows = [...expandedRows];
+                                                            tempRows.forEach((item, index) => {
+                                                                if (item === record.key) {
+                                                                    tempRows.splice(index, 1);
+                                                                }
+                                                            });
+                                                            setExpandedRows(tempRows);
+                                                        }
+                                                    },
+                                                }}
+                                                scrollX={1400}
                                             />
                                             <br></br>
                                             <Pagination
