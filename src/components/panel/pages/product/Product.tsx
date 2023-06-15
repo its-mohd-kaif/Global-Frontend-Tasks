@@ -4,9 +4,17 @@ import { FileText, ChevronDown, Filter } from "react-feather"
 import productFallbackImg from "../../../../assets/images/png/productFallBack.png"
 import { ExpandableGrid, GetRange, ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
 import { callApi } from '../../../../core/ApiMethods';
+import { useDispatch, useSelector } from 'react-redux';
+import { showToast } from '../../../../redux/ReduxSlice';
 interface paginationObj {
     activePage: number
     countPerPage: number
+}
+interface bulkStateObj {
+    chooseCategoryTemplate: string;
+    chooseTikTokWarehouse: string;
+    profile_id: string;
+    warehouse_id: string;
 }
 function Product() {
     const [products, setProducts] = useState<any>([])
@@ -17,7 +25,17 @@ function Product() {
     const [bulkModal, setBulkModal] = useState<boolean>(false)
     const [openExtraColumn, setOpenExtraColumn] = useState<boolean>(false);
     const [totalProducts, setTotalProducts] = useState<number>(0)
-    const [expandedRows, setExpandedRows] = useState<any>([])
+    const [expandedRows, setExpandedRows] = useState<any>([]);
+    const [bulkState, setBulkState] = useState<bulkStateObj>({
+        chooseCategoryTemplate: "",
+        profile_id: "",
+        chooseTikTokWarehouse: "",
+        warehouse_id: ""
+    })
+    const redux = useSelector((redux: any) => redux.redux.connectorGetAllState.data?.tiktok.installed[0].warehouses)
+    const dispatch = useDispatch()
+    const [categoryOptions, setCategoryOptions] = useState<any>([]);
+    const [warehouse, setWarehouse] = useState<any>([]);
     const columns = [
         {
             align: 'left',
@@ -101,6 +119,7 @@ function Product() {
         }
     ]
     const { activePage, countPerPage, } = pagination;
+    const { chooseCategoryTemplate, profile_id, chooseTikTokWarehouse, warehouse_id } = bulkState;
 
     useEffect(() => {
         callApi("GET", "connector/product/getRefineProductCount?activePage=1&count=10", {}, "extraHeaders")
@@ -110,6 +129,12 @@ function Product() {
 
                 }
             })
+        callApi("GET", "connector/profile/getProfileData?count=100", {}, "extraHeaders")
+            .then((res: any) => {
+                if (res.success === true) {
+                    makeCategoryOptions(res.data.rows)
+                }
+            })
     }, [])
 
 
@@ -117,10 +142,42 @@ function Product() {
         getRefineProduct()
     }, [pagination])
 
+    const makeTiktokWarehouseOptions = (data: any) => {
+        let tempArr: any = []
+        data.forEach((element: any) => {
+            let obj = {
+                label: element.warehouse_name,
+                value: element.warehouse_name,
+                id: element.warehouse_id,
+            }
+            tempArr.push(obj)
+        });
+        setWarehouse(tempArr)
+    }
+
+    const makeCategoryOptions = (data: any) => {
+        console.log("data", data)
+        let tempArr: any = []
+        data.forEach((element: any) => {
+            let count = 0
+            if (element?.product_count[0]?.count !== undefined) {
+                count = element.product_count[0].count
+            } else if (element?.total_count !== undefined) {
+                count = element.total_count
+            }
+            let obj = {
+                label: element.name,
+                value: count,
+                id: element._id.$oid
+            }
+            tempArr.push(obj)
+        });
+        setCategoryOptions(tempArr)
+    }
+
     const getRefineProduct = () => {
         callApi("GET", `connector/product/getRefineProducts?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeaders")
             .then((res: any) => {
-                console.log("getRefineProduct", res.data.rows)
                 const dataRes = res.data.rows
                 let tempArr: any = []
                 dataRes.forEach((element: any) => {
@@ -208,6 +265,49 @@ function Product() {
             activePage: val,
         })
     }
+
+    const bulkUploadHandler = () => {
+        console.log("state", bulkState);
+        let obj = {}
+        if (profile_id === "") {
+            obj = {
+                "source": "bigcommerce",
+                "target": "tiktok",
+                "warehouse_id": warehouse_id,
+                "create_notification": false,
+                "marketplace": "tiktok",
+                "filter": {
+                    "profile.profile_id": {
+                        "12": "0"
+                    }
+                }
+            }
+        } else {
+            obj = {
+                "source": "bigcommerce",
+                "target": "tiktok",
+                "warehouse_id": warehouse_id,
+                "create_notification": false,
+                "marketplace": "tiktok",
+                "profile_id": profile_id
+            }
+        }
+        callApi("POST", "connector/product/upload", obj, "extraHeaders")
+            .then((res: any) => {
+                console.log("upload", res)
+                if (res.success === true) {
+                    dispatch(showToast({
+                        type: "success",
+                        message: res.message
+                    }))
+                } else {
+                    dispatch(showToast({
+                        type: "error",
+                        message: res.message
+                    }))
+                }
+            })
+    }
     return (
         <>
             <PageHeader
@@ -246,6 +346,7 @@ function Product() {
                         />
                         <Button onClick={() => {
                             setBulkModal(!bulkModal)
+                            makeTiktokWarehouseOptions(redux)
                         }} type="Primary">Bulk Upload</Button>
                     </FlexLayout>
                 }
@@ -256,15 +357,76 @@ function Product() {
                     close={() => {
                         setBulkModal(!bulkModal)
                     }}
-                    heading="Upload Products"
-                    modalSize="small"
+                    heading="Select a category template to upload product(s) to TikTok Shop."
+                    modalSize="large"
                     primaryAction={{
-                        content: 'Upload Products',
+                        content: 'Upload',
                         loading: false,
-                        onClick: function noRefCheck() { }
+                        onClick: bulkUploadHandler,
+                        disable: chooseTikTokWarehouse !== "" ? false : true
                     }}
                     open={bulkModal}>
-                    Are you sure you want to upload selected products?
+                    <FlexLayout direction='vertical' spacing='extraLoose'>
+                        <FlexLayout spacing='loose' halign='fill'>
+                            <FlexChild desktopWidth='33' tabWidth='100' mobileWidth='100'>
+                                <FlexLayout spacing='extraTight'>
+                                    <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Category Template</TextStyles>
+                                </FlexLayout>
+                            </FlexChild>
+                            <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
+                                {categoryOptions.length === 0 ?
+                                    <TextStyles>
+                                        No Category Template(s) Found
+                                    </TextStyles>
+                                    :
+                                    <Select
+                                        onChange={(e, event: any) => {
+                                            setBulkState({
+                                                ...bulkState,
+                                                chooseCategoryTemplate: e,
+                                                profile_id: event.id
+                                            })
+                                        }}
+                                        onblur={function noRefCheck() { }}
+                                        options={categoryOptions}
+                                        value={chooseCategoryTemplate}
+                                        placeholder='Select'
+                                        searchEable
+                                        popoverContainer='element'
+                                    />
+                                }
+
+                            </FlexChild>
+                        </FlexLayout>
+                        <FlexLayout spacing='loose' halign='fill'>
+                            <FlexChild desktopWidth='33' tabWidth='100' mobileWidth='100'>
+                                <FlexLayout spacing='extraTight'>
+                                    <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>TikTok Shop Warehouse</TextStyles>
+                                    <TextStyles textcolor="negative">*</TextStyles>
+                                </FlexLayout>
+                            </FlexChild>
+                            <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
+                                <Select
+                                    onChange={(e, event: any) => {
+                                        setBulkState({
+                                            ...bulkState,
+                                            chooseTikTokWarehouse: e,
+                                            warehouse_id: event.id
+                                        })
+                                    }}
+                                    onblur={function noRefCheck() { }}
+                                    options={warehouse}
+                                    value={chooseTikTokWarehouse}
+                                    placeholder='Select'
+                                    searchEable
+                                    popoverContainer='element'
+                                />
+                            </FlexChild>
+                        </FlexLayout>
+                        <FlexChild>
+                            <TextStyles content={`Are you sure you want to upload  ${chooseCategoryTemplate} Product(s) ?`} />
+                        </FlexChild>
+                    </FlexLayout>
                 </Modal>
                 <FlexLayout spacing='extraLoose' direction='vertical'>
                     <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
