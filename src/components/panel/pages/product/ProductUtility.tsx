@@ -229,7 +229,80 @@ export const ProductsStatus = (_props: any) => {
     </>
 }
 
-export const ExpandableGrid = (_props: any) => {
-    return <>
-    </>
+export const makebadgeBgColors = (status: any) => {
+    if (status === "all") {
+        return "#C8B6FF"
+    } else if (status === "not_uploaded") {
+        return "#FCE19F"
+    } else if (status === "in_progress") {
+        return "#F6A8A1"
+    } else if (status === "live") {
+        return "#9EF2D4"
+    } else if (status === "reviewing") {
+        return "#9FDEF6"
+    } else if (status === "failed") {
+        return "#FFC2C2"
+    } else if (status === "inactive") {
+        return "#D4D5D9"
+    }
+}
+
+export const makeURLForTabChange = (status: string) => {
+    if (status === "all") {
+        return ""
+    } else if (status === "not_uploaded") {
+        return "&filter[items.0.status][12]=0"
+    } else {
+        return `&filter[items.0.status][1]=${status}`
+    }
+}
+
+
+export const makeIndividualQueryParams = (key: any, value: any) => {
+    let queryString = null;
+    switch (key) {
+        case "categoryChoose":
+            queryString = `&filter[profile.profile_name][1]=${value}`;
+            break;
+        case "productTypeChoose":
+            queryString = `&filter[type][1]=${value}`;
+            break;
+        case "minQuantity":
+            queryString = `&filter[items.quantity][7][from]=${value}`;
+            break;
+        case "maxQuantity":
+            queryString = `&filter[items.quantity][7][to]=${value}`;
+            break;
+        case "minPrice":
+            queryString = `&filter[items.price][7][from]=${value}`;
+            break;
+        case "maxPrice":
+            queryString = `&filter[items.price][7][to]=${value}`;
+            break;
+        case "brand":
+            queryString = `&filter[brand][3]=${value}`;
+            break;
+    }
+    return queryString;
+}
+
+export const makeTitleForTag = (key: any) => {
+    switch (key) {
+        case "categoryChoose":
+            return "Category Template";
+        case "productTypeChoose":
+            return "Product Type";
+        case "minQuantity":
+            return "Minimum Quantity";
+        case "maxQuantity":
+            return "Maximum Quantity";
+        case "minPrice":
+            return "Minimum Retail Price";
+        case "maxPrice":
+            return "Maximum Retail Price";
+        case "brand":
+            return "Brand";
+        default:
+            return null;
+    }
 }

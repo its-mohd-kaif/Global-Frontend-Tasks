@@ -1,8 +1,8 @@
-import { ActionList, AdvanceFilter, Alert, AutoComplete, Button, Card, CheckBox, FlexChild, FlexLayout, FormElement, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
+import { ActionList, Filter, Alert, AutoComplete, Button, Card, CheckBox, FlexChild, FlexLayout, FormElement, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles, Loader, Tag } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
-import { FileText, ChevronDown, Filter } from "react-feather"
+import { FileText, ChevronDown, } from "react-feather"
 import productFallbackImg from "../../../../assets/images/png/productFallBack.png"
-import { ExpandableGrid, GetRange, ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
+import { GetRange, makebadgeBgColors, makeIndividualQueryParams, makeTitleForTag, makeURLForTabChange, ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
 import { callApi } from '../../../../core/ApiMethods';
 import { useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../../../../redux/ReduxSlice';
@@ -24,7 +24,11 @@ function Product() {
     })
     const [bulkModal, setBulkModal] = useState<boolean>(false)
     const [openExtraColumn, setOpenExtraColumn] = useState<boolean>(false);
-    const [totalProducts, setTotalProducts] = useState<number>(0)
+    const [totalProducts, setTotalProducts] = useState<number>(0);
+    const [productsStatus, setProductsStatus] = useState<any>([]);
+    // state for hold value of seclected tabs
+    const [tab, setTabs] = useState<string>("all")
+    const [loader, setLoader] = useState<boolean>(true)
     const [expandedRows, setExpandedRows] = useState<any>([]);
     const [bulkState, setBulkState] = useState<bulkStateObj>({
         chooseCategoryTemplate: "",
@@ -33,6 +37,7 @@ function Product() {
         warehouse_id: ""
     })
     const redux = useSelector((redux: any) => redux.redux.connectorGetAllState.data?.tiktok.installed[0].warehouses)
+    const regex = /^\d*$/; // Regular expression to match only digits
     const dispatch = useDispatch()
     const [categoryOptions, setCategoryOptions] = useState<any>([]);
     const [warehouse, setWarehouse] = useState<any>([]);
@@ -120,28 +125,71 @@ function Product() {
     ]
     const { activePage, countPerPage, } = pagination;
     const { chooseCategoryTemplate, profile_id, chooseTikTokWarehouse, warehouse_id } = bulkState;
+    const [filterState, setFilterState] = useState({
+        categoryChoose: '',
+        productTypeChoose: '',
+        minQuantity: '',
+        maxQuantity: '',
+        minPrice: '',
+        maxPrice: '',
+        brand: ''
+    });
+    const [tag, setTag] = useState<any>([])
+    const [errorfilter, setErrorFilter] = useState({
+        priceError: false,
+        quantityError: false
+    })
+    const { categoryChoose, productTypeChoose, minQuantity, maxQuantity, minPrice, maxPrice, brand } = filterState;
+    const { priceError, quantityError } = errorfilter
 
     useEffect(() => {
-        callApi("GET", "connector/product/getRefineProductCount?activePage=1&count=10", {}, "extraHeaders")
-            .then((res: any) => {
-                if (res.success === true) {
-                    setTotalProducts(res.data.count)
-
-                }
-            })
         callApi("GET", "connector/profile/getProfileData?count=100", {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
                     makeCategoryOptions(res.data.rows)
                 }
             })
+        callApi("POST", "tiktokhome/product/getproductStatus", {}, "extraHeaders")
+            .then((res: any) => {
+                if (res.success === true) {
+                    makeProdctsStatusTabs(res.data)
+                }
+            })
     }, [])
-
-
     useEffect(() => {
-        getRefineProduct()
-    }, [pagination])
+        getRefineProduct(tab)
+    }, [pagination, tab, tag])
 
+    const makeProdctsStatusTabs = (data: any) => {
+        const tabs = [
+            { status: "All", id: "total" },
+            { status: "Not Uploaded", id: "not_uploaded" },
+            { status: "In Progress", id: "in_progress" },
+            { status: "Live", id: "live" },
+            { status: "Reviewing", id: "reviewing" },
+            { status: "Failed", id: "failed" },
+            { status: "Inactive", id: "inactive" }
+        ];
+        const customizedResponse = tabs.map((tab) => {
+            if (tab.id === "total") {
+                return { status: tab.status, count: data.total, id: "all" };
+            }
+            const matchingStatus = data.status.find((status: any) => status._id === tab.id);
+            return { status: tab.status, count: matchingStatus ? matchingStatus.count : 0, id: tab.id };
+        });
+        const objectArray = customizedResponse.map((item: any) => {
+            let badgeContent = item.count.toString();
+            let customBgColors = makebadgeBgColors(item.id);
+            return {
+                content: item.status,
+                id: item.id,
+                badge: true,
+                badgeContent,
+                customBgColors
+            };
+        });
+        setProductsStatus(objectArray)
+    }
     const makeTiktokWarehouseOptions = (data: any) => {
         let tempArr: any = []
         data.forEach((element: any) => {
@@ -156,7 +204,6 @@ function Product() {
     }
 
     const makeCategoryOptions = (data: any) => {
-        console.log("data", data)
         let tempArr: any = []
         data.forEach((element: any) => {
             let count = 0
@@ -175,9 +222,26 @@ function Product() {
         setCategoryOptions(tempArr)
     }
 
-    const getRefineProduct = () => {
-        callApi("GET", `connector/product/getRefineProducts?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeaders")
+    const getRefineProduct = (value: string) => {
+        setLoader(true)
+        const url = makeURLForTabChange(value);
+        function generateQueryString(data: any) {
+            const strKeys = data.filter((obj: any) => typeof obj.title === 'string')
+                .map((obj: any) => obj.str);
+
+            return strKeys.join('');
+        }
+        const filterUrl = tag.length === 0 ? "" : generateQueryString(tag)
+        callApi("GET", `connector/product/getRefineProductCount?activePage=1&count=10${url}${filterUrl}`, {}, "extraHeaders")
             .then((res: any) => {
+                if (res.success === true) {
+                    setTotalProducts(res.data.count)
+
+                }
+            })
+        callApi("GET", `connector/product/getRefineProducts?activePage=${activePage}&count=${countPerPage}${url}${filterUrl}`, {}, "extraHeaders")
+            .then((res: any) => {
+                setLoader(false)
                 const dataRes = res.data.rows
                 let tempArr: any = []
                 dataRes.forEach((element: any) => {
@@ -267,7 +331,6 @@ function Product() {
     }
 
     const bulkUploadHandler = () => {
-        console.log("state", bulkState);
         let obj = {}
         if (profile_id === "") {
             obj = {
@@ -294,7 +357,6 @@ function Product() {
         }
         callApi("POST", "connector/product/upload", obj, "extraHeaders")
             .then((res: any) => {
-                console.log("upload", res)
                 if (res.success === true) {
                     dispatch(showToast({
                         type: "success",
@@ -307,6 +369,74 @@ function Product() {
                     }))
                 }
             })
+    }
+
+    const handleFormChange = (value: string, name: string) => {
+        setFilterState((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+        validateForm(value, name);
+    };
+    const validateForm = (value: string, name: string) => {
+        if (
+            (name === 'minQuantity' && maxQuantity !== '' && parseInt(value) > parseInt(maxQuantity)) ||
+            (name === 'maxQuantity' && minQuantity !== '' && parseInt(value) < parseInt(minQuantity)) ||
+            (name === 'minPrice' && maxPrice !== '' && parseInt(value) > parseInt(maxPrice)) ||
+            (name === 'maxPrice' && minPrice !== '' && parseInt(value) < parseInt(minPrice))
+        ) {
+            if (name === 'minQuantity' || name === 'maxQuantity') {
+                setErrorFilter({
+                    ...errorfilter,
+                    quantityError: true
+                })
+            } else if (name === 'minPrice' || name === 'maxPrice') {
+                setErrorFilter({
+                    ...errorfilter,
+                    priceError: true
+                })
+            }
+        } else {
+            if (name === 'minQuantity' || name === 'maxQuantity') {
+                setErrorFilter({
+                    ...errorfilter,
+                    quantityError: false
+                })
+            } else if (name === 'minPrice' || name === 'maxPrice') {
+                setErrorFilter({
+                    ...errorfilter,
+                    priceError: false
+                })
+            }
+        }
+    };
+
+    const filterApplyHandler = () => {
+        let tempArr: any = [];
+        function getKeyByValue(object: any, value: any) {
+            return Object.keys(object).find(key => object[key] === value);
+        }
+        Object.values(filterState)
+            .forEach(element => {
+                if (element !== '') {
+                    const key: any = getKeyByValue(filterState, element);
+                    let obj = {
+                        title: makeTitleForTag(key),
+                        value: element,
+                        id: Math.floor(Math.random() * 9191919191),
+                        str: makeIndividualQueryParams(key, filterState[key as keyof typeof filterState])
+                    }
+                    tempArr.push(obj)
+                }
+            });
+        setTag(tempArr)
+    }
+    const removeFilerHandler = (id: number) => {
+        function removeItemById(arr: any, id: number) {
+            return arr.filter((item: any) => item.id !== id);
+        }
+        const updatedData = removeItemById(tag, id);
+        setTag(updatedData)
     }
     return (
         <>
@@ -438,361 +568,358 @@ function Product() {
                             Want to upload simple product(s)? <TextLink label="Learn More" />
                         </Alert>
                     </FlexChild>
-                    <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                        <Tabs
-                            alignment="horizontal"
-                            onChange={function noRefCheck() { }}
-                            selected="all"
-                            value={[
-                                {
-                                    content: 'All',
-                                    id: 'all',
-                                    badge: true,
-                                    badgeContent: '100',
-                                    badgeTextColor: 'light',
-                                    customBgColors: '#9984DB',
-                                },
-                                {
-                                    content: 'Not Uploaded',
-                                    id: 'not-uploaded',
-                                    badge: true,
-                                    badgeContent: '10',
-                                    customBgColors: '#FEE6AE',
-                                },
-                                {
-                                    content: 'In Progress',
-                                    id: 'in-progress',
-                                    badge: true,
-                                    badgeContent: '20',
-                                    badgeTextColor: 'light',
-                                    customBgColors: '#FF8277',
-                                },
-                                {
-                                    content: 'Live',
-                                    id: 'live',
-                                    badge: true,
-                                    badgeContent: '30',
-                                    badgeTextColor: 'light',
-                                    customBgColors: '#269E6C',
-                                },
-                                {
-                                    content: 'Pending',
-                                    id: 'pending',
-                                    badge: true,
-                                    badgeContent: '25',
-                                    customBgColors: '#FEC84B',
-                                },
-                                {
-                                    content: 'Failed',
-                                    id: 'failed',
-                                    badge: true,
-                                    badgeContent: '15',
-                                    badgeTextColor: 'light',
-                                    customBgColors: '#FF0000',
-                                },
-                                {
-                                    content: 'Seller Deactivated',
-                                    id: 'seller-deactivated',
-                                    badge: true,
-                                    badgeContent: '0',
-                                    customBgColors: '#B9BBC1',
-                                },
+                    {loader === true ?
+                        <Loader type='Loader1' />
+                        :
+                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                            <Tabs
+                                alignment="horizontal"
+                                onChange={(e) => {
+                                    setTabs(e)
+                                }}
+                                selected={tab}
+                                value={productsStatus}
+                            >
+                                <Card cardType='Bordered'>
+                                    <FlexLayout spacing='loose' direction='vertical'>
+                                        <FlexChild >
+                                            <FlexLayout spacing='loose'>
+                                                <AutoComplete
+                                                    clearButton
+                                                    clearFunction={function noRefCheck() { }}
+                                                    extraClass=""
+                                                    onChange={function noRefCheck() { }}
+                                                    onClick={function noRefCheck() { }}
+                                                    onEnter={function noRefCheck() { }}
+                                                    options={[]}
+                                                    placeHolder="Enter Title, ID or SKU"
+                                                    popoverContainer="body"
+                                                    popoverPosition="right"
+                                                    setHiglighted
+                                                    thickness="thin"
+                                                    value=""
+                                                />
+                                                <Popover
+                                                    activator={<Button thickness='thin' icon={<ChevronDown />} iconAlign="right"
+                                                        onClick={() => {
+                                                            setOpenExtraColumn(!openExtraColumn)
+                                                        }}
+                                                        type="Outlined">Customize Grid</Button>} open={openExtraColumn}                                       >
+                                                    <FlexLayout spacing='loose' direction='vertical'>
+                                                        <CheckBox
+                                                            id="two"
+                                                            checked={false}
+                                                            labelVal="ID"
+                                                            name="ID"
+                                                            onClick={() => { }}
+                                                        />
+                                                        <CheckBox
+                                                            id="two"
+                                                            checked={false}
+                                                            labelVal="Price"
+                                                            name="Price"
+                                                            onClick={() => { }}
+                                                        />
+                                                        <CheckBox
+                                                            id="two"
+                                                            checked={false}
+                                                            labelVal="Quantity"
+                                                            name="Quantity"
+                                                            onClick={() => { }}
+                                                        />
+                                                        <CheckBox
+                                                            id="two"
+                                                            checked={false}
+                                                            labelVal="SKU"
+                                                            name="SKU"
+                                                            onClick={() => { }}
+                                                        />
+                                                        <CheckBox
+                                                            id="two"
+                                                            checked={false}
+                                                            labelVal="Category"
+                                                            name="Category"
+                                                            onClick={() => { }}
+                                                        />
+                                                        <CheckBox
+                                                            id="two"
+                                                            checked={false}
+                                                            labelVal="Status"
+                                                            name="Status"
+                                                            onClick={() => { }}
+                                                        />
+                                                    </FlexLayout>
+                                                </Popover>
+                                                <Filter
+                                                    icon={<FileText size={17} />}
+                                                    button="Filters"
+                                                    disableApply={false}
+                                                    filters={[
+                                                        {
+                                                            children: <>
+                                                                <FlexLayout spacing='loose' direction='vertical'>
+                                                                    <Select
+                                                                        onChange={(e) => {
+                                                                            handleFormChange(e, "categoryChoose")
+                                                                        }}
+                                                                        onblur={function noRefCheck() { }}
+                                                                        options={categoryOptions}
+                                                                        value={categoryChoose}
+                                                                        placeholder='Select'
+                                                                        thickness='thin'
+                                                                        popoverContainer='element'
+                                                                    />
+                                                                    <Button
+                                                                        onClick={() => {
+                                                                            setFilterState({
+                                                                                ...filterState,
+                                                                                categoryChoose: ""
+                                                                            })
+                                                                        }}
+                                                                        disable={categoryChoose === "" ? true : false}
+                                                                        thickness="extraThin" type='Danger'>
+                                                                        Clear
+                                                                    </Button>
+                                                                </FlexLayout>
+                                                            </>,
+                                                            name: 'Category Template'
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <FlexLayout spacing='loose' direction='vertical'>
+                                                                    <Select
+                                                                        onChange={(e) => {
+                                                                            handleFormChange(e, "productTypeChoose")
+                                                                        }}
+                                                                        onblur={function noRefCheck() { }}
+                                                                        options={[
+                                                                            {
+                                                                                label: "Simple",
+                                                                                value: "simple"
+                                                                            },
+                                                                            {
+                                                                                label: "Variant",
+                                                                                value: "variant"
+                                                                            }
+                                                                        ]}
+                                                                        value={productTypeChoose}
+                                                                        placeholder='Select'
+                                                                        thickness='thin'
+                                                                        popoverContainer='element'
+                                                                    />
+                                                                    <Button
+                                                                        onClick={() => {
+                                                                            setFilterState({
+                                                                                ...filterState,
+                                                                                productTypeChoose: ""
+                                                                            })
+                                                                        }}
+                                                                        disable={productTypeChoose === "" ? true : false}
+                                                                        thickness="extraThin" type='Danger'>
+                                                                        Clear
+                                                                    </Button>
+                                                                </FlexLayout>
+                                                            </>,
+                                                            name: "Product Type"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <FlexLayout
+                                                                    wrap='noWrap'
+                                                                    spacing='tight'
+                                                                >
+                                                                    <TextField
+                                                                        autocomplete="off"
+                                                                        onChange={(e) => {
+                                                                            if (regex.test(e) || e === '') {
+                                                                                handleFormChange(e, "minQuantity")
+                                                                            }
+                                                                        }}
+                                                                        placeHolder="From"
+                                                                        showHelp='Enter minimum quantity'
+                                                                        type="text"
+                                                                        value={minQuantity}
+                                                                        error={quantityError}
+                                                                    />
+                                                                    <TextField
+                                                                        autocomplete="off"
+                                                                        onChange={(e) => {
+                                                                            if (regex.test(e) || e === '') {
+                                                                                handleFormChange(e, "maxQuantity")
+                                                                            }
+                                                                        }}
+                                                                        placeHolder="To"
+                                                                        showHelp='Enter maximum quantity'
+                                                                        type="text"
+                                                                        value={maxQuantity}
+                                                                        error={quantityError}
+                                                                    />
+                                                                </FlexLayout>
+                                                            </>,
+                                                            name: "Quantity"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <FlexLayout
+                                                                    wrap='noWrap'
+                                                                    spacing='tight'
+                                                                >
+                                                                    <TextField
+                                                                        autocomplete="off"
+                                                                        onChange={(e) => {
+                                                                            if (regex.test(e) || e === '') {
+                                                                                handleFormChange(e, "minPrice")
+                                                                            }
+                                                                        }}
+                                                                        placeHolder="From"
+                                                                        showHelp='Enter minimum price'
+                                                                        type="text"
+                                                                        value={minPrice}
+                                                                        error={priceError}
+                                                                    />
+                                                                    <TextField
+                                                                        autocomplete="off"
+                                                                        onChange={(e) => {
+                                                                            if (regex.test(e) || e === '') {
+                                                                                handleFormChange(e, "maxPrice")
+                                                                            }
+                                                                        }}
+                                                                        placeHolder="To"
+                                                                        showHelp='Enter maximum price'
+                                                                        type="text"
+                                                                        value={maxPrice}
+                                                                        error={priceError}
+                                                                    />
+                                                                </FlexLayout>
+                                                            </>,
+                                                            name: "Price"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <TextField
+                                                                    autocomplete="off"
+                                                                    onChange={(e) => {
+                                                                        handleFormChange(e, "brand")
+                                                                    }}
+                                                                    placeHolder="Enter Brand"
+                                                                    type="text"
+                                                                    value={brand}
+                                                                />
+                                                            </>,
+                                                            name: "Brand"
+                                                        },
+                                                    ]}
+                                                    heading="Filter"
+                                                    // icon={<Filter color="#2a2a2a" size={16} />}
+                                                    onApply={filterApplyHandler}
+                                                    // onClose={function noRefCheck() { }}
+                                                    type="Outlined"
 
-                            ]}
-                        >
-                            <Card cardType='Bordered'>
-                                <FlexLayout spacing='loose' direction='vertical'>
-                                    <FlexChild >
-                                        <FlexLayout spacing='loose'>
-                                            <AutoComplete
-                                                clearButton
-                                                clearFunction={function noRefCheck() { }}
-                                                extraClass=""
-                                                onChange={function noRefCheck() { }}
-                                                onClick={function noRefCheck() { }}
-                                                onEnter={function noRefCheck() { }}
-                                                options={[]}
-                                                placeHolder="Enter Title, ID or SKU"
-                                                popoverContainer="body"
-                                                popoverPosition="right"
-                                                setHiglighted
-                                                thickness="thin"
-                                                value=""
-                                            />
-                                            <Popover
-                                                activator={<Button thickness='thin' icon={<ChevronDown />} iconAlign="right"
-                                                    onClick={() => {
-                                                        setOpenExtraColumn(!openExtraColumn)
-                                                    }}
-                                                    type="Outlined">Customize Grid</Button>} open={openExtraColumn}                                       >
-                                                <FlexLayout spacing='loose' direction='vertical'>
-                                                    <CheckBox
-                                                        id="two"
-                                                        checked={false}
-                                                        labelVal="ID"
-                                                        name="ID"
-                                                        onClick={() => { }}
-                                                    />
-                                                    <CheckBox
-                                                        id="two"
-                                                        checked={false}
-                                                        labelVal="Price"
-                                                        name="Price"
-                                                        onClick={() => { }}
-                                                    />
-                                                    <CheckBox
-                                                        id="two"
-                                                        checked={false}
-                                                        labelVal="Quantity"
-                                                        name="Quantity"
-                                                        onClick={() => { }}
-                                                    />
-                                                    <CheckBox
-                                                        id="two"
-                                                        checked={false}
-                                                        labelVal="SKU"
-                                                        name="SKU"
-                                                        onClick={() => { }}
-                                                    />
-                                                    <CheckBox
-                                                        id="two"
-                                                        checked={false}
-                                                        labelVal="Category"
-                                                        name="Category"
-                                                        onClick={() => { }}
-                                                    />
-                                                    <CheckBox
-                                                        id="two"
-                                                        checked={false}
-                                                        labelVal="Status"
-                                                        name="Status"
-                                                        onClick={() => { }}
-                                                    />
+                                                />
+                                            </FlexLayout>
+                                        </FlexChild>
+                                        <FlexChild>
+                                            <>
+                                                <FlexLayout spacing='loose'>
+                                                    {
+                                                        tag.length !== 0 ?
+                                                            tag.map((val: any, index: number) => (
+                                                                <Tag key={index} destroy={() => removeFilerHandler(val.id)}>
+                                                                    {val.title} : {val.value}
+                                                                </Tag>
+                                                            ))
+
+                                                            : null
+                                                    }
+                                                    {
+                                                        tag.length !== 0 ?
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setTag([])
+                                                                }}
+                                                                type='Outlined'
+                                                                thickness='extraThin'>
+                                                                Clear all filter
+                                                            </Button> : null
+                                                    }
+
                                                 </FlexLayout>
-                                            </Popover>
-                                            <AdvanceFilter
-                                                button="Filters"
-                                                disableApply
-                                                filters={[
-                                                    {
-                                                        children: <>
-                                                            <FormElement>
-                                                                <Radio
-                                                                    checked
-                                                                    id="0"
-                                                                    labelVal="Simple"
-                                                                    name="2"
-                                                                    onClick={function noRefCheck() { }}
-                                                                    value={0}
-                                                                />
-                                                                <Radio
-                                                                    id="1"
-                                                                    labelVal="Variant"
-                                                                    name="2"
-                                                                    onClick={function noRefCheck() { }}
-                                                                    value={0}
-                                                                />
-                                                                <Radio
-                                                                    id="2"
-                                                                    labelVal="None of the above"
-                                                                    name="2"
-                                                                    onClick={function noRefCheck() { }}
-                                                                    value={0}
-                                                                />
-                                                            </FormElement>
-                                                        </>,
-                                                        name: 'Listing Type'
-                                                    },
-                                                    {
-                                                        children: <>
-                                                            <Select
-                                                                helpIcon={<svg fill="none" height="20" stroke="#c3c3c3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /></svg>}
-                                                                onChange={function noRefCheck() { }}
-                                                                onblur={function noRefCheck() { }}
-                                                                options={[
-                                                                    {
-                                                                        label: 'Default',
-                                                                        value: '0'
-                                                                    },
-                                                                    {
-                                                                        label: 'Profile First',
-                                                                        value: '1'
-                                                                    },
-                                                                    {
-                                                                        label: 'Profile Second',
-                                                                        value: '1'
-                                                                    },
-                                                                ]}
-                                                                searchEable
-                                                                value=""
-                                                            />
-                                                        </>,
-                                                        name: "Template"
-                                                    },
-                                                    {
-                                                        children: <>
-                                                            <FlexLayout direction='vertical' spacing='tight'>
-                                                                <TextField
-                                                                    autocomplete="off"
-                                                                    name="Minimum Quantity"
-                                                                    onChange={function noRefCheck() { }}
-                                                                    placeHolder="Enter Quantity"
-                                                                    type="text"
-                                                                />
-                                                                <TextField
-                                                                    autocomplete="off"
-                                                                    name="Maximum Quantity"
-                                                                    onChange={function noRefCheck() { }}
-                                                                    placeHolder="Enter Quantity"
-                                                                    type="text"
-                                                                />
-                                                            </FlexLayout>
-                                                        </>,
-                                                        name: "Quantity"
-                                                    },
-                                                    {
-                                                        children: <>
-                                                            <FlexLayout direction='vertical' spacing='tight'>
-                                                                <TextField
-                                                                    autocomplete="off"
-                                                                    name="Minimum Price"
-                                                                    onChange={function noRefCheck() { }}
-                                                                    placeHolder="Enter Price"
-                                                                    type="text"
-                                                                />
-                                                                <TextField
-                                                                    autocomplete="off"
-                                                                    name="Maximum Price"
-                                                                    onChange={function noRefCheck() { }}
-                                                                    placeHolder="Enter Price"
-                                                                    type="text"
-                                                                />
-                                                            </FlexLayout>
-                                                        </>,
-                                                        name: "Price"
-                                                    },
-                                                    {
-                                                        children: <>
-                                                            <Select
-                                                                helpIcon={<svg fill="none" height="20" stroke="#c3c3c3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /></svg>}
-                                                                onChange={function noRefCheck() { }}
-                                                                onblur={function noRefCheck() { }}
-                                                                options={[
-                                                                    {
-                                                                        label: 'Boots',
-                                                                        value: '0'
-                                                                    },
-                                                                    {
-                                                                        label: 'Sandals',
-                                                                        value: '1'
-                                                                    },
-                                                                    {
-                                                                        label: 'Sneaker',
-                                                                        value: '1'
-                                                                    },
-                                                                    {
-                                                                        label: 'Sports Shoes',
-                                                                        value: '1'
-                                                                    },
-                                                                ]}
-                                                                searchEable
-                                                                value=""
-                                                            />
-                                                        </>,
-                                                        name: "Category"
-                                                    },
-                                                    {
-                                                        children: <>
-                                                            <TextField
-                                                                autocomplete="off"
-                                                                onChange={function noRefCheck() { }}
-                                                                placeHolder="Enter Barcode"
-                                                                type="text"
-                                                            />
 
-                                                        </>,
-                                                        name: "Barcode"
-                                                    },
-                                                ]}
-                                                heading="Filter Heading"
-                                                icon={<Filter color="#2a2a2a" size={16} />}
-                                                onApply={function noRefCheck() { }}
-                                                onClose={function noRefCheck() { }}
-                                                type="Outlined"
-                                            />
-                                        </FlexLayout>
-                                    </FlexChild>
-                                    <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                                        <>
-                                            <Grid
-                                                columns={columns}
-                                                dataSource={products}
-                                                rowSelection={{
-                                                    onChange: function noRefCheck() { }
-                                                }}
-                                                expandable={{
-                                                    showExpandColumn: true,
-                                                    rowExpandable: (record: any) => {
-                                                        return record['childrenRow'];
-                                                    },
-                                                    expandedRowKeys: [...expandedRows],
-                                                    expandedRowRender: (record: any) => {
-                                                        return (
-                                                            <Grid
-                                                                tableLayout="auto"
-                                                                size="middle"
-                                                                scrollX={1400}
-                                                                columns={childColumns}
-                                                                dataSource={record['childrenRow']}
-                                                            />
-                                                        );
-                                                    },
-                                                    onExpand: (expanded: any, record: any) => {
-                                                        if (expanded) {
-                                                            setExpandedRows([...expandedRows, record.key]);
-                                                        } else {
-                                                            const tempRows = [...expandedRows];
-                                                            tempRows.forEach((item, index) => {
-                                                                if (item === record.key) {
-                                                                    tempRows.splice(index, 1);
-                                                                }
-                                                            });
-                                                            setExpandedRows(tempRows);
-                                                        }
-                                                    },
-                                                }}
-                                                scrollX={1400}
-                                            />
-                                            <br></br>
-                                            <Pagination
-                                                countPerPage={countPerPage}
-                                                currentPage={activePage}
-                                                onCountChange={(e: any) => countChangeHandler(e)}
-                                                onEnter={(e: any) => onEnterChange(e)}
-                                                onNext={nextPageHandler}
-                                                onPrevious={prevPageHandler}
-                                                totalitem={totalProducts}
-                                                optionPerPage={[
-                                                    {
-                                                        label: '5',
-                                                        value: '5'
-                                                    },
-                                                    {
-                                                        label: '10',
-                                                        value: '10'
-                                                    },
-                                                    {
-                                                        label: '15',
-                                                        value: '15'
-                                                    },
-                                                ]}
-                                            />
-                                        </>
-                                    </FlexChild>
-                                </FlexLayout>
-                            </Card>
-                        </Tabs>
-                    </FlexChild>
+                                            </>
+                                        </FlexChild>
+                                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                            <>
+                                                <Grid
+                                                    columns={columns}
+                                                    dataSource={products}
+                                                    rowSelection={{
+                                                        onChange: function noRefCheck() { }
+                                                    }}
+                                                    expandable={{
+                                                        showExpandColumn: true,
+                                                        rowExpandable: (record: any) => {
+                                                            return record['childrenRow'];
+                                                        },
+                                                        expandedRowKeys: [...expandedRows],
+                                                        expandedRowRender: (record: any) => {
+                                                            return (
+                                                                <Grid
+                                                                    tableLayout="auto"
+                                                                    size="middle"
+                                                                    scrollX={1400}
+                                                                    columns={childColumns}
+                                                                    dataSource={record['childrenRow']}
+                                                                />
+                                                            );
+                                                        },
+                                                        onExpand: (expanded: any, record: any) => {
+                                                            if (expanded) {
+                                                                setExpandedRows([...expandedRows, record.key]);
+                                                            } else {
+                                                                const tempRows = [...expandedRows];
+                                                                tempRows.forEach((item, index) => {
+                                                                    if (item === record.key) {
+                                                                        tempRows.splice(index, 1);
+                                                                    }
+                                                                });
+                                                                setExpandedRows(tempRows);
+                                                            }
+                                                        },
+                                                    }}
+                                                    scrollX={1400}
+                                                />
+                                                <br></br>
+                                                <Pagination
+                                                    countPerPage={countPerPage}
+                                                    currentPage={activePage}
+                                                    onCountChange={(e: any) => countChangeHandler(e)}
+                                                    onEnter={(e: any) => onEnterChange(e)}
+                                                    onNext={nextPageHandler}
+                                                    onPrevious={prevPageHandler}
+                                                    totalitem={totalProducts}
+                                                    optionPerPage={[
+                                                        {
+                                                            label: '5',
+                                                            value: '5'
+                                                        },
+                                                        {
+                                                            label: '10',
+                                                            value: '10'
+                                                        },
+                                                        {
+                                                            label: '15',
+                                                            value: '15'
+                                                        },
+                                                    ]}
+                                                />
+                                            </>
+                                        </FlexChild>
+                                    </FlexLayout>
+                                </Card>
+                            </Tabs>
+                        </FlexChild>
+                    }
+
 
                 </FlexLayout>
 
