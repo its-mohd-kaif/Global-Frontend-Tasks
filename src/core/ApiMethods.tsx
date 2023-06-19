@@ -28,7 +28,7 @@ export function callApi<Data>(method: string, endPoint: string, payload = {} as 
             "Ced-Source-Name": "shopify",
             "Ced-Target-Id": "313",
             "Ced-Target-Name": "tiktok",
-            "Apptag": "tiktok_connector"
+            "Apptag": "tiktok_connector",
         });
     }
 

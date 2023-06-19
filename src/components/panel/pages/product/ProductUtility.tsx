@@ -245,6 +245,7 @@ export const makebadgeBgColors = (status: any) => {
     } else if (status === "inactive") {
         return "#D4D5D9"
     }
+
 }
 
 export const makeURLForTabChange = (status: string) => {

@@ -214,7 +214,8 @@ function Product() {
             }
             let obj = {
                 label: element.name,
-                value: count,
+                value: element.name,
+                count: count,
                 id: element._id.$oid
             }
             tempArr.push(obj)
@@ -424,19 +425,37 @@ function Product() {
                         title: makeTitleForTag(key),
                         value: element,
                         id: Math.floor(Math.random() * 9191919191),
-                        str: makeIndividualQueryParams(key, filterState[key as keyof typeof filterState])
+                        str: makeIndividualQueryParams(key, filterState[key as keyof typeof filterState]),
+                        key: key
                     }
                     tempArr.push(obj)
                 }
             });
         setTag(tempArr)
     }
-    const removeFilerHandler = (id: number) => {
+    const removeFilerHandler = (id: number, key: string) => {
         function removeItemById(arr: any, id: number) {
             return arr.filter((item: any) => item.id !== id);
         }
         const updatedData = removeItemById(tag, id);
+        setFilterState((prevState) => ({
+            ...prevState,
+            [key]: "",
+        }));
         setTag(updatedData)
+    }
+
+    const resetAllFilter = () => {
+        setTag([])
+        setFilterState({
+            brand: "",
+            categoryChoose: "",
+            maxPrice: "",
+            maxQuantity: "",
+            minPrice: "",
+            minQuantity: "",
+            productTypeChoose: ""
+        })
     }
     return (
         <>
@@ -513,7 +532,7 @@ function Product() {
                                         onChange={(e, event: any) => {
                                             setBulkState({
                                                 ...bulkState,
-                                                chooseCategoryTemplate: e,
+                                                chooseCategoryTemplate: event.count,
                                                 profile_id: event.id
                                             })
                                         }}
@@ -810,11 +829,12 @@ function Product() {
                                                         },
                                                     ]}
                                                     heading="Filter"
-                                                    // icon={<Filter color="#2a2a2a" size={16} />}
                                                     onApply={filterApplyHandler}
-                                                    // onClose={function noRefCheck() { }}
                                                     type="Outlined"
-
+                                                    resetFilter={() => {
+                                                        resetAllFilter()
+                                                    }}
+                                                    disableReset={false}
                                                 />
                                             </FlexLayout>
                                         </FlexChild>
@@ -824,7 +844,7 @@ function Product() {
                                                     {
                                                         tag.length !== 0 ?
                                                             tag.map((val: any, index: number) => (
-                                                                <Tag key={index} destroy={() => removeFilerHandler(val.id)}>
+                                                                <Tag key={index} destroy={() => removeFilerHandler(val.id, val.key)}>
                                                                     {val.title} : {val.value}
                                                                 </Tag>
                                                             ))
@@ -835,7 +855,7 @@ function Product() {
                                                         tag.length !== 0 ?
                                                             <Button
                                                                 onClick={() => {
-                                                                    setTag([])
+                                                                    resetAllFilter()
                                                                 }}
                                                                 type='Outlined'
                                                                 thickness='extraThin'>
