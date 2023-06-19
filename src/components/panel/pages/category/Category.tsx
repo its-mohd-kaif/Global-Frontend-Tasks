@@ -1,14 +1,13 @@
-import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, PageHeader, Pagination, TextLink } from '@cedcommerce/ounce-ui'
+import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, TextLink } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
+import { callApi } from '../../../../core/ApiMethods'
 import { CategoryActions, ViewRules } from './CategoryUtility'
 import { TemplateData } from './TemplateData'
 interface paginationObj {
     activePage: number
     countPerPage: number
-    start: number
-    end: number
 }
 function Category() {
     const navigate = useNavigate()
@@ -49,70 +48,78 @@ function Category() {
             width: 140
         },
     ]
-    const [allData, setAllData] = useState<any>([]);
+    const [totalCount, setTotalCount] = useState<number>(0)
     const [data, setData] = useState<any>([]);
+    const [loader, setLoader] = useState<boolean>(true)
     const [pagination, setPagination] = useState<paginationObj>({
         activePage: 1,
         countPerPage: 5,
-        start: 0,
-        end: 5,
     })
-    const { activePage, countPerPage, start, end } = pagination;
+    const { activePage, countPerPage } = pagination;
+
     useEffect(() => {
-        const resData = TemplateData
-        let tempArr: any = []
-        resData.forEach((element: any) => {
-            let obj = {
-                name: element.name,
-                category: element.category,
-                rules: <ViewRules rule={element.rules} />,
-                total_products: <TextLink label={element.totalProduct} />,
-                actions: <CategoryActions />,
-                key:Math.random()*91919191
-            }
-            tempArr.push(obj)
-            setAllData(tempArr)
-            setData(tempArr.slice(start, end))
-        })
-    }, [start, end])
+        setLoader(true)
+        callApi("GET", `connector/profile/getProfileDataCount?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeader")
+            .then((res: any) => {
+                console.log("getProfileDataCount", res)
+                if (res.success === true) {
+                    setTotalCount(res.total_count)
+                    callApi("GET", `connector/profile/getProfileData?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeader")
+                        .then((res: any) => {
+                            setLoader(false)
+                            console.log("getProfileData", res)
+                            if (res.success === true) {
+                                const resData = res.data.rows
+                                let tempArr: any = []
+                                resData.forEach((element: any) => {
+                                    let obj = {
+                                        name: element.name,
+                                        category: element.category_id.label,
+                                        // rules: <ViewRules rule={element.rules} />,
+                                        rules: <TextLink label="View Rule" />,
+                                        // total_products: <TextLink label={element.totalProduct} />,
+                                        total_products: element.product_count[0]?.count !== undefined ?
+                                            element.product_count[0].count :
+                                            element.total_count !== undefined ? element.total_count
+                                                : 0,
+                                        actions: <CategoryActions />,
+                                        key: Math.random() * 91919191
+                                    }
+                                    tempArr.push(obj)
+                                    setData(tempArr)
+                                })
+                            }
+                        })
+                }
+            })
+    }, [pagination])
+
     /**
-   * on count change pagination handler
-   * @param val user select from grid 
-   */
+    * on count change pagination handler
+    * @param val user select from grid 
+    */
     const countChangeHandler = (val: any) => {
-        let newGrid = allData.slice(0, val)
         setPagination({
             ...pagination,
             countPerPage: val
         })
-        setData(newGrid)
     }
     /**
     * next page handler
     */
     const nextPageHandler = () => {
-
-        let start = countPerPage * activePage;
-        let end = countPerPage * activePage + countPerPage;
         setPagination({
             ...pagination,
             activePage: activePage + 1,
-            start: start,
-            end: end
         })
     }
     /**
     * prev page handler function
      */
     const prevPageHandler = () => {
-        //for delay active state value we more decrement value by one
-        let start = countPerPage * (activePage - 1) - countPerPage;
-        let end = countPerPage * (activePage - 1);
         setPagination({
             ...pagination,
             activePage: activePage - 1,
-            start: start,
-            end: end
         })
     }
     /**
@@ -120,13 +127,9 @@ function Category() {
    * @param val user press on grid
    */
     const onEnterChange = (val: number) => {
-        let start = countPerPage * val - countPerPage;
-        let end = countPerPage * val;
         setPagination({
             ...pagination,
             activePage: val,
-            start: start,
-            end: end
         })
     }
     return (
@@ -161,33 +164,41 @@ function Category() {
                             value=""
                         />
                     </FlexChild>
-                    <Grid
-                        columns={columns}
-                        dataSource={data}
-                    />
-                    <Pagination
-                        countPerPage={countPerPage}
-                        currentPage={activePage}
-                        onCountChange={(e: any) => countChangeHandler(e)}
-                        onEnter={(e: any) => onEnterChange(e)}
-                        onNext={nextPageHandler}
-                        onPrevious={prevPageHandler}
-                        totalitem={allData.length}
-                        optionPerPage={[
-                            {
-                                label: '5',
-                                value: '5'
-                            },
-                            {
-                                label: '10',
-                                value: '10'
-                            },
-                            {
-                                label: '15',
-                                value: '15'
-                            },
-                        ]}
-                    />
+                    {loader === true ?
+                        <Loader type='Loader1' />
+                        :
+                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                            <>
+                                <Grid
+                                    columns={columns}
+                                    dataSource={data}
+                                />
+                                <Pagination
+                                    countPerPage={countPerPage}
+                                    currentPage={activePage}
+                                    onCountChange={(e: any) => countChangeHandler(e)}
+                                    onEnter={(e: any) => onEnterChange(e)}
+                                    onNext={nextPageHandler}
+                                    onPrevious={prevPageHandler}
+                                    totalitem={totalCount}
+                                    optionPerPage={[
+                                        {
+                                            label: '5',
+                                            value: '5'
+                                        },
+                                        {
+                                            label: '10',
+                                            value: '10'
+                                        },
+                                        {
+                                            label: '15',
+                                            value: '15'
+                                        },
+                                    ]}
+                                />
+                            </>
+                        </FlexChild>
+                    }
                 </FlexLayout>
             </Card>
         </>
