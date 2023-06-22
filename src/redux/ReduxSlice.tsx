@@ -10,6 +10,10 @@ const initialState = {
     stepCompletedState: {},
     connectorGetAllState: {},
     attributes_mapping: {},
+    chooseCategory: {
+        selectValue: "",
+        selectCategory_id: ""
+    }
 };
 
 const reduxSlice = createSlice({
@@ -47,11 +51,16 @@ const reduxSlice = createSlice({
                 ...action.payload
             }
         },
+        addChooseCategory: (state, action) => {
+            const { value, id } = action.payload
+            state.chooseCategory.selectValue = value;
+            state.chooseCategory.selectCategory_id = id
+        },
 
     },
 });
 // Export Actions
-export const { userId, showToast, hideToast, stepCompleted, connectorGetMethod, attributesMappingMethod } =
+export const { userId, showToast, hideToast, stepCompleted, connectorGetMethod, attributesMappingMethod, addChooseCategory } =
     reduxSlice.actions;
 
 export default reduxSlice.reducer;
