@@ -17,7 +17,6 @@ function Onboarding() {
         callApi("POST", "tiktokhome/frontend/getStepCompleted")
             .then((res: any) => {
                 if (res.success === true) {
-                    console.log("getStepCompleted Onboarding", res)
                     setStepper(res.data)
                     setLoader(false)
                 }

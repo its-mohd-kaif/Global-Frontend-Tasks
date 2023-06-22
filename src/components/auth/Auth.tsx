@@ -17,10 +17,6 @@ function Auth() {
         const searchParams = new URLSearchParams(location.search);
         const user_token: any = searchParams.get('user_token');
         setMyToken(user_token)
-        if (user_token !== null) {
-            const userDetails: any = jwtDecode(`${user_token}`);
-            console.log("details", userDetails)
-        }
     }, [])
     if (myToken === null) {
         return (

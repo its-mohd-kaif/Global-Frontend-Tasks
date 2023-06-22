@@ -1,4 +1,4 @@
-import { Alert, Button, Card, FormElement, List, TextField, TextStyles } from '@cedcommerce/ounce-ui'
+import { Alert, Button, Card, FormElement,TextField } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'react-feather';
 import { useLocation } from 'react-router-dom';
@@ -63,9 +63,7 @@ function ResetPassword() {
     useEffect(() => {
         const base64: any = queryParams.get('token');
         const jwt = atob(base64)
-        console.log("Token", atob(base64))
         const decoded: any = jwt_decode(jwt);
-        console.log("JWT", decoded)
         setToken({
             base64: base64,
             jwtToken: {
@@ -76,7 +74,7 @@ function ResetPassword() {
     /**
      * destructure all values 
      */
-    const { base64, jwtToken: {
+    const { jwtToken: {
         email
     } } = token
     const { newPassword, loading, confirmPassword, eyeoff } = state;

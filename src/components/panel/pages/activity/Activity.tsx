@@ -1,66 +1,85 @@
-import { Button, Card, FlexChild, FlexLayout, PageHeader, Progressbar, TextStyles, Notification, Pagination, Modal } from '@cedcommerce/ounce-ui'
+import { Button, Card, FlexChild, FlexLayout, PageHeader, Progressbar, TextStyles, Notification, Pagination, Modal, FallBack } from '@cedcommerce/ounce-ui'
+import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
+import NoNotificationSvg from '../../../../assets/images/svg/NoNotificationSvg';
+import { callApi } from '../../../../core/ApiMethods';
 import { NotificationData } from './ActivityUtility';
 interface paginationObj {
     activePage: number
     countPerPage: number
-    start: number
-    end: number
 }
 function Activity() {
     const [notification, setNotification] = useState<any>([]);
-    const [allData, setAllData] = useState<any>([])
+    const [allData, setAllData] = useState<any>([]);
+    const [state, setState] = useState({
+        ongoingMessage: "",
+        ongoingProgress: 0
+    })
     const [pagination, setPagination] = useState<paginationObj>({
         activePage: 1,
-        countPerPage: 5,
-        start: 0,
-        end: 5,
+        countPerPage: 10,
     })
-    const { activePage, countPerPage, start, end } = pagination;
+    const { activePage, countPerPage } = pagination;
+    const { ongoingMessage, ongoingProgress } = state
     const [openModal, setOpenModal] = useState<boolean>(false)
     useEffect(() => {
+        callApi("GET", "connector/get/allQueuedTasks", {}, "extraHeaders")
+            .then((res: any) => {
+                if (res.success === true) {
+                    setState({
+                        ongoingMessage: res.data.rows[0].message,
+                        ongoingProgress: res.data.rows[0].progress
+                    })
+                }
+            })
+
+        callApi("GET", `connector/get/allNotifications?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeaders")
+            .then((res: any) => {
+                if (res.success === true) {
+                    makeNotification(res.data.rows)
+                }
+            })
         setAllData(NotificationData)
-        setNotification(NotificationData.slice(start, end))
-    }, [start, end])
+    }, [pagination])
+    const makeNotification = (data: any) => {
+        let tempArr: any = []
+        data.forEach((element: any) => {
+            let obj = {
+                message: element.message,
+                severity: element.severity,
+                created_at: moment(element.created_at).format('ddd MMM D YYYY h:mm A')
+            }
+            tempArr.push(obj)
+        });
+        setNotification(tempArr)
+    }
     /**
     * on count change pagination handler
     * @param val user select from grid 
     */
     const countChangeHandler = (val: any) => {
-        let newGrid = allData.slice(0, val)
         setPagination({
             ...pagination,
             countPerPage: val
         })
-        setNotification(newGrid)
     }
     /**
     * next page handler
     */
     const nextPageHandler = () => {
-
-        let start = countPerPage * activePage;
-        let end = countPerPage * activePage + countPerPage;
         setPagination({
             ...pagination,
             activePage: activePage + 1,
-            start: start,
-            end: end
         })
     }
     /**
     * prev page handler function
      */
     const prevPageHandler = () => {
-        //for delay active state value we more decrement value by one
-        let start = countPerPage * (activePage - 1) - countPerPage;
-        let end = countPerPage * (activePage - 1);
         setPagination({
             ...pagination,
             activePage: activePage - 1,
-            start: start,
-            end: end
         })
     }
     /**
@@ -68,13 +87,9 @@ function Activity() {
    * @param val user press on grid
    */
     const onEnterChange = (val: number) => {
-        let start = countPerPage * val - countPerPage;
-        let end = countPerPage * val;
         setPagination({
             ...pagination,
             activePage: val,
-            start: start,
-            end: end
         })
     }
     return (
@@ -96,30 +111,9 @@ function Activity() {
                     <FlexLayout spacing='loose' direction='vertical'>
                         <FlexChild>
                             <FlexLayout spacing='tight' direction='vertical'>
-                                <TextStyles fontweight='bold'>Select and upload initiated</TextStyles>
-                                <TextStyles textcolor='light'>Mon, 13 Feb 2023 10:21:53 GMT</TextStyles>
+                                <TextStyles fontweight='bold' content={ongoingMessage} />
                                 <Progressbar
-                                    percentage={10}
-                                    progessThickness="thin"
-                                />
-                            </FlexLayout>
-                        </FlexChild>
-                        <FlexChild>
-                            <FlexLayout spacing='tight' direction='vertical'>
-                                <TextStyles fontweight='bold'>Select and upload initiated</TextStyles>
-                                <TextStyles textcolor='light'>Mon, 13 Feb 2023 10:21:53 GMT</TextStyles>
-                                <Progressbar
-                                    percentage={70}
-                                    progessThickness="thin"
-                                />
-                            </FlexLayout>
-                        </FlexChild>
-                        <FlexChild>
-                            <FlexLayout spacing='tight' direction='vertical'>
-                                <TextStyles fontweight='bold'>Select and upload initiated</TextStyles>
-                                <TextStyles textcolor='light'>Mon, 13 Feb 2023 10:21:53 GMT</TextStyles>
-                                <Progressbar
-                                    percentage={0}
+                                    percentage={ongoingProgress}
                                     progessThickness="thin"
                                 />
                             </FlexLayout>
@@ -127,49 +121,55 @@ function Activity() {
                     </FlexLayout>
                 </Card>
                 <Card title={"Completed Activities"}>
-                    <FlexLayout spacing='loose' direction='vertical'>
-                        <FlexChild>
-                            {
-                                notification.map((val: any, index: number) => (
-                                    <Notification
-                                        key={index}
-                                        destroy={false}
-                                        onClose={function noRefCheck() { }}
-                                        subdesciption={val.time}
-                                        type="success"
-                                    >
-                                        {val.name}
-                                    </Notification>
-                                ))
-                            }
-                        </FlexChild>
-                        <FlexChild>
-                            <Pagination
-                                countPerPage={countPerPage}
-                                currentPage={activePage}
-                                onCountChange={(e: any) => countChangeHandler(e)}
-                                onEnter={(e: any) => onEnterChange(e)}
-                                onNext={nextPageHandler}
-                                onPrevious={prevPageHandler}
-                                totalitem={allData.length}
-                                optionPerPage={[
-                                    {
-                                        label: '5',
-                                        value: '5'
-                                    },
-                                    {
-                                        label: '10',
-                                        value: '10'
-                                    },
-                                    {
-                                        label: '15',
-                                        value: '15'
-                                    },
-                                ]}
-                            />
-                        </FlexChild>
-                    </FlexLayout>
-
+                    {notification.length === 0 ?
+                        <FallBack
+                            illustration={<NoNotificationSvg />}
+                            subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no activities and notification found in this page</TextStyles></FlexLayout>}
+                            title="No Notification Available"
+                        />
+                        :
+                        <FlexLayout spacing='loose' direction='vertical'>
+                            <FlexChild>
+                                {
+                                    notification.map((val: any, index: number) => (
+                                        <Notification key={index}
+                                            destroy={false}
+                                            onClose={function noRefCheck() { }}
+                                            subdesciption={val.created_at}
+                                            type={val.severity === "error" ? "danger" : val.severity}
+                                        >
+                                            <TextStyles fontweight="bold" content={val.message} />
+                                        </Notification>
+                                    ))
+                                }
+                            </FlexChild>
+                            <FlexChild>
+                                <Pagination
+                                    countPerPage={countPerPage}
+                                    currentPage={activePage}
+                                    onCountChange={(e: any) => countChangeHandler(e)}
+                                    onEnter={(e: any) => onEnterChange(e)}
+                                    onNext={nextPageHandler}
+                                    onPrevious={prevPageHandler}
+                                    totalitem={allData.length}
+                                    optionPerPage={[
+                                        {
+                                            label: '5',
+                                            value: '5'
+                                        },
+                                        {
+                                            label: '10',
+                                            value: '10'
+                                        },
+                                        {
+                                            label: '15',
+                                            value: '15'
+                                        },
+                                    ]}
+                                />
+                            </FlexChild>
+                        </FlexLayout>
+                    }
 
                 </Card>
             </FlexLayout>
@@ -179,7 +179,7 @@ function Activity() {
                 modalSize="small"
                 primaryAction={{
                     content: 'Clear',
-                    type:"Danger",
+                    type: "Danger",
                     loading: false,
                     onClick: () => { setOpenModal(!openModal) }
                 }}

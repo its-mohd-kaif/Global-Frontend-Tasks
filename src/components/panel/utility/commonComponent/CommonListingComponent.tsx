@@ -70,9 +70,7 @@ function CommonListingComponent(props: any) {
             source_marketplace: 'bigcommerce'
         }
         callApi("GET", "tiktokhome/category/getAttributes", payload, "extraHeaders").then((res: any) => {
-            console.log("getAttributes", res)
             setLoader(false)
-            // const resOfStaticAttributes = StaticAttributes;
             let tempArr: any = []
             res.data.forEach((element: any) => {
                 if (element.attribute_type === 3) {

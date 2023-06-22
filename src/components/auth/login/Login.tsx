@@ -52,10 +52,8 @@ function Login() {
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const user_token: any = searchParams.get('user_token');
-        console.log("Login Param", user_token);
         if (user_token !== null) {
             const userDetails: any = jwtDecode(`${user_token}`);
-            console.log("details", userDetails)
             // Save User Token In Session 
             sessionStorage.setItem(`${userDetails.user_id}_auth_token`, user_token)
             // Save User Id in redux
@@ -65,12 +63,10 @@ function Login() {
             callApi("POST", "connector/get/all")
                 .then((res: any) => {
                     if (res.success === true) {
-                        console.log("connector/get/all", res)
                         if (res.data.shopify?.installed.length > 0) {
                             callApi("POST", "tiktokhome/frontend/getStepCompleted")
                                 .then((res: any) => {
                                     if (res.success === true) {
-                                        console.log("getStepCompleted", res)
                                         setStepCompleted(res.data, userDetails.user_id)
                                     }
                                 })
@@ -81,14 +77,11 @@ function Login() {
     }, [])
 
     const setStepCompleted = (data: number, user_id: number) => {
-        // For Now Pass Static 1
-        // But In Real Case Pass data+1
         let payload = {
             step: data + 1
         }
         callApi("POST", "tiktokhome/frontend/stepCompleted", payload)
             .then((res: any) => {
-                console.log("stepCompleted", res)
                 if (res.success === true) {
                     navigate(`/panel/${user_id}/dashboard`)
                 }
@@ -113,12 +106,12 @@ function Login() {
                 passwordError: true
             })
         }
-        // else if (reCAPTCHA === null) {
-        //     setError({
-        //         ...error,
-        //         reCAPTCHAMess: "Please Click On ReCAPTCHA"
-        //     })
-        // } 
+        else if (reCAPTCHA === null) {
+            setError({
+                ...error,
+                reCAPTCHAMess: "Please Click On ReCAPTCHA"
+            })
+        } 
         else {
             setState({
                 ...state,

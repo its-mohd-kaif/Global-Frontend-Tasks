@@ -60,7 +60,6 @@ function Forgot() {
                 if (data.success === true) {
                     navigate("/auth/resetMail")
                 }
-                console.log(data);
             })
             .catch((error) => {
                 // Handle any errors that occurred during the request

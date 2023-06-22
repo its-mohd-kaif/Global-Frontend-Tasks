@@ -1,8 +1,10 @@
 import { Alert, Button, Card, CheckBox, FlexChild, FlexLayout, FormElement, List, PageHeader, Radio, Select, Switcher, TextField, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText, Trash2, Percent } from "react-feather"
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { callApi } from '../../../../core/ApiMethods';
+import { showToast } from '../../../../redux/ReduxSlice';
 import CommonListingComponent from '../../utility/commonComponent/CommonListingComponent';
 import { RuleGroup } from './CategoryUtility'
 function Template() {
@@ -28,6 +30,8 @@ function Template() {
     const { templateName, price_template, price_template_value, price_template_value_error,
         saveBtnLoader } = state
     const { errorTemplateName, errorTemplateNameMess } = error
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
     useEffect(() => {
         callApi("GET", "tiktokhome/category/getRuleGroup?marketplace=tiktok", {}, "extraHeaders")
             .then((res: any) => {
@@ -150,11 +154,9 @@ function Template() {
         }
         callApi("POST", "connector/profile/getQueryProducts", payloadForGetQueryProduct, "extraHeader")
             .then((res: any) => {
-                console.log("getQueryProducts", res)
                 if (res.success === true) {
                     callApi("POST", "connector/profile/getQueryProductsCount", payloadForGetQueryProductCount, "extraHeader")
                         .then((res: any) => {
-                            console.log("getQueryProductsCount", res)
                             if (res.success === true) {
                                 setCount(res.data.count)
                             }
@@ -168,6 +170,10 @@ function Template() {
     let reduxState = useSelector((redux: any) => redux.redux.attributes_mapping)
     const reduxChooseCategory = useSelector((redux: any) => redux.redux)
     const SaveHandler = () => {
+        setState({
+            ...state,
+            saveBtnLoader: true
+        })
         const product_attributes: any = {};
         const variation_attributes: any = {};
         for (const key in reduxState) {
@@ -183,8 +189,8 @@ function Template() {
             data: {
                 attributes_mapping: reduxState,
                 category_id: {
-                    label: reduxChooseCategory.chooseCategory.selectCategory_id,
-                    value: reduxChooseCategory.chooseCategory.selectValue
+                    label: reduxChooseCategory.chooseCategory.selectValue,
+                    value: reduxChooseCategory.chooseCategory.selectCategory_id,
                 },
                 data: [
                     {
@@ -209,7 +215,39 @@ function Template() {
                 query: queryString,
                 targets: [
                     {
-                        target_marketplace: "tiktok"
+                        target_marketplace: "tiktok",
+                        attributes_mapping: reduxState,
+                        shops: [
+                            {
+                                shop_id: "313",
+                                active: "1",
+                                warehouses: [
+                                    {
+                                        warehouse_id: "1111",
+                                        active: "1",
+                                        attributes_mapping: reduxState,
+                                        sources: [
+                                            {
+                                                source_marketplace: "bigcommerce",
+                                                attributes_mapping: reduxState,
+                                                shops: [
+                                                    {
+                                                        shop_id: "241",
+                                                        active: "1",
+                                                        warehouses: [
+                                                            {
+                                                                active: "1",
+                                                                attributes_mapping: reduxState
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
@@ -220,13 +258,25 @@ function Template() {
         }
         callApi("POST", "connector/profile/validateProfieName", payload1, "extraHeaders")
             .then((res: any) => {
-                console.log("validateProfieName", res)
                 if (res.success === true) {
                     callApi("POST", "connector/profile/saveProfile", obj, "extraHeadears")
                         .then((res: any) => {
-                            console.log("saveProfile", res)
-                            // if (res.success === true) {
-                            // }
+                            setState({
+                                ...state,
+                                saveBtnLoader: false
+                            })
+                            if (res.success === true) {
+                                dispatch(showToast({
+                                    type: "success",
+                                    message: res.message
+                                }))
+                                navigate(`/panel/${sessionStorage.getItem("user_id")}/category`)
+                            } else {
+                                dispatch(showToast({
+                                    type: "error",
+                                    message: res.message
+                                }))
+                            }
                         })
                 }
             })
@@ -238,7 +288,7 @@ function Template() {
                 action={
                     <FlexLayout valign='center' spacing='tight'>
                         <Button icon={<FileText size={"18"} />} type="Outlined">Guide</Button>
-                        <Button onClick={SaveHandler} type="Primary">Save</Button>
+                        <Button loading={saveBtnLoader} onClick={SaveHandler} type="Primary">Save</Button>
                     </FlexLayout>
                 }
             />

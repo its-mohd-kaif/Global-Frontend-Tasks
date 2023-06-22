@@ -20,7 +20,6 @@ function Confirmation() {
                 if (data.success === false) {
                     setAlert(true)
                 } else {
-                    console.log(jwtDecode(`${paramValue}`))
                     const userDetails: any = jwtDecode(`${paramValue}`);
                     sessionStorage.setItem(`${userDetails.user_id}_auth_token`, paramValue)
                     dispatch(userId(userDetails.user_id))
