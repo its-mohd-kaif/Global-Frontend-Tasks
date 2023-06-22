@@ -147,3 +147,10 @@
 .action-delete-btn {
   padding: 4px 12px !important;
 }
+
+/* View Rules Table String CSS */
+.rulesContent{
+  width: 130px; /* Adjust this value to your desired width */
+  word-break: break-all;
+  text-align: center;
+}

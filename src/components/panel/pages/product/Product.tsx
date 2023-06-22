@@ -718,7 +718,7 @@ function Product() {
                                                                             },
                                                                             {
                                                                                 label: "Variant",
-                                                                                value: "variant"
+                                                                                value: "variation"
                                                                             }
                                                                         ]}
                                                                         value={productTypeChoose}
