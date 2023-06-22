@@ -28,8 +28,8 @@ function MappingTemplate() {
                     default_profile: {
                         attributes_mapping: reduxState,
                         category_id: {
-                            label: reduxChooseCategory.chooseCategory.selectCategory_id,
-                            value: reduxChooseCategory.chooseCategory.selectValue
+                            label: reduxChooseCategory.chooseCategory.selectValue,
+                            value: reduxChooseCategory.chooseCategory.selectCategory_id,
                         },
                         data: [{
                             data: {
@@ -49,14 +49,12 @@ function MappingTemplate() {
                     callApi("POST", "tiktokhome/frontend/getStepCompleted")
                         .then((res: any) => {
                             if (res.success === true) {
-                                console.log("getStepCompleted", res)
                                 let payload = {
                                     step: res.data + 1
                                 }
                                 callApi("POST", "tiktokhome/frontend/stepCompleted", payload)
                                     .then((res: any) => {
                                         if (res.success === true) {
-                                            // navigate(`/panel/${user_id}/dashboard`)
                                             window.location.reload();
                                         }
                                     })

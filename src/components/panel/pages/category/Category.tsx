@@ -1,4 +1,4 @@
-import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, TextLink } from '@cedcommerce/ounce-ui'
+import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, TextField, TextLink } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
@@ -67,18 +67,33 @@ function Category() {
         nextPage: "",
         prevPage: ""
     })
+    const [search, setSearch] = useState<string>("")
+    const [deleteCheck, setDeleteCheck] = useState<boolean>(false)
     const { activePage, countPerPage, next, prev } = pagination;
     const { nextPage, prevPage } = helpPagination
 
     useEffect(() => {
         setLoader(true)
-        callApi("GET", `connector/profile/getProfileDataCount?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeader")
+        setDeleteCheck(false)
+        makeApiCall()
+    }, [pagination, deleteCheck])
+
+    useEffect(() => {
+        if (search !== "") {
+            const getData = setTimeout(() => {
+                setLoader(true)
+                makeApiCall()
+            }, 3000);
+            return () => clearInterval(getData);
+        }
+    }, [search])
+
+    const makeApiCall = () => {
+        callApi("GET", `connector/profile/getProfileDataCount?activePage=${activePage}&count=${countPerPage}${search !== "" ? `&name=${search}` : ""}`, {}, "extraHeader")
             .then((res: any) => {
                 if (res.success === true) {
                     setTotalCount(res.total_count)
-                    callApi("GET", `connector/profile/getProfileData?activePage=${activePage}&count=${countPerPage}
-                    ${next !== null ? `&next=${next}` : ""}
-                    ${prev !== null ? `&prev=${prev}` : ""}`, {}, "extraHeader")
+                    callApi("GET", `connector/profile/getProfileData?activePage=${activePage}&count=${countPerPage}${next !== null ? `&next=${next}` : ""}${prev !== null ? `&prev=${prev}` : ""}${search !== "" ? `&name=${search}` : ""}`, {}, "extraHeader")
                         .then((res: any) => {
                             setLoader(false)
                             if (res.success === true) {
@@ -93,7 +108,7 @@ function Category() {
                                             element.product_count[0].count :
                                             element.total_count !== undefined ? element.total_count
                                                 : 0,
-                                        actions: <CategoryActions id={element._id.$oid} />,
+                                        actions: <CategoryActions id={element._id.$oid} setDeleteCheck={setDeleteCheck} />,
                                         key: Math.random() * 91919191
                                     }
                                     tempArr.push(obj)
@@ -107,7 +122,7 @@ function Category() {
                         })
                 }
             })
-    }, [pagination])
+    }
     /**
     * next page handler
     */
@@ -118,6 +133,7 @@ function Category() {
             next: nextPage,
             prev: null
         })
+        setSearch("")
     }
     /**
     * prev page handler function
@@ -129,6 +145,7 @@ function Category() {
             next: null,
             prev: prevPage
         })
+        setSearch("")
     }
     return (
         <>
@@ -146,20 +163,23 @@ function Category() {
             <Card cardType='Bordered'>
                 <FlexLayout spacing='loose' direction='vertical'>
                     <FlexChild desktopWidth='33' tabWidth='50' mobileWidth='100'>
-                        <AutoComplete
-                            clearButton
-                            clearFunction={function noRefCheck() { }}
-                            extraClass=""
-                            onChange={function noRefCheck() { }}
-                            onClick={function noRefCheck() { }}
-                            onEnter={function noRefCheck() { }}
-                            options={[]}
+                        <TextField
+                            onChange={(e) => {
+                                setSearch(e)
+                            }}
                             placeHolder="Search category template"
-                            popoverContainer="body"
-                            popoverPosition="right"
-                            setHiglighted
-                            thickness="thick"
-                            value=""
+                            value={search}
+                            clearButton
+                            clearFunction={() => {
+                                setSearch("")
+                                makeApiCall()
+                                setPagination({
+                                    activePage: 1,
+                                    countPerPage: 5,
+                                    next: null,
+                                    prev: null
+                                })
+                            }}
                         />
                     </FlexChild>
                     {loader === true ?

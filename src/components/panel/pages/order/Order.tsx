@@ -254,7 +254,6 @@ function Order() {
         function removeItemById(arr: any, id: number) {
             return arr.filter((item: any) => item.id !== id);
         }
-        console.log("Remove Filter", id, key)
         const updatedData = removeItemById(tag, id);
         setFilterState((prevState) => ({
             ...prevState,

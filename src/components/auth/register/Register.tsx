@@ -1,5 +1,5 @@
 import { Button, Card, CheckBox, FlexChild, FlexLayout, TextField, TextLink, TextStyles } from '@cedcommerce/ounce-ui'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Eye, EyeOff } from 'react-feather';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -102,7 +102,6 @@ function Register() {
           ...state,
           btnLoader: false
         })
-        console.log("REGISTER", res)
         if (res.success === true) {
           dispatch(showToast({
             type: "success",

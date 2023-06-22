@@ -4,6 +4,7 @@ import {
     Button,
     Card,
     Carousel,
+    FallBack,
     FlexChild,
     FlexLayout,
     Loader,
@@ -22,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { makeBadgeForStatus, makeTitleForStatus } from "./DashboardUtility";
 import { callApi } from "../../../../core/ApiMethods";
 import { useSelector } from "react-redux";
+import NoNotificationSvg from "../../../../assets/images/svg/NoNotificationSvg";
 function Dashboard() {
     const navigate = useNavigate()
     // Make State For Store Product Status
@@ -202,19 +204,33 @@ function Dashboard() {
                                     </Card>
                                 </FlexLayout>
                             </Card>
-                            <Card title={"Activity"} action={<Button onClick={() => navigate("/panel/activity")} type="TextButton">View all</Button>}>
-                                {
-                                    notifications.map((val: any, index: number) => (
-                                        <Notification key={index}
-                                            destroy={false}
-                                            onClose={function noRefCheck() { }}
-                                            subdesciption={val.created_at}
-                                            type={val.severity === "error" ? "danger" : val.severity}
-                                        >
-                                            <TextStyles fontweight="bold" content={val.message} />
-                                        </Notification>
-                                    ))
+                            <Card title={"Activity"} action={<Button onClick={() => navigate(`/panel/${sessionStorage.getItem("user_id")}/activity`)} type="TextButton">View all</Button>}>
+
+                                {notifications.length === 0 ?
+                                    <FallBack
+                                        illustration={<NoNotificationSvg />}
+                                        subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no activities and notification found in this page</TextStyles></FlexLayout>}
+                                        title="No Notification Available"
+                                    />
+                                    :
+                                    <FlexLayout spacing='loose' direction='vertical'>
+                                        <FlexChild>
+                                            {
+                                                notifications.map((val: any, index: number) => (
+                                                    <Notification key={index}
+                                                        destroy={false}
+                                                        onClose={function noRefCheck() { }}
+                                                        subdesciption={val.created_at}
+                                                        type={val.severity === "error" ? "danger" : val.severity}
+                                                    >
+                                                        <TextStyles fontweight="bold" content={val.message} />
+                                                    </Notification>
+                                                ))
+                                            }
+                                        </FlexChild>
+                                    </FlexLayout>
                                 }
+
                             </Card>
                         </FlexLayout>
                     </FlexChild>

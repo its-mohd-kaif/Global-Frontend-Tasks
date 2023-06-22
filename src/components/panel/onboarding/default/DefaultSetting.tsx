@@ -82,7 +82,6 @@ function DefaultSetting() {
                     ...state,
                     saveBtnLoader: false
                 })
-                console.log("saveConfig", res)
                 if (res.success === true) {
                     dispatch(showToast({
                         type: "success",
@@ -91,16 +90,13 @@ function DefaultSetting() {
                     callApi("POST", "tiktokhome/frontend/getStepCompleted")
                         .then((res: any) => {
                             if (res.success === true) {
-                                console.log("getStepCompleted", res)
                                 let payload1 = {
                                     step: 4
                                 }
                                 callApi("POST", "tiktokhome/frontend/stepCompleted", payload1)
                                     .then((res: any) => {
-                                        console.log("stepCompleted*", res)
                                         if (res.success === true) {
-                                            // navigate(`/panel/${user_id}/dashboard`)
-                                            window.location.reload();
+                                            navigate(`/panel/${user_id}/dashboard`)
                                         }
                                     })
                             }

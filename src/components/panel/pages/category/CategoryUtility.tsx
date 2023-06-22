@@ -8,7 +8,7 @@ import { showToast } from "../../../../redux/ReduxSlice"
 
 
 export const CategoryActions = (_props: any) => {
-    const { id } = _props
+    const { id, setDeleteCheck } = _props
     const [openActions, setOpenActions] = useState<boolean>(false)
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [btnLoader, setBtnLoader] = useState<boolean>(false);
@@ -18,13 +18,13 @@ export const CategoryActions = (_props: any) => {
         callApi("GET", `connector/profile/deleteProfile?id=${id}`, {}, "extraHeaders")
             .then((res: any) => {
                 setBtnLoader(false)
-                console.log("deleteProfile", res)
                 if (res.success === true) {
                     setOpenModal(false)
                     dispatch(showToast({
                         type: "success",
                         message: res.message
                     }))
+                    setDeleteCheck(true)
                 } else {
                     dispatch(showToast({
                         type: "error",
@@ -161,10 +161,8 @@ export const RuleGroup = (props: any) => {
                         })
                         if (e === "title") {
                             setConditionOptions(allCondition)
-                            console.log("IF")
                         } else {
                             setConditionOptions(twoCondition)
-                            console.log("Else")
                         }
 
                     }}
