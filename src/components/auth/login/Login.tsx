@@ -119,8 +119,8 @@ function Login() {
             })
             // Make a payload for api
             const payload = {
-                // email: email,
-                username: "Testing Team #1",
+                // dev username : Testing Team #1
+                username: email,
                 password: password
             }
             callApi("POST", "user/login", payload)
@@ -158,7 +158,7 @@ function Login() {
             <FlexLayout spacing='loose' direction='vertical'>
                 <TextField
                     autocomplete="off"
-                    name="Email"
+                    name="Username"
                     required
                     onChange={(e) => {
                         setState({
@@ -170,7 +170,7 @@ function Login() {
                             emailError: false
                         })
                     }}
-                    placeHolder="Enter Email Address or Mobile Number"
+                    placeHolder="Enter Username or Mobile Number"
                     type="text"
                     value={email}
                     error={emailError}
