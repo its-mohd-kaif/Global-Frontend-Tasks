@@ -6,7 +6,7 @@ import BrokenPageSvg from '../../../../assets/images/svg/BrokenPageSvg'
 function BrokenComponent() {
     const navigate = useNavigate()
     return (
-        <div style={{ marginTop: "3em" }}>
+        <div style={{ marginTop: "5em" }}>
             <FallBack
                 action={<Button onClick={() => {
                     navigate("auth/login")
