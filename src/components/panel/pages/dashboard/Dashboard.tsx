@@ -20,7 +20,7 @@ import moment from "moment";
 import React, { useEffect, useState } from 'react'
 import carouselImg from "../../../../assets/images/png/carousel.png"
 import { useNavigate } from "react-router-dom";
-import { makeBadgeForStatus, makeTitleForStatus } from "./DashboardUtility";
+import { makeBadgeForOrderStatus, makeBadgeForProductStatus, makeTitleForOrderStatus, makeTitleForProductStatus } from "./DashboardUtility";
 import { callApi } from "../../../../core/ApiMethods";
 import { useSelector } from "react-redux";
 import NoNotificationSvg from "../../../../assets/images/svg/NoNotificationSvg";
@@ -61,8 +61,8 @@ function Dashboard() {
         let tempArr: any = []
         data.forEach((element: any) => {
             let obj = {
-                title: makeTitleForStatus(element._id),
-                icon: makeBadgeForStatus(element._id),
+                title: makeTitleForOrderStatus(element._id),
+                icon: makeBadgeForOrderStatus(element._id),
                 count: element.count,
                 btn: <TextLink label="View Product"></TextLink>,
                 id: element._id
@@ -74,14 +74,17 @@ function Dashboard() {
     const makeProductStatus = (data: any) => {
         let tempArr: any = []
         data.forEach((element: any) => {
-            let obj = {
-                title: makeTitleForStatus(element._id),
-                icon: makeBadgeForStatus(element._id),
-                count: element.count,
-                btn: <TextLink label="View Product"></TextLink>,
-                id: element._id
-            };
-            tempArr.push(obj)
+            if (element._id !== "in_progress") {
+                let obj = {
+                    title: makeTitleForProductStatus(element._id),
+                    icon: makeBadgeForProductStatus(element._id),
+                    count: element.count,
+                    btn: <TextLink label="View Product"></TextLink>,
+                    id: element._id
+                };
+                tempArr.push(obj)
+            }
+
         });
         setProducts(tempArr)
     }
@@ -125,7 +128,7 @@ function Dashboard() {
                     <FlexChild desktopWidth="66" tabWidth="66" mobileWidth="100">
                         <FlexLayout spacing="loose" direction="vertical">
                             <Card>
-                                <FlexLayout spacing="extraTight" direction="vertical">
+                                <FlexLayout spacing="loose" direction="vertical">
                                     <Card
                                         action={<Button type="TextButton">View all</Button>}
                                         cardType="Subdued"
