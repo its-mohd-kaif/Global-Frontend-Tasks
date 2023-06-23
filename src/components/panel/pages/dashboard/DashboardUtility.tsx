@@ -6,7 +6,7 @@ export const AccordionData = [
     'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point ofusing Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using "Content here, content here", making itlook like readable English.',
 ]
 
-export function makeTitleForStatus(string: string) {
+export function makeTitleForProductStatus(string: string) {
     if (string === "not_uploaded") {
         return "Not Uploaded"
     } else if (string === "inactive") {
@@ -15,7 +15,10 @@ export function makeTitleForStatus(string: string) {
         return "Failed"
     } else if (string === "live") {
         return "Live"
-    } else if (string === "AWAITING_SHIPMENT") {
+    }
+}
+export function makeTitleForOrderStatus(string: string) {
+    if (string === "AWAITING_SHIPMENT") {
         return "Awaiting Shipment"
     } else if (string === "COMPLETED") {
         return "Completed"
@@ -26,7 +29,7 @@ export function makeTitleForStatus(string: string) {
     }
 }
 
-export function makeBadgeForStatus(string: string) {
+export function makeBadgeForProductStatus(string: string) {
     if (string === "not_uploaded") {
         return <AlertTriangle size="18" color="#ffc107bf" />
     } else if (string === "inactive") {
@@ -35,7 +38,10 @@ export function makeBadgeForStatus(string: string) {
         return <Slash size="18" color="#ff0000" />
     } else if (string === "live") {
         return <CheckCircle size="18" color="#4caf50c4" />
-    } else if (string === "AWAITING_SHIPMENT") {
+    }
+}
+export function makeBadgeForOrderStatus(string: string) {
+    if (string === "AWAITING_SHIPMENT") {
         return <Clock size="18" color="#ffc107bf" />
     } else if (string === "COMPLETED") {
         return <CheckCircle size="18" color="#4caf50c4" />
