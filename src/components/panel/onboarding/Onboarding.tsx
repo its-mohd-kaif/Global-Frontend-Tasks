@@ -55,14 +55,11 @@ function Onboarding() {
                             stepper === 0 ?
                                 <SoucreConnect />
                                 : stepper === 1 ?
-                                    // <TargetConnection />
                                     <MappingTemplate />
                                     : stepper === 2 ?
                                         <DefaultSetting />
                                         :
-                                        // : stepper === 3 ?
-                                            <Navigate to={"/prepareOnboarding"} />
-                                            // : null
+                                        <Navigate to={"/prepareOnboarding"} />
                         }
                     </div>
                 </div>
