@@ -14,7 +14,7 @@ function Onboarding() {
     const [loader, setLoader] = useState<boolean>(true)
 
     useEffect(() => {
-        callApi("POST", "tiktokhome/frontend/getStepCompleted")
+        callApi("POST", "tiktokhome/frontend/getStepCompleted", {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
                     setStepper(res.data)

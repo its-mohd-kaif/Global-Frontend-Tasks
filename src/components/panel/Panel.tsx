@@ -16,6 +16,7 @@ import Onboarding from "./onboarding/Onboarding"
 import { useDispatch, useSelector } from "react-redux"
 import LoaderComponent from "./utility/commonComponent/LoaderComponent"
 import { connectorGetMethod, stepCompleted, userId } from "../../redux/ReduxSlice"
+import GridPage from "../../testing-grid/GridPage"
 
 function Panel() {
     const navigate = useNavigate()
@@ -38,7 +39,7 @@ function Panel() {
         dispatch(userId(user_id))
     }, [])
     const getStepCompleted = () => {
-        callApi("POST", "tiktokhome/frontend/getStepCompleted")
+        callApi("POST", "tiktokhome/frontend/getStepCompleted", {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
                     dispatch(stepCompleted(res))
@@ -82,6 +83,7 @@ function Panel() {
                             <Route path='category' element={<Category />} />
                             <Route path='category_template' element={< Template />} />
                             <Route path='activity' element={<Activity />} />
+                            <Route path='grid-page' element={<GridPage />} />
                         </Routes>
                         <Footer />
                     </BodyLayout>
