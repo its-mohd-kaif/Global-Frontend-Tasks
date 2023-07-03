@@ -2,7 +2,7 @@ import { NewSidebar } from '@cedcommerce/ounce-ui'
 import React from 'react'
 import CompanyLogoSvg from '../../../assets/images/svg/CompanyLogoSvg'
 import OnlyLogoSvg from '../../../assets/images/svg/OnlyLogoSvg'
-import { Box, HelpCircle, Home, LifeBuoy, Settings, FileText, ShoppingBag, DollarSign, CornerDownLeft } from 'react-feather'
+import { Box, Grid, HelpCircle, Home, LifeBuoy, Settings, FileText, ShoppingBag, DollarSign, CornerDownLeft } from 'react-feather'
 import { useNavigate } from 'react-router-dom'
 
 function Sidebar() {
@@ -60,6 +60,12 @@ function Sidebar() {
             icon: <LifeBuoy color='#3B424F' />,
             id: "help",
             path: "help",
+        },
+        {
+            content: "Grid Page",
+            icon: <Grid size="24" color="#3B424F" />,
+            id: "grid-page",
+            path: "grid-page",
         },
     ]
     const navigate = useNavigate()

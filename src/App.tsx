@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideToast } from "./redux/ReduxSlice";
 import Response from "./components/panel/onboarding/response/Response";
 import BrokenComponent from "./components/panel/utility/commonComponent/BrokenComponent";
+import GridPage from "./testing-grid/GridPage";
 
 
 interface ErrorBoundaryProps {
@@ -63,6 +64,7 @@ function App() {
           <Route path='/prepareOnboarding' element={<PrepareOnboarding />} />
           <Route path='/prepareDashboard' element={<PrepareDashboard />} />
           <Route path="/show/message" element={<Response />} />
+          <Route path="/testing-grid" element={<GridPage />} />
           <Route
             path="/panel/:uId"
             element={
