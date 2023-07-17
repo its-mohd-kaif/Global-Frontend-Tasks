@@ -1,6 +1,6 @@
 import { Alert, Button, Card, ChoiceList, FlexChild, FlexLayout, Image, Modal, Popover, Select, TextField, TextLink, TextStyles } from "@cedcommerce/ounce-ui"
 import { useEffect, useState } from "react"
-import { Edit, Trash2 } from "react-feather"
+import { Trash2 } from "react-feather"
 import { useDispatch } from "react-redux"
 import actions from "../../../../assets/images/png/menu.png"
 import { callApi } from "../../../../core/ApiMethods"
@@ -76,7 +76,6 @@ export const RuleGroup = (props: any) => {
         type: parentType !== "" ? parentType : "title",
         condition: parentCondition !== "" ? parentCondition : "=="
     })
-
     const [selectOptions, setSelectOptions] = useState<any>([])
     const [brandChoiseListOptions, setBrandChoiceListOptions] = useState<any>([])
     const [cateChoiseListOptions, setCateChoiceListOptions] = useState<any>([])
