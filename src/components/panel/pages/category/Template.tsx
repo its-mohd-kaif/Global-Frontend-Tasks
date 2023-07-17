@@ -458,39 +458,6 @@ function Template() {
                                 <TextStyles fontweight='bold' subheadingTypes='XS-1.6'>Profile Custom Pricing (Fixed or Percentage)</TextStyles>
                             </FlexChild>
                             <FlexChild desktopWidth='66' tabWidth='100' mobileWidth='100'>
-                                {/* <FlexLayout spacing='extraTight' direction='vertical'>
-                                    <FlexChild>
-                                        <FlexLayout halign='fill' spacing='loose'>
-                                            <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
-                                                <Select
-                                                    helpIcon={<svg fill="none" height="20" stroke="#c3c3c3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /></svg>}
-                                                    onChange={function noRefCheck() { }}
-                                                    onblur={function noRefCheck() { }}
-                                                    options={[
-                                                        {
-                                                            label: 'Percentage Increment',
-                                                            value: '0'
-                                                        },
-                                                    ]}
-                                                    searchEable
-                                                    value="0"
-                                                />
-                                            </FlexChild>
-                                            <FlexChild desktopWidth='50' tabWidth='50' mobileWidth='50'>
-                                                <TextField
-                                                    innerSufIcon={<Percent color='#70747E' size={18} />}
-                                                    onChange={function noRefCheck() { }}
-                                                    placeHolder="Enter Value"
-                                                    type="text"
-                                                    value=""
-                                                />
-                                            </FlexChild>
-                                        </FlexLayout>
-                                    </FlexChild>
-                                    <FlexChild>
-                                        <TextStyles textcolor='light'>The filtered product(s) will be uploaded on setup Shop with the updated price rule.</TextStyles>
-                                    </FlexChild>
-                                </FlexLayout> */}
                                 <FlexLayout halign='center' direction='vertical'>
                                     <FlexLayout spacing='loose' direction='vertical' >
                                         <FlexChild>
@@ -575,52 +542,6 @@ function Template() {
                                                 </FlexChild>
                                             </FlexLayout>
                                         </FlexChild>
-                                        {/* <FlexLayout valign='start' spacing='mediumTight'>
-                                            <Switcher
-                                                checked={product_auto_import}
-                                                onChange={() => {
-                                                    setState({
-                                                        ...state,
-                                                        product_auto_import: !product_auto_import
-                                                    })
-                                                }}
-                                                textAligh="right"
-                                            />
-                                            <FlexChild>
-                                                <FlexLayout direction='vertical'>
-                                                    <TextStyles>Product Auto Import</TextStyles>
-                                                    <TextStyles textcolor='light'>Enable to automatically import product(s) to the app</TextStyles>
-                                                </FlexLayout>
-                                            </FlexChild>
-                                        </FlexLayout>
-                                        <FlexLayout valign='start' spacing='mediumTight'>
-                                            <Switcher
-                                                checked={product_auto_delete}
-                                                onChange={() => {
-                                                    setState({
-                                                        ...state,
-                                                        product_auto_delete: !product_auto_delete
-                                                    })
-                                                }}
-                                                textAligh="right"
-                                            />
-                                            <FlexChild>
-                                                <FlexLayout direction='vertical'>
-                                                    <TextStyles>Product Auto Delete</TextStyles>
-                                                    <FlexChild>
-                                                        <>
-                                                            <TextStyles textcolor='light'>
-                                                                Enable to automatically delete from Michaels Shop when product(s) is deleted from
-                                                            </TextStyles>
-                                                            <TextStyles textcolor='light'>
-                                                                Magento Store. Individual variants won’t be deleted
-                                                            </TextStyles>
-                                                            <br></br>
-                                                        </>
-                                                    </FlexChild>
-                                                </FlexLayout>
-                                            </FlexChild>
-                                        </FlexLayout> */}
                                     </FlexLayout>
                                 </FlexLayout>
                             </FlexChild>

@@ -4,26 +4,33 @@ interface gridInterface {
     rows: any[],
     columns: any[]
 }
-function GridUtility(props: any) {
+interface GridUtilityProps {
+    data: any[];
+}
+
+interface GridInterface {
+    rows: any[];
+    columns: any[];
+}
+
+function GridUtility(props: GridUtilityProps) {
     const { data } = props;
-    const [state, setState] = useState<gridInterface>({
+    const [state, setState] = useState<GridInterface>({
         rows: [],
         columns: []
-    })
-    const { rows, columns } = state
+    });
+    const { rows, columns } = state;
+
     useEffect(() => {
-        setState({
+        setState(prevState => ({
+            ...prevState,
             columns: makeDynamicColumns(Object.keys(data[0])),
             rows: data,
-        })
-    }, [])
-    /**
-    * In this function, we create columns object array 
-    * @param data its an api response Object.keys(data[0])
-    * @returns object array
-    */
-    const makeDynamicColumns = (data: any) => {
-        let tempColumns: any = [];
+        }));
+    }, [data]);
+
+    const makeDynamicColumns = (data: any[]) => {
+        let tempColumns: any[] = [];
         data.forEach((element: any) => {
             if (element !== "key") {
                 let objOfColumns = {
@@ -32,12 +39,13 @@ function GridUtility(props: any) {
                     key: element.toLowerCase(),
                     title: element.charAt(0).toUpperCase() + element.slice(1).toLowerCase(),
                     width: 100
-                }
-                tempColumns.push(objOfColumns)
+                };
+                tempColumns.push(objOfColumns);
             }
         });
-        return tempColumns
-    }
+        return tempColumns;
+    };
+
     return (
         <>
             <Grid
@@ -45,7 +53,7 @@ function GridUtility(props: any) {
                 dataSource={rows}
             />
         </>
-    )
+    );
 }
 
-export default GridUtility
+export default GridUtility;

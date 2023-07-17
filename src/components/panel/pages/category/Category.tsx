@@ -1,10 +1,9 @@
-import { AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, TextField, TextLink } from '@cedcommerce/ounce-ui'
+import { Button, Card, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, TextField } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
 import { callApi } from '../../../../core/ApiMethods'
 import { CategoryActions, ViewRules } from './CategoryUtility'
-import { TemplateData } from './TemplateData'
 interface paginationObj {
     activePage: number;
     countPerPage: number;

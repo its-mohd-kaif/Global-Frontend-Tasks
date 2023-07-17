@@ -38,6 +38,7 @@ function Dashboard() {
         callApi("GET", "tiktokhome/product/getproductStatus", {}, "extraHeaders")
             .then((res: any) => {
                 setLoader(false)
+                console.log("getproductStatus", res)
                 if (res.success === true) {
                     makeProductStatus(res.data.status)
                 }
@@ -74,7 +75,6 @@ function Dashboard() {
     const makeProductStatus = (data: any) => {
         let tempArr: any = []
         data.forEach((element: any) => {
-            if (element._id !== "in_progress") {
                 let obj = {
                     title: makeTitleForProductStatus(element._id),
                     icon: makeBadgeForProductStatus(element._id),
@@ -83,8 +83,6 @@ function Dashboard() {
                     id: element._id
                 };
                 tempArr.push(obj)
-            }
-
         });
         setProducts(tempArr)
     }
@@ -240,9 +238,9 @@ function Dashboard() {
                     <FlexChild desktopWidth="33" tabWidth="33" mobileWidth="100">
                         <FlexLayout desktopWidth="100" tabWidth="100" mobileWidth="100" spacing="loose" direction="vertical">
                             <Card cardType="Default" title="Connected Michael Account">
-                                <FlexLayout halign="fill" valign="start" spacing="loose">
+                                <FlexLayout  halign="fill" valign="start" spacing="loose">
                                     <FlexChild desktopWidth="66">
-                                        <FlexLayout>
+                                        <FlexLayout wrap="noWrap">
                                             <FlexChild desktopWidth="25">
                                                 <Avatar
                                                     color="red"
@@ -253,7 +251,7 @@ function Dashboard() {
                                                 />
                                             </FlexChild>
                                             <FlexChild desktopWidth="75">
-                                                <FlexLayout direction="vertical">
+                                                <FlexLayout wrap="noWrap" direction="vertical">
                                                     <TextStyles fontweight="bold" type="SubHeading">
                                                         {user}
                                                     </TextStyles>
@@ -302,7 +300,7 @@ function Dashboard() {
         )
     } else {
         return (
-            <Loader type="Loader2" />
+            <Loader type="Loader1" />
         )
     }
 
