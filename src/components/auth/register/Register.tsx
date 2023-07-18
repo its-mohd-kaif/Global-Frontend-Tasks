@@ -71,9 +71,6 @@ function Register() {
     confirmPasswordMess, createBtn, emailError,
     emailMess, mobileError, mobileMess, passwordError } = error;
 
-
-  const apiEndPoint = process.env.REACT_APP_END_POINT
-
   let { emailFormat
   } = regexValidation;
 
@@ -178,6 +175,13 @@ function Register() {
     }
   }
 
+  const capitalizeFirstLetter = (str: string) => {
+    if (str.length === 0) {
+      return str; // Handle empty string
+    }
+    return `${str[0].toUpperCase()}${str.slice(1)}`;
+  };
+
   return (
     <Card title={"Create an account"}>
       <FlexLayout spacing='loose' direction='vertical'>
@@ -214,6 +218,11 @@ function Register() {
                     ...error,
                     firstNameError: true
                   })
+                } else {
+                  setState({
+                    ...state,
+                    first_name: capitalizeFirstLetter(first_name)
+                  })
                 }
               }}
             />
@@ -248,6 +257,11 @@ function Register() {
                   setError({
                     ...error,
                     lastNameError: true
+                  })
+                } else {
+                  setState({
+                    ...state,
+                    last_name: capitalizeFirstLetter(last_name)
                   })
                 }
               }}
