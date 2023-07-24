@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
 import { callApi } from '../../../../core/ApiMethods'
+import { SkCategory } from '../../../skeleton/SkCategory'
 import { CategoryActions, ViewRules } from './CategoryUtility'
 interface paginationObj {
     activePage: number;
@@ -160,30 +161,30 @@ function Category() {
             <hr></hr>
             <br></br>
             <Card cardType='Bordered'>
-                <FlexLayout spacing='loose' direction='vertical'>
-                    <FlexChild desktopWidth='33' tabWidth='50' mobileWidth='100'>
-                        <TextField
-                            onChange={(e) => {
-                                setSearch(e)
-                            }}
-                            placeHolder="Search category template"
-                            value={search}
-                            clearButton
-                            clearFunction={() => {
-                                setSearch("")
-                                makeApiCall()
-                                setPagination({
-                                    activePage: 1,
-                                    countPerPage: 5,
-                                    next: null,
-                                    prev: null
-                                })
-                            }}
-                        />
-                    </FlexChild>
-                    {loader === true ?
-                        <Loader type='Loader1' />
-                        :
+                {loader === true ? <SkCategory />
+
+                    :
+                    <FlexLayout spacing='loose' direction='vertical'>
+                        <FlexChild desktopWidth='33' tabWidth='50' mobileWidth='100'>
+                            <TextField
+                                onChange={(e) => {
+                                    setSearch(e)
+                                }}
+                                placeHolder="Search category template"
+                                value={search}
+                                clearButton
+                                clearFunction={() => {
+                                    setSearch("")
+                                    makeApiCall()
+                                    setPagination({
+                                        activePage: 1,
+                                        countPerPage: 5,
+                                        next: null,
+                                        prev: null
+                                    })
+                                }}
+                            />
+                        </FlexChild>
                         <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
                             <>
                                 <Grid
@@ -214,8 +215,9 @@ function Category() {
                                 />
                             </>
                         </FlexChild>
-                    }
-                </FlexLayout>
+                    </FlexLayout>
+                }
+
             </Card>
         </>
     )

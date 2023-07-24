@@ -1,7 +1,6 @@
 import { Loader, StepWizard } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import ConnectionTitle from '../utility/commonComponent/ConnectionTitle'
-import TargetConnection from './connection/TargetConnection'
 import MappingTemplate from './default/MappingTemplate'
 import DefaultSetting from './default/DefaultSetting'
 import TopbarOnboarding from '../topbar/TopbarOnboarding'

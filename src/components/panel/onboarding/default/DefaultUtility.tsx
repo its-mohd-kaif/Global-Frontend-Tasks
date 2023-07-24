@@ -202,7 +202,7 @@ function AttributeMappingMethod(props: any) {
                         </FlexChild>
                         <FlexChild>
 
-                            <FlexLayout spacing='extraTight'>
+                            <FlexLayout spacing='loose'>
                                 <TextStyles>{row.name}</TextStyles>
                                 {row.required === true ?
                                     <TextStyles textcolor="negative">*</TextStyles>
@@ -248,9 +248,10 @@ function AttributeMappingMethod(props: any) {
                                 showBadges
                                 thickness="thick"
                                 value={value}
-                            /> :
+                            />
+                            :
                             <FlexChild>
-                                <FlexLayout valign='center' spacing='tight'>
+                                <FlexLayout valign='center' spacing='loose'>
                                     <FlexChild desktopWidth={valuePresent() ? "100" : "80"} tabWidth={valuePresent() ? "100" : "80"}
                                         mobileWidth={valuePresent() ? "100" : "80"}>
                                         {selectOptionTitle === "Set Custom" ?
@@ -283,7 +284,6 @@ function AttributeMappingMethod(props: any) {
                                             />}
                                         </>
                                     </FlexChild>
-
                                 </FlexLayout>
                             </FlexChild>
                         }

@@ -1,4 +1,4 @@
-import { ActionList, Filter, Alert, AutoComplete, Button, Card, CheckBox, FlexChild, FlexLayout, FormElement, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles, Loader, Tag } from '@cedcommerce/ounce-ui'
+import { ActionList, Filter, Alert, AutoComplete, Button, Card, CheckBox, FlexChild, FlexLayout, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles, Loader, Tag, FallBack } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText, ChevronDown, } from "react-feather"
 import productFallbackImg from "../../../../assets/images/png/productFallBack.png"
@@ -6,6 +6,9 @@ import { GetRange, makebadgeBgColors, makeIndividualQueryParams, makeTitleForTag
 import { callApi } from '../../../../core/ApiMethods';
 import { useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../../../../redux/ReduxSlice';
+import { SkProduct } from '../../../skeleton/SkProduct';
+import SkTabs from '../../../skeleton/SkTabs';
+import NoProductSvg from '../../../../assets/images/svg/NoProductSvg';
 interface paginationObj {
     activePage: number
     countPerPage: number
@@ -17,7 +20,7 @@ interface bulkStateObj {
     warehouse_id: string;
 }
 function Product() {
-    const [products, setProducts] = useState<any>([])
+    const [products, setProducts] = useState<any>(null)
     const [pagination, setPagination] = useState<paginationObj>({
         activePage: 1,
         countPerPage: 5,
@@ -142,7 +145,10 @@ function Product() {
     const { categoryChoose, productTypeChoose, minQuantity, maxQuantity, minPrice, maxPrice, brand } = filterState;
     const { priceError, quantityError } = errorfilter
 
+    const [tabLoader, setTabLoader] = useState<boolean>(false)
+
     useEffect(() => {
+        setTabLoader(true)
         callApi("GET", "connector/profile/getProfileData?count=100", {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
@@ -151,6 +157,7 @@ function Product() {
             })
         callApi("POST", "tiktokhome/product/getproductStatus", {}, "extraHeaders")
             .then((res: any) => {
+                setTabLoader(false)
                 if (res.success === true) {
                     makeProdctsStatusTabs(res.data)
                 }
@@ -580,369 +587,410 @@ function Product() {
                 <FlexLayout spacing='extraLoose' direction='vertical'>
                     <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
                         <Alert
-                            destroy
+                            destroy={false}
                             onClose={function noRefCheck() { }}
                             type="info"
                         >
                             Want to upload simple product(s)? <TextLink label="Learn More" />
                         </Alert>
                     </FlexChild>
-                    {loader === true ?
-                        <Loader type='Loader1' />
-                        :
-                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                            <Tabs
-                                alignment="horizontal"
-                                onChange={(e) => {
-                                    setTabs(e)
-                                }}
-                                selected={tab}
-                                value={productsStatus}
-                            >
-                                <Card cardType='Bordered'>
-                                    <FlexLayout spacing='loose' direction='vertical'>
-                                        <FlexChild >
-                                            <FlexLayout spacing='loose'>
-                                                <AutoComplete
-                                                    clearButton
-                                                    clearFunction={function noRefCheck() { }}
-                                                    extraClass=""
-                                                    onChange={function noRefCheck() { }}
-                                                    onClick={function noRefCheck() { }}
-                                                    onEnter={function noRefCheck() { }}
-                                                    options={[]}
-                                                    placeHolder="Enter Title, ID or SKU"
-                                                    popoverContainer="body"
-                                                    popoverPosition="right"
-                                                    setHiglighted
-                                                    thickness="thin"
-                                                    value=""
-                                                />
-                                                <Popover
-                                                    activator={<Button thickness='thin' icon={<ChevronDown />} iconAlign="right"
-                                                        onClick={() => {
-                                                            setOpenExtraColumn(!openExtraColumn)
-                                                        }}
-                                                        type="Outlined">Customize Grid</Button>} open={openExtraColumn}                                       >
-                                                    <FlexLayout spacing='loose' direction='vertical'>
-                                                        <CheckBox
-                                                            id="two"
-                                                            checked={false}
-                                                            labelVal="ID"
-                                                            name="ID"
-                                                            onClick={() => { }}
+                    {tabLoader === true ? <SkTabs /> : null}
+                    <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                        <Tabs
+                            alignment="horizontal"
+                            onChange={(e) => {
+                                setTabs(e)
+                            }}
+                            selected={tab}
+                            value={productsStatus}
+                        >
+                            {
+                                loader === true ?
+                                    <SkProduct />
+                                    :
+                                    products.length === 0 ?
+                                        <FallBack
+                                            illustration={<NoProductSvg />}
+                                            subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no product found in this page</TextStyles></FlexLayout>}
+                                            title="No Product(s) Found"
+                                        /> :
+                                        <Card cardType='Bordered'>
+                                            <FlexLayout spacing='loose' direction='vertical'>
+                                                <FlexChild >
+                                                    <FlexLayout spacing='loose'>
+                                                        <AutoComplete
+                                                            clearButton
+                                                            clearFunction={function noRefCheck() { }}
+                                                            extraClass=""
+                                                            onChange={function noRefCheck() { }}
+                                                            onClick={function noRefCheck() { }}
+                                                            onEnter={function noRefCheck() { }}
+                                                            options={[]}
+                                                            placeHolder="Enter Title, ID or SKU"
+                                                            popoverContainer="body"
+                                                            popoverPosition="right"
+                                                            setHiglighted
+                                                            thickness="thin"
+                                                            value=""
                                                         />
-                                                        <CheckBox
-                                                            id="two"
-                                                            checked={false}
-                                                            labelVal="Price"
-                                                            name="Price"
-                                                            onClick={() => { }}
-                                                        />
-                                                        <CheckBox
-                                                            id="two"
-                                                            checked={false}
-                                                            labelVal="Quantity"
-                                                            name="Quantity"
-                                                            onClick={() => { }}
-                                                        />
-                                                        <CheckBox
-                                                            id="two"
-                                                            checked={false}
-                                                            labelVal="SKU"
-                                                            name="SKU"
-                                                            onClick={() => { }}
-                                                        />
-                                                        <CheckBox
-                                                            id="two"
-                                                            checked={false}
-                                                            labelVal="Category"
-                                                            name="Category"
-                                                            onClick={() => { }}
-                                                        />
-                                                        <CheckBox
-                                                            id="two"
-                                                            checked={false}
-                                                            labelVal="Status"
-                                                            name="Status"
-                                                            onClick={() => { }}
+                                                        <Popover
+                                                            activator={<Button thickness='thin' icon={<ChevronDown />} iconAlign="right"
+                                                                onClick={() => {
+                                                                    setOpenExtraColumn(!openExtraColumn)
+                                                                }}
+                                                                type="Outlined">Customize Grid</Button>} open={openExtraColumn}                                       >
+                                                            <FlexLayout spacing='loose' direction='vertical'>
+                                                                <CheckBox
+                                                                    id="two"
+                                                                    checked={false}
+                                                                    labelVal="ID"
+                                                                    name="ID"
+                                                                    onClick={() => { }}
+                                                                />
+                                                                <CheckBox
+                                                                    id="two"
+                                                                    checked={false}
+                                                                    labelVal="Price"
+                                                                    name="Price"
+                                                                    onClick={() => { }}
+                                                                />
+                                                                <CheckBox
+                                                                    id="two"
+                                                                    checked={false}
+                                                                    labelVal="Quantity"
+                                                                    name="Quantity"
+                                                                    onClick={() => { }}
+                                                                />
+                                                                <CheckBox
+                                                                    id="two"
+                                                                    checked={false}
+                                                                    labelVal="SKU"
+                                                                    name="SKU"
+                                                                    onClick={() => { }}
+                                                                />
+                                                                <CheckBox
+                                                                    id="two"
+                                                                    checked={false}
+                                                                    labelVal="Category"
+                                                                    name="Category"
+                                                                    onClick={() => { }}
+                                                                />
+                                                                <CheckBox
+                                                                    id="two"
+                                                                    checked={false}
+                                                                    labelVal="Status"
+                                                                    name="Status"
+                                                                    onClick={() => { }}
+                                                                />
+                                                            </FlexLayout>
+                                                        </Popover>
+                                                        <Filter
+                                                            icon={<FileText size={17} />}
+                                                            button="Filters"
+                                                            disableApply={false}
+                                                            filters={[
+                                                                {
+                                                                    children: <>
+                                                                        <FlexLayout spacing='loose' direction='vertical'>
+                                                                            <Select
+                                                                                onChange={(e) => {
+                                                                                    handleFormChange(e, "categoryChoose")
+                                                                                }}
+                                                                                onblur={function noRefCheck() { }}
+                                                                                options={categoryOptions}
+                                                                                value={categoryChoose}
+                                                                                placeholder='Select'
+                                                                                thickness='thin'
+                                                                                popoverContainer='element'
+                                                                            />
+                                                                            <Button
+                                                                                onClick={() => {
+                                                                                    setFilterState({
+                                                                                        ...filterState,
+                                                                                        categoryChoose: ""
+                                                                                    })
+                                                                                }}
+                                                                                disable={categoryChoose === "" ? true : false}
+                                                                                thickness="extraThin" type='Danger'>
+                                                                                Clear
+                                                                            </Button>
+                                                                        </FlexLayout>
+                                                                    </>,
+                                                                    name: 'Category Template'
+                                                                },
+                                                                {
+                                                                    children: <>
+                                                                        <FlexLayout spacing='loose' direction='vertical'>
+                                                                            <Select
+                                                                                onChange={(e) => {
+                                                                                    handleFormChange(e, "productTypeChoose")
+                                                                                }}
+                                                                                onblur={function noRefCheck() { }}
+                                                                                options={[
+                                                                                    {
+                                                                                        label: "Simple",
+                                                                                        value: "simple"
+                                                                                    },
+                                                                                    {
+                                                                                        label: "Variant",
+                                                                                        value: "variation"
+                                                                                    }
+                                                                                ]}
+                                                                                value={productTypeChoose}
+                                                                                placeholder='Select'
+                                                                                thickness='thin'
+                                                                                popoverContainer='element'
+                                                                            />
+                                                                            <Button
+                                                                                onClick={() => {
+                                                                                    setFilterState({
+                                                                                        ...filterState,
+                                                                                        productTypeChoose: ""
+                                                                                    })
+                                                                                }}
+                                                                                disable={productTypeChoose === "" ? true : false}
+                                                                                thickness="extraThin" type='Danger'>
+                                                                                Clear
+                                                                            </Button>
+                                                                        </FlexLayout>
+                                                                    </>,
+                                                                    name: "Product Type"
+                                                                },
+                                                                {
+                                                                    children: <>
+                                                                        <FlexLayout
+                                                                            wrap='noWrap'
+                                                                            spacing='tight'
+                                                                        >
+                                                                            <TextField
+                                                                                autocomplete="off"
+                                                                                onChange={(e) => {
+                                                                                    if (regex.test(e) || e === '') {
+                                                                                        handleFormChange(e, "minQuantity")
+                                                                                    }
+                                                                                }}
+                                                                                placeHolder="From"
+                                                                                showHelp='Enter minimum quantity'
+                                                                                type="text"
+                                                                                value={minQuantity}
+                                                                                error={quantityError}
+                                                                                clearButton={true}
+                                                                                clearFunction={() => {
+                                                                                    setFilterState({
+                                                                                        ...filterState,
+                                                                                        minQuantity: ""
+                                                                                    })
+                                                                                }}
+                                                                            />
+                                                                            <TextField
+                                                                                autocomplete="off"
+                                                                                onChange={(e) => {
+                                                                                    if (regex.test(e) || e === '') {
+                                                                                        handleFormChange(e, "maxQuantity")
+                                                                                    }
+                                                                                }}
+                                                                                placeHolder="To"
+                                                                                showHelp='Enter maximum quantity'
+                                                                                type="text"
+                                                                                value={maxQuantity}
+                                                                                error={quantityError}
+                                                                                clearButton={true}
+                                                                                clearFunction={() => {
+                                                                                    setFilterState({
+                                                                                        ...filterState,
+                                                                                        maxQuantity: ""
+                                                                                    })
+                                                                                }}
+                                                                            />
+                                                                        </FlexLayout>
+                                                                    </>,
+                                                                    name: "Quantity"
+                                                                },
+                                                                {
+                                                                    children: <>
+                                                                        <FlexLayout
+                                                                            wrap='noWrap'
+                                                                            spacing='tight'
+                                                                        >
+                                                                            <TextField
+                                                                                autocomplete="off"
+                                                                                onChange={(e) => {
+                                                                                    if (regex.test(e) || e === '') {
+                                                                                        handleFormChange(e, "minPrice")
+                                                                                    }
+                                                                                }}
+                                                                                placeHolder="From"
+                                                                                showHelp='Enter minimum price'
+                                                                                type="text"
+                                                                                value={minPrice}
+                                                                                error={priceError}
+                                                                                clearButton={true}
+                                                                                clearFunction={() => {
+                                                                                    setFilterState({
+                                                                                        ...filterState,
+                                                                                        minPrice: ""
+                                                                                    })
+                                                                                }}
+                                                                            />
+                                                                            <TextField
+                                                                                autocomplete="off"
+                                                                                onChange={(e) => {
+                                                                                    if (regex.test(e) || e === '') {
+                                                                                        handleFormChange(e, "maxPrice")
+                                                                                    }
+                                                                                }}
+                                                                                placeHolder="To"
+                                                                                showHelp='Enter maximum price'
+                                                                                type="text"
+                                                                                value={maxPrice}
+                                                                                error={priceError}
+                                                                                clearButton={true}
+                                                                                clearFunction={() => {
+                                                                                    setFilterState({
+                                                                                        ...filterState,
+                                                                                        minPrice: ""
+                                                                                    })
+                                                                                }}
+                                                                            />
+                                                                        </FlexLayout>
+                                                                    </>,
+                                                                    name: "Price"
+                                                                },
+                                                                {
+                                                                    children: <>
+                                                                        <TextField
+                                                                            autocomplete="off"
+                                                                            onChange={(e) => {
+                                                                                handleFormChange(e, "brand")
+                                                                            }}
+                                                                            placeHolder="Enter Brand"
+                                                                            type="text"
+                                                                            value={brand}
+                                                                            clearButton={true}
+                                                                            clearFunction={() => {
+                                                                                setFilterState({
+                                                                                    ...filterState,
+                                                                                    brand: ""
+                                                                                })
+                                                                            }}
+                                                                        />
+                                                                    </>,
+                                                                    name: "Brand"
+                                                                },
+                                                            ]}
+                                                            heading="Filter"
+                                                            onApply={filterApplyHandler}
+                                                            type="Outlined"
+                                                            resetFilter={() => {
+                                                                resetAllFilter()
+                                                            }}
+                                                            disableReset={false}
                                                         />
                                                     </FlexLayout>
-                                                </Popover>
-                                                <Filter
-                                                    icon={<FileText size={17} />}
-                                                    button="Filters"
-                                                    disableApply={false}
-                                                    filters={[
-                                                        {
-                                                            children: <>
-                                                                <FlexLayout spacing='loose' direction='vertical'>
-                                                                    <Select
-                                                                        onChange={(e) => {
-                                                                            handleFormChange(e, "categoryChoose")
-                                                                        }}
-                                                                        onblur={function noRefCheck() { }}
-                                                                        options={categoryOptions}
-                                                                        value={categoryChoose}
-                                                                        placeholder='Select'
-                                                                        thickness='thin'
-                                                                        popoverContainer='element'
-                                                                    />
-                                                                    <Button
-                                                                        onClick={() => {
-                                                                            setFilterState({
-                                                                                ...filterState,
-                                                                                categoryChoose: ""
-                                                                            })
-                                                                        }}
-                                                                        disable={categoryChoose === "" ? true : false}
-                                                                        thickness="extraThin" type='Danger'>
-                                                                        Clear
-                                                                    </Button>
-                                                                </FlexLayout>
-                                                            </>,
-                                                            name: 'Category Template'
-                                                        },
-                                                        {
-                                                            children: <>
-                                                                <FlexLayout spacing='loose' direction='vertical'>
-                                                                    <Select
-                                                                        onChange={(e) => {
-                                                                            handleFormChange(e, "productTypeChoose")
-                                                                        }}
-                                                                        onblur={function noRefCheck() { }}
-                                                                        options={[
-                                                                            {
-                                                                                label: "Simple",
-                                                                                value: "simple"
-                                                                            },
-                                                                            {
-                                                                                label: "Variant",
-                                                                                value: "variation"
-                                                                            }
-                                                                        ]}
-                                                                        value={productTypeChoose}
-                                                                        placeholder='Select'
-                                                                        thickness='thin'
-                                                                        popoverContainer='element'
-                                                                    />
-                                                                    <Button
-                                                                        onClick={() => {
-                                                                            setFilterState({
-                                                                                ...filterState,
-                                                                                productTypeChoose: ""
-                                                                            })
-                                                                        }}
-                                                                        disable={productTypeChoose === "" ? true : false}
-                                                                        thickness="extraThin" type='Danger'>
-                                                                        Clear
-                                                                    </Button>
-                                                                </FlexLayout>
-                                                            </>,
-                                                            name: "Product Type"
-                                                        },
-                                                        {
-                                                            children: <>
-                                                                <FlexLayout
-                                                                    wrap='noWrap'
-                                                                    spacing='tight'
-                                                                >
-                                                                    <TextField
-                                                                        autocomplete="off"
-                                                                        onChange={(e) => {
-                                                                            if (regex.test(e) || e === '') {
-                                                                                handleFormChange(e, "minQuantity")
-                                                                            }
-                                                                        }}
-                                                                        placeHolder="From"
-                                                                        showHelp='Enter minimum quantity'
-                                                                        type="text"
-                                                                        value={minQuantity}
-                                                                        error={quantityError}
-                                                                    />
-                                                                    <TextField
-                                                                        autocomplete="off"
-                                                                        onChange={(e) => {
-                                                                            if (regex.test(e) || e === '') {
-                                                                                handleFormChange(e, "maxQuantity")
-                                                                            }
-                                                                        }}
-                                                                        placeHolder="To"
-                                                                        showHelp='Enter maximum quantity'
-                                                                        type="text"
-                                                                        value={maxQuantity}
-                                                                        error={quantityError}
-                                                                    />
-                                                                </FlexLayout>
-                                                            </>,
-                                                            name: "Quantity"
-                                                        },
-                                                        {
-                                                            children: <>
-                                                                <FlexLayout
-                                                                    wrap='noWrap'
-                                                                    spacing='tight'
-                                                                >
-                                                                    <TextField
-                                                                        autocomplete="off"
-                                                                        onChange={(e) => {
-                                                                            if (regex.test(e) || e === '') {
-                                                                                handleFormChange(e, "minPrice")
-                                                                            }
-                                                                        }}
-                                                                        placeHolder="From"
-                                                                        showHelp='Enter minimum price'
-                                                                        type="text"
-                                                                        value={minPrice}
-                                                                        error={priceError}
-                                                                    />
-                                                                    <TextField
-                                                                        autocomplete="off"
-                                                                        onChange={(e) => {
-                                                                            if (regex.test(e) || e === '') {
-                                                                                handleFormChange(e, "maxPrice")
-                                                                            }
-                                                                        }}
-                                                                        placeHolder="To"
-                                                                        showHelp='Enter maximum price'
-                                                                        type="text"
-                                                                        value={maxPrice}
-                                                                        error={priceError}
-                                                                    />
-                                                                </FlexLayout>
-                                                            </>,
-                                                            name: "Price"
-                                                        },
-                                                        {
-                                                            children: <>
-                                                                <TextField
-                                                                    autocomplete="off"
-                                                                    onChange={(e) => {
-                                                                        handleFormChange(e, "brand")
-                                                                    }}
-                                                                    placeHolder="Enter Brand"
-                                                                    type="text"
-                                                                    value={brand}
-                                                                />
-                                                            </>,
-                                                            name: "Brand"
-                                                        },
-                                                    ]}
-                                                    heading="Filter"
-                                                    onApply={filterApplyHandler}
-                                                    type="Outlined"
-                                                    resetFilter={() => {
-                                                        resetAllFilter()
-                                                    }}
-                                                    disableReset={false}
-                                                />
-                                            </FlexLayout>
-                                        </FlexChild>
-                                        <FlexChild>
-                                            <>
-                                                <FlexLayout spacing='loose'>
-                                                    {
-                                                        tag.length !== 0 ?
-                                                            tag.map((val: any, index: number) => (
-                                                                <Tag key={index} destroy={() => removeFilerHandler(val.id, val.key)}>
-                                                                    {val.title} : {val.value}
-                                                                </Tag>
-                                                            ))
+                                                </FlexChild>
+                                                <FlexChild>
+                                                    <>
+                                                        <FlexLayout spacing='loose'>
+                                                            {
+                                                                tag.length !== 0 ?
+                                                                    tag.map((val: any, index: number) => (
+                                                                        <Tag key={index} destroy={() => removeFilerHandler(val.id, val.key)}>
+                                                                            {val.title} : {val.value}
+                                                                        </Tag>
+                                                                    ))
 
-                                                            : null
-                                                    }
-                                                    {
-                                                        tag.length !== 0 ?
-                                                            <Button
-                                                                onClick={() => {
-                                                                    resetAllFilter()
-                                                                }}
-                                                                type='Outlined'
-                                                                thickness='extraThin'>
-                                                                Clear all filter
-                                                            </Button> : null
-                                                    }
-
-                                                </FlexLayout>
-
-                                            </>
-                                        </FlexChild>
-                                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                                            <>
-                                                <Grid
-                                                    columns={columns}
-                                                    dataSource={products}
-                                                    rowSelection={{
-                                                        onChange: function noRefCheck() { }
-                                                    }}
-                                                    expandable={{
-                                                        showExpandColumn: true,
-                                                        rowExpandable: (record: any) => {
-                                                            return record['childrenRow'];
-                                                        },
-                                                        expandedRowKeys: [...expandedRows],
-                                                        expandedRowRender: (record: any) => {
-                                                            return (
-                                                                <Grid
-                                                                    tableLayout="auto"
-                                                                    size="middle"
-                                                                    scrollX={1400}
-                                                                    columns={childColumns}
-                                                                    dataSource={record['childrenRow']}
-                                                                />
-                                                            );
-                                                        },
-                                                        onExpand: (expanded: any, record: any) => {
-                                                            if (expanded) {
-                                                                setExpandedRows([...expandedRows, record.key]);
-                                                            } else {
-                                                                const tempRows = [...expandedRows];
-                                                                tempRows.forEach((item, index) => {
-                                                                    if (item === record.key) {
-                                                                        tempRows.splice(index, 1);
-                                                                    }
-                                                                });
-                                                                setExpandedRows(tempRows);
+                                                                    : null
                                                             }
-                                                        },
-                                                    }}
-                                                    scrollX={1400}
-                                                />
-                                                <br></br>
-                                                <Pagination
-                                                    countPerPage={countPerPage}
-                                                    currentPage={activePage}
-                                                    onCountChange={(e: any) => countChangeHandler(e)}
-                                                    onEnter={(e: any) => onEnterChange(e)}
-                                                    onNext={nextPageHandler}
-                                                    onPrevious={prevPageHandler}
-                                                    totalitem={totalProducts}
-                                                    optionPerPage={[
-                                                        {
-                                                            label: '5',
-                                                            value: '5'
-                                                        },
-                                                        {
-                                                            label: '10',
-                                                            value: '10'
-                                                        },
-                                                        {
-                                                            label: '15',
-                                                            value: '15'
-                                                        },
-                                                    ]}
-                                                />
-                                            </>
-                                        </FlexChild>
-                                    </FlexLayout>
-                                </Card>
-                            </Tabs>
-                        </FlexChild>
-                    }
+                                                            {
+                                                                tag.length !== 0 ?
+                                                                    <Button
+                                                                        onClick={() => {
+                                                                            resetAllFilter()
+                                                                        }}
+                                                                        type='Outlined'
+                                                                        thickness='extraThin'>
+                                                                        Clear all filter
+                                                                    </Button> : null
+                                                            }
 
+                                                        </FlexLayout>
 
+                                                    </>
+                                                </FlexChild>
+                                                <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                                    <>
+                                                        <Grid
+                                                            columns={columns}
+                                                            size={"small"}
+                                                            scrollX={970}
+                                                            dataSource={products}
+                                                            rowSelection={{
+                                                                onChange: function noRefCheck() { }
+                                                            }}
+                                                            expandable={{
+                                                                showExpandColumn: true,
+                                                                rowExpandable: (record: any) => {
+                                                                    return record['childrenRow'];
+                                                                },
+                                                                expandedRowKeys: [...expandedRows],
+                                                                expandedRowRender: (record: any) => {
+                                                                    return (
+                                                                        <Grid
+                                                                            tableLayout="auto"
+                                                                            size="middle"
+                                                                            scrollX={1400}
+                                                                            columns={childColumns}
+                                                                            dataSource={record['childrenRow']}
+                                                                        />
+                                                                    );
+                                                                },
+                                                                onExpand: (expanded: any, record: any) => {
+                                                                    if (expanded) {
+                                                                        setExpandedRows([...expandedRows, record.key]);
+                                                                    } else {
+                                                                        const tempRows = [...expandedRows];
+                                                                        tempRows.forEach((item, index) => {
+                                                                            if (item === record.key) {
+                                                                                tempRows.splice(index, 1);
+                                                                            }
+                                                                        });
+                                                                        setExpandedRows(tempRows);
+                                                                    }
+                                                                },
+                                                            }}
+                                                        />
+                                                        <br></br>
+                                                        <Pagination
+                                                            countPerPage={countPerPage}
+                                                            currentPage={activePage}
+                                                            onCountChange={(e: any) => countChangeHandler(e)}
+                                                            onEnter={(e: any) => onEnterChange(e)}
+                                                            onNext={nextPageHandler}
+                                                            onPrevious={prevPageHandler}
+                                                            totalitem={totalProducts}
+                                                            optionPerPage={[
+                                                                {
+                                                                    label: '5',
+                                                                    value: '5'
+                                                                },
+                                                                {
+                                                                    label: '10',
+                                                                    value: '10'
+                                                                },
+                                                                {
+                                                                    label: '15',
+                                                                    value: '15'
+                                                                },
+                                                            ]}
+                                                        />
+                                                    </>
+                                                </FlexChild>
+                                            </FlexLayout>
+                                        </Card>
+                            }
+                        </Tabs>
+                    </FlexChild>
                 </FlexLayout>
-
             </Card>
         </>
     )

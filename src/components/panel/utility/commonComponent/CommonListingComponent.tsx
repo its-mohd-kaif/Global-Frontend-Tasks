@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { callApi } from '../../../../core/ApiMethods';
 import { CategoryListData, StaticAttributes } from '../../../../core/Constant';
 import { addChooseCategory } from '../../../../redux/ReduxSlice';
+import SkMapping from '../../../skeleton/SkMapping';
 import AttributeMappingMethod from '../../onboarding/default/DefaultUtility';
 
 function CommonListingComponent(props: any) {
@@ -70,98 +71,91 @@ function CommonListingComponent(props: any) {
             source_marketplace: 'bigcommerce'
         }
         callApi("GET", "tiktokhome/category/getAttributes", payload, "extraHeaders").then((res: any) => {
-            setLoader(false)
-            let tempArr: any = []
-            res.data.forEach((element: any) => {
-                if (element.attribute_type === 3) {
-                    let obj = {
-                        productAttributes: <AttributeMappingMethod row={element} baseAttribute={attr}
-                        />
+            setLoader(false);
+            if (res.success === true) {
+                let tempArr: any = Object.values(res.data).map((element: any) => element);
+                tempArr.forEach((element: any) => {
+                    if (element.attribute_type === 3) {
+                        let obj = {
+                            productAttributes: <AttributeMappingMethod row={element} baseAttribute={attr} />
+                        };
+                        tempArr.push(obj);
+                    } else if (element.attribute_type === 2) {
+                        let obj = {
+                            variationAttributes: <AttributeMappingMethod row={element} baseAttribute={variant_attr} />
+                        };
+                        tempArr.push(obj);
                     }
-                    tempArr.push(obj)
-                } else if (element.attribute_type === 2) {
-                    let obj = {
-                        variationAttributes: <AttributeMappingMethod row={element} baseAttribute={variant_attr}
-                        />
-                    }
-                    tempArr.push(obj)
-                }
-            });
-            setSelectAttribute(tempArr)
-        })
-
+                });
+                setSelectAttribute(tempArr);
+            }
+        });
     }
-    if (loader === true) {
-        return (
-            <>
-                <Loader type='Loader2' />
-            </>
-        )
-    } else {
-        return (
-            <FlexLayout direction='vertical' spacing='loose'>
-                <FlexLayout spacing='extraLoose' halign='fill'>
+    return (
+        <FlexLayout direction='vertical' spacing='loose'>
+            <FlexLayout spacing='extraLoose' halign='fill'>
+                <FlexChild desktopWidth='33' tabWidth='33' mobileWidth='100'>
+                    <FlexLayout spacing='tight' direction='vertical'>
+                        <FlexLayout spacing='extraTight'>
+                            <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Select Product category</TextStyles>
+                            <TextStyles textcolor="negative">*</TextStyles>
+                        </FlexLayout>
+                        <TextStyles textcolor='light'>Choose the ‘Category’ that best defines your listing(s).</TextStyles>
+                        <div style={{ color: "#4E4F52" }}>
+                            <TextStyles>
+                                <span style={{ fontWeight: "bold" }}>Note :</span> Based on the selected category you will further map Shopify attribute with Michaels attributes.
+                            </TextStyles>
+                        </div>
+                    </FlexLayout>
+                </FlexChild>
+                <FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
+                    <FlexLayout spacing='tight' direction='vertical'>
+                        <Select
+                            onChange={(event: any, id: any) => handleSelectCategory(event, id.category_id)}
+                            onblur={function noRefCheck() { }}
+                            options={listingCategroy}
+                            value={reduxState.chooseCategory.selectValue}
+                            searchEable
+                        />
+                        {
+                            reduxState.chooseCategory.selectValue !== "" ? <Tag destroy={() => {
+                                dispatch(addChooseCategory({
+                                    value: "",
+                                    id: ""
+                                }))
+                            }}>
+                                {reduxState.chooseCategory.selectValue}
+                            </Tag> : null
+                        }
+                    </FlexLayout>
+
+                </FlexChild>
+            </FlexLayout>
+            <FlexLayout spacing='extraLoose' halign='fill'>
+                {reduxState.chooseCategory.selectValue !== "" && where === "template" ?
                     <FlexChild desktopWidth='33' tabWidth='33' mobileWidth='100'>
                         <FlexLayout spacing='tight' direction='vertical'>
-                            <FlexLayout spacing='extraTight'>
-                                <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Select Product category</TextStyles>
-                                <TextStyles textcolor="negative">*</TextStyles>
-                            </FlexLayout>
-                            <TextStyles textcolor='light'>Choose the ‘Category’ that best defines your listing(s).</TextStyles>
+                            <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Select Attribute Mapping</TextStyles>
+                            <TextStyles textcolor='light'>Through ‘Attribute Mapping’ you can enhance your listing catalog with additional
+                                listing information.</TextStyles>
                             <div style={{ color: "#4E4F52" }}>
                                 <TextStyles>
-                                    <span style={{ fontWeight: "bold" }}>Note :</span> Based on the selected category you will further map Shopify attribute with Michaels attributes.
+                                    <span style={{ fontWeight: "bold" }}>Product Attributes:</span> These are the compulsory attributes that
+                                    must be selected for mapping Shopify attributes with Michaels attributes.
+                                </TextStyles>
+                            </div>
+                            <div style={{ color: "#4E4F52" }}>
+                                <TextStyles>
+                                    <span style={{ fontWeight: "bold" }}>Variation Attributes:</span> These are the mandatory attributes that must
+                                    be selected if you have variants for your listings.
                                 </TextStyles>
                             </div>
                         </FlexLayout>
-                    </FlexChild>
-                    <FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
-                        <FlexLayout spacing='tight' direction='vertical'>
-                            <Select
-                                onChange={(event: any, id: any) => handleSelectCategory(event, id.category_id)}
-                                onblur={function noRefCheck() { }}
-                                options={listingCategroy}
-                                value={reduxState.chooseCategory.selectValue}
-                                searchEable
-                            />
-                            {
-                                reduxState.chooseCategory.selectValue !== "" ? <Tag destroy={() => {
-                                    dispatch(addChooseCategory({
-                                        value: "",
-                                        id: ""
-                                    }))
-                                }}>
-                                    {reduxState.chooseCategory.selectValue}
-                                </Tag> : null
-                            }
-                        </FlexLayout>
-
-                    </FlexChild>
-                </FlexLayout>
-                <FlexLayout spacing='extraLoose' halign='fill'>
-                    {reduxState.chooseCategory.selectValue !== "" && where === "template" ?
-                        <FlexChild desktopWidth='33' tabWidth='33' mobileWidth='100'>
-                            <FlexLayout spacing='tight' direction='vertical'>
-                                <TextStyles fontweight='bold' type="SubHeading" subheadingTypes='XS-1.6'>Select Attribute Mapping</TextStyles>
-                                <TextStyles textcolor='light'>Through ‘Attribute Mapping’ you can enhance your listing catalog with additional
-                                    listing information.</TextStyles>
-                                <div style={{ color: "#4E4F52" }}>
-                                    <TextStyles>
-                                        <span style={{ fontWeight: "bold" }}>Product Attributes:</span> These are the compulsory attributes that
-                                        must be selected for mapping Shopify attributes with Michaels attributes.
-                                    </TextStyles>
-                                </div>
-                                <div style={{ color: "#4E4F52" }}>
-                                    <TextStyles>
-                                        <span style={{ fontWeight: "bold" }}>Variation Attributes:</span> These are the mandatory attributes that must
-                                        be selected if you have variants for your listings.
-                                    </TextStyles>
-                                </div>
-                            </FlexLayout>
-                        </FlexChild> : null
-                    }
-                    {reduxState.chooseCategory.selectValue !== "" ?
-                        < FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
+                    </FlexChild> : null
+                }
+                {reduxState.chooseCategory.selectValue !== "" ?
+                    < FlexChild desktopWidth='66' tabWidth='66' mobileWidth='100'>
+                        {loader === true ? <SkMapping /> :
                             <FlexLayout direction='vertical' spacing='mediumLoose'>
                                 <Accordion
                                     boxed
@@ -190,12 +184,14 @@ function CommonListingComponent(props: any) {
                                             </FlexLayout>
                                         </FlexChild>
                                         <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                                            {selectAttribute.map((val: any, index: number) => (
-                                                <>
-                                                    {val.productAttributes}
-                                                    <br></br>
-                                                </>
-                                            ))}
+                                            <FlexLayout direction='vertical'>
+                                                {selectAttribute.map((val: any, index: number) => (
+                                                    <>
+                                                        {val.productAttributes}
+                                                    </>
+                                                ))}
+                                            </FlexLayout>
+
                                         </FlexChild>
                                     </FlexLayout>
                                 </Accordion>
@@ -226,7 +222,7 @@ function CommonListingComponent(props: any) {
                                             </FlexLayout>
                                         </FlexChild>
                                         <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                                            <FlexLayout spacing='extraTight' direction='vertical'>
+                                            <FlexLayout direction='vertical'>
                                                 {selectAttribute.map((val: any, index: number) => (
                                                     <>
                                                         {val.variationAttributes}
@@ -237,13 +233,14 @@ function CommonListingComponent(props: any) {
                                     </FlexLayout>
                                 </Accordion>
                             </FlexLayout>
-                        </FlexChild>
-                        :
-                        null}
-                </FlexLayout>
+                        }
+                    </FlexChild>
+                    :
+                    null}
             </FlexLayout>
-        )
-    }
+        </FlexLayout>
+    )
+
 }
 
 export default CommonListingComponent

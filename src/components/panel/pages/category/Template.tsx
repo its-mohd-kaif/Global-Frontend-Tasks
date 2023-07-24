@@ -164,7 +164,6 @@ function Template() {
                 }
             })
 
-
     }
 
     let reduxState = useSelector((redux: any) => redux.redux.attributes_mapping)
@@ -282,16 +281,19 @@ function Template() {
             })
 
     }
+
     return (
         <>
             <PageHeader title="Category Template"
                 action={
                     <FlexLayout valign='center' spacing='tight'>
                         <Button icon={<FileText size={"18"} />} type="Outlined">Guide</Button>
-                        <Button loading={saveBtnLoader} onClick={SaveHandler} type="Primary">Save</Button>
+                        <Button
+                            disable={templateName !== "" && count !== null && reduxChooseCategory.chooseCategory.selectValue !== "" ? false : true}
+                            loading={saveBtnLoader} onClick={SaveHandler} type="Primary">Save</Button>
                     </FlexLayout>
                 }
-            />
+            />.
             <hr></hr>
             <br></br>
             <Card>
@@ -353,7 +355,8 @@ function Template() {
                                     primaryAction={{
                                         content: 'Run Query',
                                         type: 'Primary',
-                                        onClick: runQueryHandler
+                                        onClick: runQueryHandler,
+                                        disable: ruleComponent[0]?.str?.value !== "" ? false : true
                                     }}
                                     secondaryAction={{
                                         content: 'Add More',
@@ -450,7 +453,9 @@ function Template() {
 
                     <hr></hr>
                     {/* Call Componet that used here and also used in onboarding category template */}
-                    <CommonListingComponent where={"template"} />
+                    <div>
+                        <CommonListingComponent where={"template"} />
+                    </div>
                     <hr></hr>
                     <FlexChild>
                         <FlexLayout spacing='loose' halign='fill'>

@@ -7,17 +7,21 @@ import { callApi } from '../../../core/ApiMethods';
 import jwtDecode from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { showToast, userId } from '../../../redux/ReduxSlice';
+import { regexValidation } from '../../../Constant';
 
 interface loginStateObj {
     email: string;
     password: string;
     eyeoff: boolean;
     reCAPTCHA: string | null;
+    btnDisabled: boolean
     loader: boolean
 }
 interface loginErrorObj {
     emailError: boolean;
+    emailErrorMessage: string;
     passwordError: boolean;
+    passwordErrorMessage: string;
     reCAPTCHAMess: string;
 }
 
@@ -31,6 +35,7 @@ function Login() {
         password: "",
         eyeoff: false,
         reCAPTCHA: null,
+        btnDisabled: true,
         loader: false
     });
 
@@ -39,16 +44,22 @@ function Login() {
      */
     const [error, setError] = useState<loginErrorObj>({
         emailError: false,
+        emailErrorMessage: "",
         passwordError: false,
+        passwordErrorMessage: "",
         reCAPTCHAMess: ""
     })
-    const { email, password, eyeoff, reCAPTCHA, loader } = state;
-    const { emailError, passwordError, reCAPTCHAMess } = error
+    const { email, password, eyeoff, reCAPTCHA, loader, btnDisabled } = state;
+    const { emailError, emailErrorMessage, passwordError, passwordErrorMessage, reCAPTCHAMess } = error
     const MySiteKey = process.env.REACT_APP_reCAPTCHA_SITE_KEY;
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const location = useLocation();
+
+    let { emailFormat
+    } = regexValidation;
+
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const user_token: any = searchParams.get('user_token');
@@ -88,77 +99,70 @@ function Login() {
             })
     }
     const loginHandler = () => {
-        // Check Validation
-        if (email === "" && password === "") {
-            setError({
-                emailError: true,
-                passwordError: true,
-                reCAPTCHAMess: "Please Click On ReCAPTCHA"
-            })
-        } else if (email === "") {
-            setError({
-                ...error,
-                emailError: true
-            })
-        } else if (password === "") {
-            setError({
-                ...error,
-                passwordError: true
-            })
-        }
-        else if (reCAPTCHA === null) {
-            setError({
-                ...error,
-                reCAPTCHAMess: "Please Click On ReCAPTCHA"
-            })
-        }
-        else {
-            setState({
-                ...state,
-                loader: true
-            })
-            // Make a payload for api
-            const payload = {
-                // dev username : Testing Team #1
-                username: email,
-                password: password
-            }
-            callApi("POST", "user/login", payload)
-                .then((res: any) => {
-                    setState({
-                        ...state,
-                        loader: false
-                    })
-                    if (res.success === true) {
-                        dispatch(showToast({
-                            type: "success",
-                            message: res.message
-                        }))
-                        const userDetails: any = jwtDecode(`${res.data.token}`);
-                        // Save User Token In Session 
-                        sessionStorage.setItem(`${userDetails.user_id}_auth_token`, res.data.token)
-                        // Save User Id in redux
-                        dispatch(userId(userDetails.user_id))
-                        // Save User Id in Session
-                        sessionStorage.setItem('user_id', userDetails.user_id)
-                        // For Now Redirect To Onboarding Page
-                        navigate(`/panel/${userDetails.user_id}/dashboard`)
-                    } else if (res.success === false) {
-                        dispatch(showToast({
-                            type: "error",
-                            message: res.message
-                        }))
-                    }
+        setState({
+            ...state,
+            loader: true
+        })
+        const trimmedEmail = email.trim();
+        const trimmedPassword = password.trim();
+
+        const payload = emailFormat.test(trimmedEmail)
+            ? { email: trimmedEmail, password: trimmedPassword }
+            : { username: trimmedEmail, password: trimmedPassword };
+
+        callApi("POST", "user/login", payload)
+            .then((res: any) => {
+                setState({
+                    ...state,
+                    loader: false
                 })
-        }
+                if (res.success === true) {
+                    dispatch(showToast({
+                        type: "success",
+                        message: res.message
+                    }))
+                    const userDetails: any = jwtDecode(`${res.data.token}`);
+                    // Save User Token In Session 
+                    sessionStorage.setItem(`${userDetails.user_id}_auth_token`, res.data.token)
+                    // Save User Id in redux
+                    dispatch(userId(userDetails.user_id))
+                    // Save User Id in Session
+                    sessionStorage.setItem('user_id', userDetails.user_id)
+                    // For Now Redirect To Onboarding Page
+                    navigate(`/panel/${userDetails.user_id}/dashboard`)
+                } else if (res.success === false) {
+                    dispatch(showToast({
+                        type: "error",
+                        message: res.message
+                    }))
+                }
+            })
+        // }
     }
 
+    useEffect(() => {
+        btnDisableHandler()
+    }, [email, password, reCAPTCHA, btnDisabled])
+
+    const btnDisableHandler = () => {
+        if (email !== "" && password !== "" && reCAPTCHA !== "") {
+            setState({
+                ...state,
+                btnDisabled: false
+            })
+        } else {
+             setState({
+                ...state,
+                btnDisabled: true
+            })
+        }
+    }
     return (
         <Card title={"Log In to your account"}>
             <FlexLayout spacing='loose' direction='vertical'>
                 <TextField
                     autocomplete="off"
-                    name="Username"
+                    name="Email or Username"
                     required
                     onChange={(e) => {
                         setState({
@@ -167,13 +171,24 @@ function Login() {
                         })
                         setError({
                             ...error,
-                            emailError: false
+                            emailError: false,
+                            emailErrorMessage: ""
                         })
                     }}
-                    placeHolder="Enter Username or Mobile Number"
+                    placeHolder="Enter Email or Username"
                     type="text"
                     value={email}
                     error={emailError}
+                    showHelp={emailErrorMessage}
+                    onblur={() => {
+                        if (email === "") {
+                            setError({
+                                ...error,
+                                emailError: true,
+                                emailErrorMessage: "This field cannot be blank. Please enter a valid email address or username."
+                            })
+                        }
+                    }}
                 />
                 <FlexLayout spacing='tight' direction='vertical'>
                     <TextField
@@ -187,7 +202,8 @@ function Login() {
                             })
                             setError({
                                 ...error,
-                                passwordError: false
+                                passwordError: false,
+                                passwordErrorMessage: ""
                             })
                         }}
                         placeHolder="Enter Password"
@@ -195,6 +211,7 @@ function Login() {
                         show={eyeoff}
                         value={password}
                         error={passwordError}
+                        showHelp={passwordErrorMessage}
                         innerSufIcon={
                             eyeoff ? (
                                 <Eye
@@ -220,6 +237,15 @@ function Login() {
                                 />
                             )
                         }
+                        onblur={() => {
+                            if (password === "") {
+                                setError({
+                                    ...error,
+                                    passwordError: true,
+                                    passwordErrorMessage: "Password feild cannot be blank"
+                                })
+                            }
+                        }}
                     />
                     <FlexLayout halign="end">
                         <Button
@@ -247,6 +273,7 @@ function Login() {
                     thickness='large'
                     onClick={loginHandler}
                     loading={loader}
+                    disable={btnDisabled}
                 />
                 <TextStyles>
                     New to CedCommerce? {" "}
