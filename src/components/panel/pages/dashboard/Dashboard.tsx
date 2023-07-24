@@ -7,7 +7,6 @@ import {
     FallBack,
     FlexChild,
     FlexLayout,
-    Loader,
     Notification,
     PageHeader,
     TextLink,
@@ -24,6 +23,7 @@ import { makeBadgeForOrderStatus, makeBadgeForProductStatus, makeTitleForOrderSt
 import { callApi } from "../../../../core/ApiMethods";
 import { useSelector } from "react-redux";
 import NoNotificationSvg from "../../../../assets/images/svg/NoNotificationSvg";
+import { SkDashboard } from "../../../skeleton/SkDashboard";
 function Dashboard() {
     const navigate = useNavigate()
     // Make State For Store Product Status
@@ -31,61 +31,89 @@ function Dashboard() {
     // Make State For Store Order Status
     const [orders, setOrders] = useState<any>([]);
     // Make State For Store Notification
-    const [notifications, setNotifications] = useState<any>([])
+    const [notifications, setNotifications] = useState<any>(null)
     const user = useSelector((redux: any) => redux.redux?.stepCompletedState?.user)
     const [loader, setLoader] = useState<boolean>(true)
     useEffect(() => {
-        callApi("GET", "tiktokhome/product/getproductStatus", {}, "extraHeaders")
-            .then((res: any) => {
-                setLoader(false)
-                console.log("getproductStatus", res)
-                if (res.success === true) {
-                    makeProductStatus(res.data.status)
-                }
-            })
-        callApi("GET", "tiktokhome/frontend/orderStatus", {}, "extraHeaders")
-            .then((res: any) => {
-                if (res.success === true) {
-                    makeOrdertStatus(res.data.status)
-                }
-            })
+        const fetchData = async () => {
+            try {
+                const productStatusRes = await callApi("GET", "tiktokhome/product/getproductStatus", {}, "extraHeaders");
+                const orderStatusRes = await callApi("GET", "tiktokhome/frontend/orderStatus", {}, "extraHeaders");
+                const notificationsRes = await callApi("GET", "connector/get/allNotifications?activePage=1&count=5", {}, "extraHeaders");
+                // Perform type assertion to let TypeScript know the types
+                const productStatusData = productStatusRes as { success: boolean; data: { status: any } };
+                const orderStatusData = orderStatusRes as { success: boolean; data: { status: any } };
+                const notificationsData = notificationsRes as { success: boolean; data: { rows: any[] } };
 
-        callApi("GET", "connector/get/allNotifications?activePage=1&count=5", {}, "extraHeaders")
-            .then((res: any) => {
-                if (res.success === true) {
-                    makeNotification(res.data.rows)
+                if (productStatusData.success === true) {
+                    makeProductStatusData(productStatusData.data.status);
                 }
-            })
 
-    }, [])
-    const makeOrdertStatus = (data: any) => {
-        let tempArr: any = []
-        data.forEach((element: any) => {
+                if (orderStatusData.success === true) {
+                    makeOrderStatusData(orderStatusData.data.status);
+                }
+
+                if (notificationsData.success === true) {
+                    makeNotification(notificationsData.data.rows);
+                }
+            } catch (error) {
+                // Handle errors here if needed
+                console.log(error);
+            } finally {
+                setLoader(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
+
+    // Reusable function to generate status data
+    const makeStatusData = (data: any, desiredIds: string[], type: string) => {
+        const getTitle = (_id: string) => {
+            return type === "order" ? makeTitleForOrderStatus(_id) : makeTitleForProductStatus(_id);
+        };
+
+        const getIcon = (_id: string) => {
+            return type === "order" ? makeBadgeForOrderStatus(_id) : makeBadgeForProductStatus(_id);
+        };
+
+        // Function to get the count for a specific _id from the API response
+        const getCountById = (_id: string) => {
+            const item = data.find((obj: any) => obj._id === _id);
+            return item ? item.count : 0;
+        };
+
+        let tempArr: any = [];
+        desiredIds.forEach((_id: string) => {
             let obj = {
-                title: makeTitleForOrderStatus(element._id),
-                icon: makeBadgeForOrderStatus(element._id),
-                count: element.count,
+                title: getTitle(_id),
+                icon: getIcon(_id),
+                count: getCountById(_id),
                 btn: <TextLink label="View Product"></TextLink>,
-                id: element._id
+                id: _id
             };
-            tempArr.push(obj)
+            tempArr.push(obj);
         });
-        setOrders(tempArr)
-    }
-    const makeProductStatus = (data: any) => {
-        let tempArr: any = []
-        data.forEach((element: any) => {
-                let obj = {
-                    title: makeTitleForProductStatus(element._id),
-                    icon: makeBadgeForProductStatus(element._id),
-                    count: element.count,
-                    btn: <TextLink label="View Product"></TextLink>,
-                    id: element._id
-                };
-                tempArr.push(obj)
-        });
-        setProducts(tempArr)
-    }
+
+        return tempArr;
+    };
+
+    // Usage for makeOrderStatus
+    const makeOrderStatusData = (apiResponse: any) => {
+        const desiredOrderStatusIds = ["AWAITING_SHIPMENT", "AWAITING_COLLECTION", "COMPLETED", "CANCELLED"];
+        const orderStatusData = makeStatusData(apiResponse, desiredOrderStatusIds, "order");
+        setOrders(orderStatusData);
+    };
+
+    // Usage for makeProductStatus
+    const makeProductStatusData = (apiResponse: any) => {
+        const desiredProductStatusIds = ["live", "failed", "not_uploaded", "inactive"];
+        const productStatusData = makeStatusData(apiResponse, desiredProductStatusIds, "product");
+        setProducts(productStatusData);
+    };
+
     const makeNotification = (data: any) => {
         let tempArr: any = []
         data.forEach((element: any) => {
@@ -115,13 +143,15 @@ function Dashboard() {
             price: 24.90
         }
     ]
-    if (loader === false) {
-        return (
-            <>
-                <PageHeader
-                    title="Dashboard"
-                    action={<Button icon={<FileText size={"18"} />} type="Outlined">Guide</Button>}
-                />
+
+    return (
+        <>
+            <PageHeader
+                title="Dashboard"
+                action={<Button icon={<FileText size={"18"} />} type="Outlined">Guide</Button>}
+            />
+            {loader === true ? <SkDashboard />
+                :
                 <FlexLayout spacing="loose">
                     <FlexChild desktopWidth="66" tabWidth="66" mobileWidth="100">
                         <FlexLayout spacing="loose" direction="vertical">
@@ -238,31 +268,27 @@ function Dashboard() {
                     <FlexChild desktopWidth="33" tabWidth="33" mobileWidth="100">
                         <FlexLayout desktopWidth="100" tabWidth="100" mobileWidth="100" spacing="loose" direction="vertical">
                             <Card cardType="Default" title="Connected Michael Account">
-                                <FlexLayout  halign="fill" valign="start" spacing="loose">
-                                    <FlexChild desktopWidth="66">
-                                        <FlexLayout wrap="noWrap">
-                                            <FlexChild desktopWidth="25">
-                                                <Avatar
-                                                    color="red"
-                                                    image=""
-                                                    size="medium"
-                                                    text={user}
-                                                    type="circle"
-                                                />
-                                            </FlexChild>
-                                            <FlexChild desktopWidth="75">
-                                                <FlexLayout wrap="noWrap" direction="vertical">
-                                                    <TextStyles fontweight="bold" type="SubHeading">
-                                                        {user}
-                                                    </TextStyles>
-                                                    <TextStyles textcolor="light">
-                                                        Cedfbe-633582fb9x8dhdbdio834ubububdd89
-                                                    </TextStyles>
-                                                </FlexLayout>
-                                            </FlexChild>
+                                <FlexLayout spacing="tight" halign="fill" wrap="noWrap">
+                                    <FlexChild desktopWidth="50" tabWidth="50" mobileWidth="50">
+                                        <FlexLayout spacing="tight" wrap="noWrap">
+                                            <Avatar
+                                                color="red"
+                                                image=""
+                                                size="medium"
+                                                text={user}
+                                                type="circle"
+                                            />
+                                            <FlexLayout desktopWidth="25" tabWidth="25" mobileWidth="25" direction="vertical" spacing="extraTight">
+                                                <TextStyles fontweight="bold" type="SubHeading">
+                                                    {user}
+                                                </TextStyles>
+                                                <TextStyles textcolor="light">
+                                                    Cedfbe-633582fb9x8dhdbdio834ubububdd89
+                                                </TextStyles>
+                                            </FlexLayout>
                                         </FlexLayout>
                                     </FlexChild>
-                                    <FlexChild desktopWidth="33">
+                                    <FlexChild desktopWidth="33" tabWidth="50" mobileWidth="50">
                                         <Badge size="regular" type="Positive-100">
                                             Connected
                                         </Badge>
@@ -296,13 +322,11 @@ function Dashboard() {
                         </FlexLayout>
                     </FlexChild>
                 </FlexLayout>
-            </>
-        )
-    } else {
-        return (
-            <Loader type="Loader1" />
-        )
-    }
+            }
+
+        </>
+    )
+
 
 }
 

@@ -1,4 +1,4 @@
-import { Button, Card, FlexChild, FlexLayout, PageHeader, Progressbar, TextStyles, Notification, Pagination, Modal, FallBack } from '@cedcommerce/ounce-ui'
+import { Button, Card, FlexChild, FlexLayout, PageHeader, Progressbar, TextStyles, Notification, Pagination, Modal, FallBack, Skeleton } from '@cedcommerce/ounce-ui'
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
@@ -10,7 +10,7 @@ interface paginationObj {
     countPerPage: number
 }
 function Activity() {
-    const [notification, setNotification] = useState<any>([]);
+    const [notification, setNotification] = useState<any>(null);
     const [allData, setAllData] = useState<any>([]);
     const [state, setState] = useState({
         ongoingMessage: "",
@@ -20,16 +20,18 @@ function Activity() {
         activePage: 1,
         countPerPage: 10,
     })
+    const [loader, setLoader] = useState<boolean>(true)
     const { activePage, countPerPage } = pagination;
     const { ongoingMessage, ongoingProgress } = state
     const [openModal, setOpenModal] = useState<boolean>(false)
     useEffect(() => {
+        setLoader(true)
         callApi("GET", "connector/get/allQueuedTasks", {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
                     setState({
-                        ongoingMessage: res.data.rows[0].message,
-                        ongoingProgress: res.data.rows[0].progress
+                        ongoingMessage: res.data.rows[0]?.message,
+                        ongoingProgress: res.data.rows[0]?.progress
                     })
                 }
             })
@@ -37,6 +39,7 @@ function Activity() {
         callApi("GET", `connector/get/allNotifications?activePage=${activePage}&count=${countPerPage}`, {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
+                    setLoader(false)
                     makeNotification(res.data.rows)
                 }
             })
@@ -121,54 +124,58 @@ function Activity() {
                     </FlexLayout>
                 </Card>
                 <Card title={"Completed Activities"}>
-                    {notification.length === 0 ?
-                        <FallBack
-                            illustration={<NoNotificationSvg />}
-                            subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no activities and notification found in this page</TextStyles></FlexLayout>}
-                            title="No Notification Available"
-                        />
-                        :
-                        <FlexLayout spacing='loose' direction='vertical'>
-                            <FlexChild>
-                                {
-                                    notification.map((val: any, index: number) => (
-                                        <Notification key={index}
-                                            destroy={false}
-                                            onClose={function noRefCheck() { }}
-                                            subdesciption={val.created_at}
-                                            type={val.severity === "error" ? "danger" : val.severity}
-                                        >
-                                            <TextStyles fontweight="bold" content={val.message} />
-                                        </Notification>
-                                    ))
-                                }
-                            </FlexChild>
-                            <FlexChild>
-                                <Pagination
-                                    countPerPage={countPerPage}
-                                    currentPage={activePage}
-                                    onCountChange={(e: any) => countChangeHandler(e)}
-                                    onEnter={(e: any) => onEnterChange(e)}
-                                    onNext={nextPageHandler}
-                                    onPrevious={prevPageHandler}
-                                    totalitem={allData.length}
-                                    optionPerPage={[
-                                        {
-                                            label: '5',
-                                            value: '5'
-                                        },
-                                        {
-                                            label: '10',
-                                            value: '10'
-                                        },
-                                        {
-                                            label: '15',
-                                            value: '15'
-                                        },
-                                    ]}
-                                />
-                            </FlexChild>
+                    {loader === true ?
+                        <FlexLayout spacing="mediumTight" direction="vertical">
+                            <Skeleton height="50px" line={5} type="line" width="50px" />
                         </FlexLayout>
+                        :
+                        notification.length === 0 ?
+                            <FallBack
+                                illustration={<NoNotificationSvg />}
+                                subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no activities and notification found in this page</TextStyles></FlexLayout>}
+                                title="No Notifications Available"
+                            /> :
+                            <FlexLayout spacing='loose' direction='vertical'>
+                                <FlexChild>
+                                    {
+                                        notification.map((val: any, index: number) => (
+                                            <Notification key={index}
+                                                destroy={false}
+                                                onClose={function noRefCheck() { }}
+                                                subdesciption={val.created_at}
+                                                type={val.severity === "error" ? "danger" : val.severity}
+                                            >
+                                                <TextStyles fontweight="bold" content={val.message} />
+                                            </Notification>
+                                        ))
+                                    }
+                                </FlexChild>
+                                <FlexChild>
+                                    <Pagination
+                                        countPerPage={countPerPage}
+                                        currentPage={activePage}
+                                        onCountChange={(e: any) => countChangeHandler(e)}
+                                        onEnter={(e: any) => onEnterChange(e)}
+                                        onNext={nextPageHandler}
+                                        onPrevious={prevPageHandler}
+                                        totalitem={allData.length}
+                                        optionPerPage={[
+                                            {
+                                                label: '5',
+                                                value: '5'
+                                            },
+                                            {
+                                                label: '10',
+                                                value: '10'
+                                            },
+                                            {
+                                                label: '15',
+                                                value: '15'
+                                            },
+                                        ]}
+                                    />
+                                </FlexChild>
+                            </FlexLayout>
                     }
 
                 </Card>

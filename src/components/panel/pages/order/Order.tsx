@@ -1,4 +1,4 @@
-import { Filter, AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, Select, Tabs, TextField, TextLink, Datepicker, Tag } from '@cedcommerce/ounce-ui'
+import { Filter, AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, PageHeader, Pagination, Select, Tabs, TextField, TextLink, Datepicker, Tag, FallBack, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import moment from "moment"
@@ -6,6 +6,9 @@ import { makebadgeBgColorsForOrder, makeElement, makeIndividualQueryParamsOrder,
 import { callApi } from '../../../../core/ApiMethods';
 import { useDispatch } from 'react-redux';
 import { showToast } from '../../../../redux/ReduxSlice';
+import SkOrder from '../../../skeleton/SkOrder';
+import SkTabs from '../../../skeleton/SkTabs';
+import NoOrderSvg from '../../../../assets/images/svg/NoOrderSvg';
 interface paginationObj {
     activePage: number
     countPerPage: number
@@ -56,7 +59,7 @@ function Order() {
         },
     ]
     const [tab, setTab] = useState<string>("all")
-    const [orders, setOrders] = useState<any>([]);
+    const [orders, setOrders] = useState<any>(null);
     const [orderTabsData, setOrderTabsData] = useState<any>([])
     const [totalOrder, setTotalOrder] = useState<number>(0)
     const [loader, setLoader] = useState<boolean>(true)
@@ -78,6 +81,8 @@ function Order() {
     const { activePage, countPerPage } = pagination;
 
     const { customerName, fulfilledBy, logisticMode, productName, tikTokProductId } = filterState
+    const [tabLoader, setTabLoader] = useState<boolean>(false)
+
 
 
     useEffect(() => {
@@ -96,8 +101,10 @@ function Order() {
     };
 
     const getOrderStatus = () => {
+        setTabLoader(true)
         callApi("GET", "tiktokhome/frontend/orderStatus", {}, "extraHeaders")
             .then((res: any) => {
+                setTabLoader(false)
                 if (res.success === true) {
                     makeOrderStatusTabs(res.data)
                 }
@@ -282,6 +289,7 @@ function Order() {
                 }
             />
             <Card>
+                {tabLoader === true ? <SkTabs /> : null}
                 <FlexLayout desktopWidth='100' tabWidth='100' mobileWidth='100' spacing='loose' direction='vertical'>
                     <Tabs
                         alignment="horizontal"
@@ -291,249 +299,278 @@ function Order() {
                         selected={tab}
                         value={orderTabsData}
                     >
-                        <Card cardType='Bordered'>
-                            <FlexLayout spacing='loose' direction='vertical'>
-                                <FlexChild >
-                                    <FlexLayout spacing='loose'>
-                                        <AutoComplete
-                                            clearButton
-                                            clearFunction={function noRefCheck() { }}
-                                            extraClass=""
-                                            onChange={function noRefCheck() { }}
-                                            onClick={function noRefCheck() { }}
-                                            onEnter={function noRefCheck() { }}
-                                            options={[]}
-                                            placeHolder="Enter Order ID"
-                                            popoverContainer="body"
-                                            popoverPosition="right"
-                                            setHiglighted
-                                            thickness="thin"
-                                            value=""
-                                        />
-                                        <Filter
-                                            button="Filters"
-                                            disableApply={false}
-                                            filters={[
-                                                {
-                                                    children: <>
-                                                        <FlexLayout spacing='loose' direction='vertical'>
-                                                            <Select
-                                                                onChange={(e) => {
-                                                                    handleFormChange(e, "fulfilledBy")
-                                                                }}
-                                                                onblur={function noRefCheck() { }}
-                                                                options={[
-                                                                    {
-                                                                        label: "Managed by Merchant",
-                                                                        value: "0"
-                                                                    },
-                                                                    {
-                                                                        label: "Managed by TikTok Shop",
-                                                                        value: "1"
-                                                                    }
-                                                                ]}
-                                                                value={fulfilledBy}
-                                                                placeholder='Select'
-                                                                thickness='thin'
-                                                                popoverContainer='element'
-                                                            />
+                        {loader === true ?
+                            <SkOrder />
+                            :
+                            orders.length === 0 ?
+                                <FallBack
+                                    illustration={<NoOrderSvg />}
+                                    subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no order found in this page</TextStyles></FlexLayout>}
+                                    title="No Order(s) Found"
+                                /> :
+                                <Card cardType='Bordered'>
+                                    <FlexLayout spacing='loose' direction='vertical'>
+                                        <FlexChild >
+                                            <FlexLayout spacing='loose'>
+                                                <AutoComplete
+                                                    clearButton
+                                                    clearFunction={function noRefCheck() { }}
+                                                    extraClass=""
+                                                    onChange={function noRefCheck() { }}
+                                                    onClick={function noRefCheck() { }}
+                                                    onEnter={function noRefCheck() { }}
+                                                    options={[]}
+                                                    placeHolder="Enter Order ID"
+                                                    popoverContainer="body"
+                                                    popoverPosition="right"
+                                                    setHiglighted
+                                                    thickness="thin"
+                                                    value=""
+                                                />
+                                                <Filter
+                                                    button="Filters"
+                                                    disableApply={false}
+                                                    filters={[
+                                                        {
+                                                            children: <>
+                                                                <FlexLayout spacing='loose' direction='vertical'>
+                                                                    <Select
+                                                                        onChange={(e) => {
+                                                                            handleFormChange(e, "fulfilledBy")
+                                                                        }}
+                                                                        onblur={function noRefCheck() { }}
+                                                                        options={[
+                                                                            {
+                                                                                label: "Managed by Merchant",
+                                                                                value: "0"
+                                                                            },
+                                                                            {
+                                                                                label: "Managed by TikTok Shop",
+                                                                                value: "1"
+                                                                            }
+                                                                        ]}
+                                                                        value={fulfilledBy}
+                                                                        placeholder='Select'
+                                                                        thickness='thin'
+                                                                        popoverContainer='element'
+                                                                    />
+                                                                    <Button
+                                                                        onClick={() => {
+                                                                            setFilterState({
+                                                                                ...filterState,
+                                                                                fulfilledBy: ""
+                                                                            })
+                                                                        }}
+                                                                        disable={fulfilledBy === "" ? true : false}
+                                                                        thickness="extraThin" type='Danger'>
+                                                                        Clear
+                                                                    </Button>
+                                                                </FlexLayout>
+                                                            </>,
+                                                            name: "Fulfilled By"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <Datepicker
+                                                                    format="YYYY-MM-DD"
+                                                                    onChange={(e: any) => {
+                                                                        setFilterState({
+                                                                            ...filterState,
+                                                                            createdAt: moment(e).format("YYYY-MM-DD")
+                                                                        })
+                                                                    }}
+                                                                    picker="date"
+                                                                    placeholder="Select Date"
+                                                                    placement="bottomLeft"
+                                                                    showToday
+                                                                    thickness="thick"
+                                                                />
+                                                            </>,
+                                                            name: "Created At"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <FlexLayout spacing='loose' direction='vertical'>
+                                                                    <Select
+                                                                        onChange={(e) => {
+                                                                            handleFormChange(e, "logisticMode")
+                                                                        }}
+                                                                        onblur={function noRefCheck() { }}
+                                                                        options={[
+                                                                            {
+                                                                                label: "Standard Shipping",
+                                                                                value: "STANDARD"
+                                                                            },
+                                                                            {
+                                                                                label: "Shipped By Seller",
+                                                                                value: "SEND_BY_SELLER"
+                                                                            }
+                                                                        ]}
+                                                                        value={logisticMode}
+                                                                        placeholder='Select'
+                                                                        thickness='thin'
+                                                                        popoverContainer='element'
+                                                                    />
+                                                                    <Button
+                                                                        onClick={() => {
+                                                                            setFilterState({
+                                                                                ...filterState,
+                                                                                logisticMode: ""
+                                                                            })
+                                                                        }}
+                                                                        disable={logisticMode === "" ? true : false}
+                                                                        thickness="extraThin" type='Danger'>
+                                                                        Clear
+                                                                    </Button>
+                                                                </FlexLayout>
+                                                            </>,
+                                                            name: "Logistic Mode"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <TextField
+                                                                    autocomplete="off"
+                                                                    onChange={(e) => {
+                                                                        handleFormChange(e, "customerName")
+                                                                    }}
+                                                                    placeHolder="Enter Customer Name"
+                                                                    type="text"
+                                                                    value={customerName}
+                                                                    clearButton
+                                                                    clearFunction={() => {
+                                                                        setFilterState({
+                                                                            ...filterState,
+                                                                            customerName: ""
+                                                                        })
+                                                                    }}
+                                                                />
+                                                            </>,
+                                                            name: "Customer Name"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <TextField
+                                                                    autocomplete="off"
+                                                                    onChange={(e) => {
+                                                                        handleFormChange(e, "productName")
+                                                                    }}
+                                                                    placeHolder="Enter Product Name"
+                                                                    type="text"
+                                                                    value={productName}
+                                                                    clearButton
+                                                                    clearFunction={() => {
+                                                                        setFilterState({
+                                                                            ...filterState,
+                                                                            productName: ""
+                                                                        })
+                                                                    }}
+                                                                />
+                                                            </>,
+                                                            name: "Product Name"
+                                                        },
+                                                        {
+                                                            children: <>
+                                                                <TextField
+                                                                    autocomplete="off"
+                                                                    onChange={(e) => {
+                                                                        if (regex.test(e) || e === '') {
+                                                                            handleFormChange(e, "tikTokProductId")
+                                                                        }
+                                                                    }}
+                                                                    placeHolder="Enter Product Id"
+                                                                    type="text"
+                                                                    value={tikTokProductId}
+                                                                    clearButton
+                                                                    clearFunction={() => {
+                                                                        setFilterState({
+                                                                            ...filterState,
+                                                                            tikTokProductId: ""
+                                                                        })
+                                                                    }}
+                                                                />
+                                                            </>,
+                                                            name: "TikTok Product Id"
+                                                        },
+                                                    ]}
+                                                    heading="Filters"
+                                                    icon={<FileText color="#2a2a2a" size={16} />}
+                                                    onApply={applyFilterHandler}
+                                                    resetFilter={() => {
+                                                        resetAllfilter()
+                                                    }}
+                                                    disableReset={false}
+                                                    type="Outlined"
+                                                />
+                                            </FlexLayout>
+                                        </FlexChild>
+                                        <FlexChild>
+                                            <>
+                                                <FlexLayout spacing='loose'>
+                                                    {
+                                                        tag.length !== 0 ?
+                                                            tag.map((val: any, index: number) => (
+                                                                <Tag key={index} destroy={() => removeFilerHandler(val.id, val.key)}>
+                                                                    {val.title} : {val.value}
+                                                                </Tag>
+                                                            ))
+
+                                                            : null
+                                                    }
+                                                    {
+                                                        tag.length !== 0 ?
                                                             <Button
                                                                 onClick={() => {
-                                                                    setFilterState({
-                                                                        ...filterState,
-                                                                        fulfilledBy: ""
-                                                                    })
+                                                                    resetAllfilter()
                                                                 }}
-                                                                disable={fulfilledBy === "" ? true : false}
-                                                                thickness="extraThin" type='Danger'>
-                                                                Clear
-                                                            </Button>
-                                                        </FlexLayout>
-                                                    </>,
-                                                    name: "Fulfilled By"
-                                                },
-                                                {
-                                                    children: <>
-                                                        <Datepicker
-                                                            format="YYYY-MM-DD"
-                                                            onChange={(e: any) => {
-                                                                setFilterState({
-                                                                    ...filterState,
-                                                                    createdAt: moment(e).format("YYYY-MM-DD")
-                                                                })
-                                                            }}
-                                                            picker="date"
-                                                            placeholder="Select Date"
-                                                            placement="bottomLeft"
-                                                            showToday
-                                                            thickness="thick"
-                                                        />
-                                                    </>,
-                                                    name: "Created At"
-                                                },
-                                                {
-                                                    children: <>
-                                                        <FlexLayout spacing='loose' direction='vertical'>
-                                                            <Select
-                                                                onChange={(e) => {
-                                                                    handleFormChange(e, "logisticMode")
-                                                                }}
-                                                                onblur={function noRefCheck() { }}
-                                                                options={[
-                                                                    {
-                                                                        label: "Standard Shipping",
-                                                                        value: "STANDARD"
-                                                                    },
-                                                                    {
-                                                                        label: "Shipped By Seller",
-                                                                        value: "SEND_BY_SELLER"
-                                                                    }
-                                                                ]}
-                                                                value={logisticMode}
-                                                                placeholder='Select'
-                                                                thickness='thin'
-                                                                popoverContainer='element'
-                                                            />
-                                                            <Button
-                                                                onClick={() => {
-                                                                    setFilterState({
-                                                                        ...filterState,
-                                                                        logisticMode: ""
-                                                                    })
-                                                                }}
-                                                                disable={logisticMode === "" ? true : false}
-                                                                thickness="extraThin" type='Danger'>
-                                                                Clear
-                                                            </Button>
-                                                        </FlexLayout>
-                                                    </>,
-                                                    name: "Logistic Mode"
-                                                },
-                                                {
-                                                    children: <>
-                                                        <TextField
-                                                            autocomplete="off"
-                                                            onChange={(e) => {
-                                                                handleFormChange(e, "customerName")
-                                                            }}
-                                                            placeHolder="Enter Customer Name"
-                                                            type="text"
-                                                            value={customerName}
-                                                        />
-                                                    </>,
-                                                    name: "Customer Name"
-                                                },
-                                                {
-                                                    children: <>
-                                                        <TextField
-                                                            autocomplete="off"
-                                                            onChange={(e) => {
-                                                                handleFormChange(e, "productName")
-                                                            }}
-                                                            placeHolder="Enter Product Name"
-                                                            type="text"
-                                                            value={productName}
-                                                        />
-                                                    </>,
-                                                    name: "Product Name"
-                                                },
-                                                {
-                                                    children: <>
-                                                        <TextField
-                                                            autocomplete="off"
-                                                            onChange={(e) => {
-                                                                if (regex.test(e) || e === '') {
-                                                                    handleFormChange(e, "tikTokProductId")
-                                                                }
-                                                            }}
-                                                            placeHolder="Enter Product Id"
-                                                            type="text"
-                                                            value={tikTokProductId}
-                                                        />
-                                                    </>,
-                                                    name: "TikTok Product Id"
-                                                },
-                                            ]}
-                                            heading="Filters"
-                                            icon={<FileText color="#2a2a2a" size={16} />}
-                                            onApply={applyFilterHandler}
-                                            resetFilter={() => {
-                                                resetAllfilter()
-                                            }}
-                                            disableReset={false}
-                                            type="Outlined"
-                                        />
+                                                                type='Outlined'
+                                                                thickness='extraThin'>
+                                                                Clear all filter
+                                                            </Button> : null
+                                                    }
+
+                                                </FlexLayout>
+
+                                            </>
+                                        </FlexChild>
+
+                                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                            <>
+                                                <Grid
+                                                    columns={columns}
+                                                    dataSource={orders}
+                                                    scrollX={950}
+                                                />
+                                                <br></br>
+                                                <Pagination
+                                                    countPerPage={countPerPage}
+                                                    currentPage={activePage}
+                                                    onCountChange={(e: any) => countChangeHandler(e)}
+                                                    onEnter={(e: any) => onEnterChange(e)}
+                                                    onNext={nextPageHandler}
+                                                    onPrevious={prevPageHandler}
+                                                    totalitem={totalOrder}
+                                                    optionPerPage={[
+                                                        {
+                                                            label: '5',
+                                                            value: '5'
+                                                        },
+                                                        {
+                                                            label: '10',
+                                                            value: '10'
+                                                        },
+                                                        {
+                                                            label: '15',
+                                                            value: '15'
+                                                        },
+                                                    ]}
+                                                />
+                                            </>
+                                        </FlexChild>
+
                                     </FlexLayout>
-                                </FlexChild>
-                                <FlexChild>
-                                    <>
-                                        <FlexLayout spacing='loose'>
-                                            {
-                                                tag.length !== 0 ?
-                                                    tag.map((val: any, index: number) => (
-                                                        <Tag key={index} destroy={() => removeFilerHandler(val.id, val.key)}>
-                                                            {val.title} : {val.value}
-                                                        </Tag>
-                                                    ))
+                                </Card>
+                        }
 
-                                                    : null
-                                            }
-                                            {
-                                                tag.length !== 0 ?
-                                                    <Button
-                                                        onClick={() => {
-                                                            resetAllfilter()
-                                                        }}
-                                                        type='Outlined'
-                                                        thickness='extraThin'>
-                                                        Clear all filter
-                                                    </Button> : null
-                                            }
-
-                                        </FlexLayout>
-
-                                    </>
-                                </FlexChild>
-                                {loader === true ?
-                                    <Loader type='Loader1' />
-                                    :
-                                    <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                                        <>
-                                            <Grid
-                                                columns={columns}
-                                                dataSource={orders}
-                                                scrollX={1400}
-                                            />
-                                            <br></br>
-                                            <Pagination
-                                                countPerPage={countPerPage}
-                                                currentPage={activePage}
-                                                onCountChange={(e: any) => countChangeHandler(e)}
-                                                onEnter={(e: any) => onEnterChange(e)}
-                                                onNext={nextPageHandler}
-                                                onPrevious={prevPageHandler}
-                                                totalitem={totalOrder}
-                                                optionPerPage={[
-                                                    {
-                                                        label: '5',
-                                                        value: '5'
-                                                    },
-                                                    {
-                                                        label: '10',
-                                                        value: '10'
-                                                    },
-                                                    {
-                                                        label: '15',
-                                                        value: '15'
-                                                    },
-                                                ]}
-                                            />
-                                        </>
-                                    </FlexChild>
-                                }
-
-                            </FlexLayout>
-                        </Card>
                     </Tabs>
                 </FlexLayout>
             </Card>
