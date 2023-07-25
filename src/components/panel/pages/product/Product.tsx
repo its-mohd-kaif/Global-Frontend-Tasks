@@ -1,6 +1,6 @@
 import { ActionList, Filter, Alert, AutoComplete, Button, Card, CheckBox, FlexChild, FlexLayout, Grid, Image, Modal, PageHeader, Pagination, Popover, Radio, Select, Tabs, TextField, TextLink, TextStyles, Loader, Tag, FallBack } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
-import { FileText, ChevronDown, } from "react-feather"
+import { FileText, ChevronDown, Search } from "react-feather"
 import productFallbackImg from "../../../../assets/images/png/productFallBack.png"
 import { GetRange, makebadgeBgColors, makeIndividualQueryParams, makeTitleForTag, makeURLForTabChange, ProductGridTitle, ProductsActions, ProductsStatus, ProductsTitle } from './ProductUtility';
 import { callApi } from '../../../../core/ApiMethods';
@@ -142,6 +142,7 @@ function Product() {
         priceError: false,
         quantityError: false
     })
+    const [searchProduct, setSearchProduct] = useState<string>("")
     const { categoryChoose, productTypeChoose, minQuantity, maxQuantity, minPrice, maxPrice, brand } = filterState;
     const { priceError, quantityError } = errorfilter
 
@@ -164,8 +165,15 @@ function Product() {
             })
     }, [])
     useEffect(() => {
-        getRefineProduct(tab)
-    }, [pagination, tab, tag])
+        if (searchProduct !== "") {
+            const getData = setTimeout(() => {
+                getRefineProduct(tab)
+            }, 3000);
+            return () => clearInterval(getData);
+        } else {
+            getRefineProduct(tab)
+        }
+    }, [pagination, tab, tag, searchProduct])
 
     const makeProdctsStatusTabs = (data: any) => {
         const tabs = [
@@ -240,14 +248,16 @@ function Product() {
             return strKeys.join('');
         }
         const filterUrl = tag.length === 0 ? "" : generateQueryString(tag)
-        callApi("GET", `connector/product/getRefineProductCount?activePage=1&count=10${url}${filterUrl}`, {}, "extraHeaders")
+        const searchUrl = searchProduct === "" ? "" : `&or_filter[title][3]=${searchProduct}&or_filter[items.sku][3]=${searchProduct}&or_filter[source_product_id][3]=${searchProduct}`;
+
+        callApi("GET", `connector/product/getRefineProductCount?activePage=1&count=10${url}${filterUrl}${searchUrl}`, {}, "extraHeaders")
             .then((res: any) => {
                 if (res.success === true) {
                     setTotalProducts(res.data.count)
 
                 }
             })
-        callApi("GET", `connector/product/getRefineProducts?activePage=${activePage}&count=${countPerPage}${url}${filterUrl}`, {}, "extraHeaders")
+        callApi("GET", `connector/product/getRefineProducts?activePage=${activePage}&count=${countPerPage}${url}${filterUrl}${searchUrl}`, {}, "extraHeaders")
             .then((res: any) => {
                 setLoader(false)
                 const dataRes = res.data.rows
@@ -608,7 +618,7 @@ function Product() {
                                 loader === true ?
                                     <SkProduct />
                                     :
-                                    products.length === 0 ?
+                                    products.length === 0 && searchProduct === "" ?
                                         <FallBack
                                             illustration={<NoProductSvg />}
                                             subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no product found in this page</TextStyles></FlexLayout>}
@@ -618,20 +628,18 @@ function Product() {
                                             <FlexLayout spacing='loose' direction='vertical'>
                                                 <FlexChild >
                                                     <FlexLayout spacing='loose'>
-                                                        <AutoComplete
-                                                            clearButton
-                                                            clearFunction={function noRefCheck() { }}
-                                                            extraClass=""
-                                                            onChange={function noRefCheck() { }}
-                                                            onClick={function noRefCheck() { }}
-                                                            onEnter={function noRefCheck() { }}
-                                                            options={[]}
+                                                        <TextField
                                                             placeHolder="Enter Title, ID or SKU"
-                                                            popoverContainer="body"
-                                                            popoverPosition="right"
-                                                            setHiglighted
                                                             thickness="thin"
-                                                            value=""
+                                                            innerPreIcon={<Search />}
+                                                            onChange={(e) => {
+                                                                setSearchProduct(e)
+                                                            }}
+                                                            value={searchProduct}
+                                                            clearButton
+                                                            clearFunction={() => {
+                                                                setSearchProduct("")
+                                                            }}
                                                         />
                                                         <Popover
                                                             activator={<Button thickness='thin' icon={<ChevronDown />} iconAlign="right"
@@ -917,74 +925,82 @@ function Product() {
 
                                                     </>
                                                 </FlexChild>
-                                                <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                                                    <>
-                                                        <Grid
-                                                            columns={columns}
-                                                            size={"small"}
-                                                            scrollX={970}
-                                                            dataSource={products}
-                                                            rowSelection={{
-                                                                onChange: function noRefCheck() { }
-                                                            }}
-                                                            expandable={{
-                                                                showExpandColumn: true,
-                                                                rowExpandable: (record: any) => {
-                                                                    return record['childrenRow'];
-                                                                },
-                                                                expandedRowKeys: [...expandedRows],
-                                                                expandedRowRender: (record: any) => {
-                                                                    return (
-                                                                        <Grid
-                                                                            tableLayout="auto"
-                                                                            size="middle"
-                                                                            scrollX={1400}
-                                                                            columns={childColumns}
-                                                                            dataSource={record['childrenRow']}
-                                                                        />
-                                                                    );
-                                                                },
-                                                                onExpand: (expanded: any, record: any) => {
-                                                                    if (expanded) {
-                                                                        setExpandedRows([...expandedRows, record.key]);
-                                                                    } else {
-                                                                        const tempRows = [...expandedRows];
-                                                                        tempRows.forEach((item, index) => {
-                                                                            if (item === record.key) {
-                                                                                tempRows.splice(index, 1);
-                                                                            }
-                                                                        });
-                                                                        setExpandedRows(tempRows);
-                                                                    }
-                                                                },
-                                                            }}
-                                                        />
-                                                        <br></br>
-                                                        <Pagination
-                                                            countPerPage={countPerPage}
-                                                            currentPage={activePage}
-                                                            onCountChange={(e: any) => countChangeHandler(e)}
-                                                            onEnter={(e: any) => onEnterChange(e)}
-                                                            onNext={nextPageHandler}
-                                                            onPrevious={prevPageHandler}
-                                                            totalitem={totalProducts}
-                                                            optionPerPage={[
-                                                                {
-                                                                    label: '5',
-                                                                    value: '5'
-                                                                },
-                                                                {
-                                                                    label: '10',
-                                                                    value: '10'
-                                                                },
-                                                                {
-                                                                    label: '15',
-                                                                    value: '15'
-                                                                },
-                                                            ]}
-                                                        />
-                                                    </>
-                                                </FlexChild>
+                                                {products.length === 0 && searchProduct !== "" ?
+                                                    <FallBack
+                                                        illustration={<NoProductSvg />}
+                                                        subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no product found in this page</TextStyles></FlexLayout>}
+                                                        title="No Matching Products Found"
+                                                    />
+                                                    :
+                                                    <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                                        <>
+                                                            <Grid
+                                                                columns={columns}
+                                                                size={"small"}
+                                                                scrollX={970}
+                                                                dataSource={products}
+                                                                rowSelection={{
+                                                                    onChange: function noRefCheck() { }
+                                                                }}
+                                                                expandable={{
+                                                                    showExpandColumn: true,
+                                                                    rowExpandable: (record: any) => {
+                                                                        return record['childrenRow'];
+                                                                    },
+                                                                    expandedRowKeys: [...expandedRows],
+                                                                    expandedRowRender: (record: any) => {
+                                                                        return (
+                                                                            <Grid
+                                                                                tableLayout="auto"
+                                                                                size="middle"
+                                                                                scrollX={1400}
+                                                                                columns={childColumns}
+                                                                                dataSource={record['childrenRow']}
+                                                                            />
+                                                                        );
+                                                                    },
+                                                                    onExpand: (expanded: any, record: any) => {
+                                                                        if (expanded) {
+                                                                            setExpandedRows([...expandedRows, record.key]);
+                                                                        } else {
+                                                                            const tempRows = [...expandedRows];
+                                                                            tempRows.forEach((item, index) => {
+                                                                                if (item === record.key) {
+                                                                                    tempRows.splice(index, 1);
+                                                                                }
+                                                                            });
+                                                                            setExpandedRows(tempRows);
+                                                                        }
+                                                                    },
+                                                                }}
+                                                            />
+                                                            <br></br>
+                                                            <Pagination
+                                                                countPerPage={countPerPage}
+                                                                currentPage={activePage}
+                                                                onCountChange={(e: any) => countChangeHandler(e)}
+                                                                onEnter={(e: any) => onEnterChange(e)}
+                                                                onNext={nextPageHandler}
+                                                                onPrevious={prevPageHandler}
+                                                                totalitem={totalProducts}
+                                                                optionPerPage={[
+                                                                    {
+                                                                        label: '5',
+                                                                        value: '5'
+                                                                    },
+                                                                    {
+                                                                        label: '10',
+                                                                        value: '10'
+                                                                    },
+                                                                    {
+                                                                        label: '15',
+                                                                        value: '15'
+                                                                    },
+                                                                ]}
+                                                            />
+                                                        </>
+                                                    </FlexChild>}
+
                                             </FlexLayout>
                                         </Card>
                             }

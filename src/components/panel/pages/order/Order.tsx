@@ -1,6 +1,6 @@
 import { Filter, AutoComplete, Button, Card, FlexChild, FlexLayout, Grid, PageHeader, Pagination, Select, Tabs, TextField, TextLink, Datepicker, Tag, FallBack, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
-import { FileText } from "react-feather"
+import { FileText, Search } from "react-feather"
 import moment from "moment"
 import { makebadgeBgColorsForOrder, makeElement, makeIndividualQueryParamsOrder, makeTitleForOrderTag, makeTTSOrderID, makeURLForTabChangeForOrder, OrdersStatus } from './OrderUtility';
 import { callApi } from '../../../../core/ApiMethods';
@@ -78,6 +78,7 @@ function Order() {
         tikTokProductId: '',
     });
     const [tag, setTag] = useState<any>([])
+    const [searchOrder, setSearchOrder] = useState<string>("")
     const { activePage, countPerPage } = pagination;
 
     const { customerName, fulfilledBy, logisticMode, productName, tikTokProductId } = filterState
@@ -90,8 +91,15 @@ function Order() {
     }, [])
 
     useEffect(() => {
-        makeOrderGrid(tab)
-    }, [pagination, tab, tag])
+        if (searchOrder !== "") {
+            const getData = setTimeout(() => {
+                makeOrderGrid(tab)
+            }, 3000);
+            return () => clearInterval(getData);
+        } else {
+            makeOrderGrid(tab)
+        }
+    }, [pagination, tab, tag, searchOrder])
 
     const handleFormChange = (value: string, name: string) => {
         setFilterState((prevState) => ({
@@ -152,7 +160,8 @@ function Order() {
             return strKeys.join('');
         }
         const filterUrl = tag.length === 0 ? "" : generateQueryString(tag)
-        callApi("GET", `connector/order/getAll?activePage=${activePage}&count=${countPerPage}&filter[object_type][1]=source_order${url}${filterUrl}`, {}, "extraHeader")
+        const searchUrl = searchOrder === "" ? "" : `&filter[marketplace_reference_id][3]=${searchOrder}`
+        callApi("GET", `connector/order/getAll?activePage=${activePage}&count=${countPerPage}&filter[object_type][1]=source_order${url}${filterUrl}${searchUrl}`, {}, "extraHeader")
             .then((res: any) => {
                 setLoader(false)
                 if (res.success === true) {
@@ -176,7 +185,6 @@ function Order() {
                 }
             })
     }
-
     /**
     * on count change pagination handler
     * @param val user select from grid 
@@ -302,7 +310,7 @@ function Order() {
                         {loader === true ?
                             <SkOrder />
                             :
-                            orders.length === 0 ?
+                            totalOrder === 0 && searchOrder === "" ?
                                 <FallBack
                                     illustration={<NoOrderSvg />}
                                     subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no order found in this page</TextStyles></FlexLayout>}
@@ -312,20 +320,20 @@ function Order() {
                                     <FlexLayout spacing='loose' direction='vertical'>
                                         <FlexChild >
                                             <FlexLayout spacing='loose'>
-                                                <AutoComplete
-                                                    clearButton
-                                                    clearFunction={function noRefCheck() { }}
-                                                    extraClass=""
-                                                    onChange={function noRefCheck() { }}
-                                                    onClick={function noRefCheck() { }}
-                                                    onEnter={function noRefCheck() { }}
-                                                    options={[]}
+                                                <TextField
                                                     placeHolder="Enter Order ID"
-                                                    popoverContainer="body"
-                                                    popoverPosition="right"
-                                                    setHiglighted
                                                     thickness="thin"
-                                                    value=""
+                                                    innerPreIcon={<Search />}
+                                                    onChange={(e) => {
+                                                        if (regex.test(e) || e === '') {
+                                                            setSearchOrder(e)
+                                                        }
+                                                    }}
+                                                    value={searchOrder}
+                                                    clearButton
+                                                    clearFunction={() => {
+                                                        setSearchOrder("")
+                                                    }}
                                                 />
                                                 <Filter
                                                     button="Filters"
@@ -532,40 +540,47 @@ function Order() {
 
                                             </>
                                         </FlexChild>
-
-                                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                                            <>
-                                                <Grid
-                                                    columns={columns}
-                                                    dataSource={orders}
-                                                    scrollX={950}
-                                                />
-                                                <br></br>
-                                                <Pagination
-                                                    countPerPage={countPerPage}
-                                                    currentPage={activePage}
-                                                    onCountChange={(e: any) => countChangeHandler(e)}
-                                                    onEnter={(e: any) => onEnterChange(e)}
-                                                    onNext={nextPageHandler}
-                                                    onPrevious={prevPageHandler}
-                                                    totalitem={totalOrder}
-                                                    optionPerPage={[
-                                                        {
-                                                            label: '5',
-                                                            value: '5'
-                                                        },
-                                                        {
-                                                            label: '10',
-                                                            value: '10'
-                                                        },
-                                                        {
-                                                            label: '15',
-                                                            value: '15'
-                                                        },
-                                                    ]}
-                                                />
-                                            </>
-                                        </FlexChild>
+                                        {totalOrder === 0 && searchOrder !== "" ?
+                                            <FallBack
+                                                illustration={<NoOrderSvg />}
+                                                subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no product found in this page</TextStyles></FlexLayout>}
+                                                title="No Matching Orders Found"
+                                            />
+                                            :
+                                            <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                                <>
+                                                    <Grid
+                                                        columns={columns}
+                                                        dataSource={orders}
+                                                        scrollX={950}
+                                                    />
+                                                    <br></br>
+                                                    <Pagination
+                                                        countPerPage={countPerPage}
+                                                        currentPage={activePage}
+                                                        onCountChange={(e: any) => countChangeHandler(e)}
+                                                        onEnter={(e: any) => onEnterChange(e)}
+                                                        onNext={nextPageHandler}
+                                                        onPrevious={prevPageHandler}
+                                                        totalitem={totalOrder}
+                                                        optionPerPage={[
+                                                            {
+                                                                label: '5',
+                                                                value: '5'
+                                                            },
+                                                            {
+                                                                label: '10',
+                                                                value: '10'
+                                                            },
+                                                            {
+                                                                label: '15',
+                                                                value: '15'
+                                                            },
+                                                        ]}
+                                                    />
+                                                </>
+                                            </FlexChild>
+                                        }
 
                                     </FlexLayout>
                                 </Card>
