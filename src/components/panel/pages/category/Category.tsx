@@ -1,7 +1,8 @@
-import { Button, Card, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, TextField } from '@cedcommerce/ounce-ui'
+import { Button, Card, FallBack, FlexChild, FlexLayout, Grid, Loader, PageHeader, Pagination, TextField, TextStyles } from '@cedcommerce/ounce-ui'
 import React, { useEffect, useState } from 'react'
 import { FileText } from "react-feather"
 import { useNavigate } from 'react-router-dom'
+import NoTemplateSvg from '../../../../assets/images/svg/NoTemplateSvg'
 import { callApi } from '../../../../core/ApiMethods'
 import { SkCategory } from '../../../skeleton/SkCategory'
 import { CategoryActions, ViewRules } from './CategoryUtility'
@@ -123,6 +124,7 @@ function Category() {
                 }
             })
     }
+    console.log("TOTAL COUNT", totalCount)
     /**
     * next page handler
     */
@@ -162,60 +164,72 @@ function Category() {
             <br></br>
             <Card cardType='Bordered'>
                 {loader === true ? <SkCategory />
-
                     :
-                    <FlexLayout spacing='loose' direction='vertical'>
-                        <FlexChild desktopWidth='33' tabWidth='50' mobileWidth='100'>
-                            <TextField
-                                onChange={(e) => {
-                                    setSearch(e)
-                                }}
-                                placeHolder="Search category template"
-                                value={search}
-                                clearButton
-                                clearFunction={() => {
-                                    setSearch("")
-                                    makeApiCall()
-                                    setPagination({
-                                        activePage: 1,
-                                        countPerPage: 5,
-                                        next: null,
-                                        prev: null
-                                    })
-                                }}
-                            />
-                        </FlexChild>
-                        <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
-                            <>
-                                <Grid
-                                    columns={columns}
-                                    dataSource={data}
+                    (totalCount === 0 || totalCount === null) && search === "" ?
+                        <FallBack
+                            illustration={<NoTemplateSvg />}
+                            subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no product found in this page</TextStyles></FlexLayout>}
+                            title="No Matching Template Found"
+                        /> :
+                        <FlexLayout spacing='loose' direction='vertical'>
+                            <FlexChild desktopWidth='33' tabWidth='50' mobileWidth='100'>
+                                <TextField
+                                    onChange={(e) => {
+                                        setSearch(e)
+                                    }}
+                                    placeHolder="Search category template"
+                                    value={search}
+                                    clearButton
+                                    clearFunction={() => {
+                                        setSearch("")
+                                        makeApiCall()
+                                        setPagination({
+                                            activePage: 1,
+                                            countPerPage: 5,
+                                            next: null,
+                                            prev: null
+                                        })
+                                    }}
                                 />
-                                <Pagination
-                                    countPerPage={countPerPage}
-                                    currentPage={activePage}
-                                    onNext={nextPageHandler}
-                                    onPrevious={prevPageHandler}
-                                    totalitem={totalCount}
-                                    simpleView={true}
-                                    optionPerPage={[
-                                        {
-                                            label: '5',
-                                            value: '5'
-                                        },
-                                        {
-                                            label: '10',
-                                            value: '10'
-                                        },
-                                        {
-                                            label: '15',
-                                            value: '15'
-                                        },
-                                    ]}
-                                />
-                            </>
-                        </FlexChild>
-                    </FlexLayout>
+                            </FlexChild>
+                            {(totalCount === 0 || totalCount === null) && search !== "" ?
+                                <FallBack
+                                    illustration={<NoTemplateSvg />}
+                                    subTitle={<FlexLayout direction="vertical" halign="center"><TextStyles alignment="center" fontweight="normal" paragraphTypes="MD-1.4" textcolor="light" type="Paragraph" utility="none">There is no product found in this page</TextStyles></FlexLayout>}
+                                    title="No Matching Template Found"
+                                /> :
+                                <FlexChild desktopWidth='100' tabWidth='100' mobileWidth='100'>
+                                    <>
+                                        <Grid
+                                            columns={columns}
+                                            dataSource={data}
+                                        />
+                                        <Pagination
+                                            countPerPage={countPerPage}
+                                            currentPage={activePage}
+                                            onNext={nextPageHandler}
+                                            onPrevious={prevPageHandler}
+                                            totalitem={totalCount}
+                                            simpleView={true}
+                                            optionPerPage={[
+                                                {
+                                                    label: '5',
+                                                    value: '5'
+                                                },
+                                                {
+                                                    label: '10',
+                                                    value: '10'
+                                                },
+                                                {
+                                                    label: '15',
+                                                    value: '15'
+                                                },
+                                            ]}
+                                        />
+                                    </>
+                                </FlexChild>
+                            }
+                        </FlexLayout>
                 }
 
             </Card>
@@ -224,3 +238,4 @@ function Category() {
 }
 
 export default Category
+
