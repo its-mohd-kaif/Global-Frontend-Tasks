@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux"
 import LoaderComponent from "./utility/commonComponent/LoaderComponent"
 import { connectorGetMethod, stepCompleted, userId } from "../../redux/ReduxSlice"
 import GridPage from "../../testing-grid/GridPage"
+import ScrollToTopButton from "../scrollToTopButton/ScrollToTopButton"
 
 function Panel() {
     const navigate = useNavigate()
@@ -86,6 +87,7 @@ function Panel() {
                             <Route path='grid-page' element={<GridPage />} />
                         </Routes>
                         <Footer />
+                        <ScrollToTopButton />
                     </BodyLayout>
                 </>
             )
